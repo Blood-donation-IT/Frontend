@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Feather';
 
 export default function SignUpScreen() {
   const [name, setName] = useState('');
@@ -68,6 +69,7 @@ export default function SignUpScreen() {
         <Text style={{ color: bloodType ? '#000' : '#999' }}>
           {bloodType || 'Blood Type'}
         </Text>
+        <Icon style={styles.chevron} name="chevron-right"/>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -148,8 +150,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 22,
     paddingHorizontal: 16,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     marginBottom: 32,
+    flexDirection: "row",
+    alignItems: "center",
   },
   dropdownText: {
     color: '#C7C7CD',
@@ -193,5 +197,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
 
+  chevron: {
+    justifyContent: "flex-end",
+    fontSize: 20,
+    color: "#3A3A3A",
+  },
 
 });
