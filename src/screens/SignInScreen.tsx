@@ -1,24 +1,25 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/Feather';
 
 export default function SignUpScreen() {
   const [name, setName] = useState('');
-  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
+  const [year, setYear] = useState('');
   const [password, setPassword] = useState('');
-  const [bloodType, setBloodType] = useState('');
-  const [isModalVisible, setModalVisible] = useState(false);
-
-  const bloodTypes = ['1+', '1-', '2+', '2-', '3+', '3-', '4+', '4-'];
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   const navigation = useNavigation();
   
 
   const handleSignUp = () => {
-    if (!name || !lastName || !email || !password || !bloodType) {
+    if (!name || !email || !year || !password || !confirmPassword ) {
       Alert.alert("Помилка", "Заповни всі поля");
+      return;
+    }
+
+    if (password != confirmPassword) {
+      Alert.alert("Помилка", "Паролі не співпадають");
       return;
     }
 
@@ -36,84 +37,66 @@ export default function SignUpScreen() {
     <>
     <ScrollView contentContainerStyle={styles.container}>
 
-      <Text style={styles.title}>SaveFlow</Text>
+      <Text style={styles.title}>OneDrop</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Your name"
-        value={name}
-        onChangeText={setName} />
+      <View style={styles.BoxOfInputs}>
+        <TextInput
+          style={styles.input}
+          placeholderTextColor="#A1A1A1"
+          placeholder="Your name"
+          value={name}
+          onChangeText={setName} />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Your last name"
-        value={lastName}
-        onChangeText={setLastName} />
+        <TextInput
+          style={styles.input}
+          placeholderTextColor="#A1A1A1"
+          placeholder="Email"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          value={email}
+          onChangeText={setEmail} />
+          
+        <TextInput
+          style={styles.input}
+          placeholderTextColor="#A1A1A1"
+          placeholder="Your Year"
+          value={year}
+          onChangeText={setYear} />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        value={email}
-        onChangeText={setEmail} />
+        <TextInput
+          style={styles.input}
+          placeholderTextColor="#A1A1A1"
+          placeholder="Password"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword} />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword} />
+        <TextInput
+          style={styles.input}
+          placeholderTextColor="#A1A1A1"
+          placeholder="Confirm Password"
+          secureTextEntry
+          value={confirmPassword}
+          onChangeText={setConfirmPassword} />
+      </View>
 
-      <TouchableOpacity style={styles.dropdown} onPress={() => setModalVisible(true)}>
-        <Text style={{ color: bloodType ? '#000' : '#999' }}>
-          {bloodType || 'Blood Type'}
-        </Text>
-        <Icon style={styles.chevron} name="chevron-right"/>
-      </TouchableOpacity>
+      <View>
+        <TouchableOpacity
+          style={styles.goToLogInButton}
+          onPress={() => navigation.navigate('LogIn')}
+        >
+          <Text style={styles.buttonText}>Log In</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.goToLogInButton}
-        onPress={() => navigation.navigate('LogIn')}
-      >
-        <Text style={styles.buttonText}>Log In</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => handleSignUp()}
-      >
-        <Text style={styles.buttonText}>Sign In</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => handleSignUp()}
+        >
+          <Text style={styles.buttonText}>Sign In</Text>
+        </TouchableOpacity>
+      </View>
 
     </ScrollView>
-
-    <Modal
-      visible={isModalVisible}
-      transparent
-      animationType="slide"
-    >
-      <TouchableOpacity
-        style={styles.modalOverlay}
-        activeOpacity={1}
-        onPressOut={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          {bloodTypes.map((type) => (
-            <TouchableOpacity
-              key={type}
-              style={styles.modalItem}
-              onPress={() => {
-                setBloodType(type);
-                setModalVisible(false);
-              } }
-            >
-              <Text style={{ fontSize: 16 }}>{type}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </TouchableOpacity>
-    </Modal>
 
     </>
   );
@@ -122,85 +105,56 @@ export default function SignUpScreen() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-evenly',
     paddingHorizontal: 24,
-    paddingVertical: 48,
     backgroundColor: '#fff',
   },
   title: {
+    fontFamily:"inter",
     fontSize: 20,
     fontWeight: '600',
-    marginBottom: 32,
     alignSelf: 'center',
     color: '#000000',
     
   },
   input: {
     height: 44,
-    borderColor: '#ccc',
+    borderColor: '#A1A1A1',
     borderWidth: 1,
-    borderRadius: 22,
+    borderRadius: 20,
     paddingHorizontal: 16,
     marginBottom: 12,
-    color: '#3A3A3A',
+    backgroundColor:"#F5EDEB",
   },
-  dropdown: {
-    height: 44,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 22,
-    paddingHorizontal: 16,
-    justifyContent: 'space-between',
-    marginBottom: 32,
-    flexDirection: "row",
-    alignItems: "center",
+
+
+  BoxOfInputs: {
+    marginBottom:"-20%",
   },
-  dropdownText: {
-    color: '#C7C7CD',
-  },
+  
   button: {
     alignItems: "center",
     justifyContent: "center",
     height: 44,
     borderRadius: 16,
-    backgroundColor: '#ddd',
+    backgroundColor: '#ED5A5A',
     alignSelf: 'center',
     width: 160,
+    marginBottom:"20%",
   },
-
-
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    justifyContent: 'flex-end',
-  },
-  modalContainer: {
-    backgroundColor: '#fff',
-    paddingVertical: 16,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-  },
-  modalItem: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-
   buttonText: {
-    color: '#000000',
+    color: '#FAFAFA',
     fontWeight: '600',
     fontSize: 16,
   },
 
   goToLogInButton: {
-    alignItems: 'flex-end',
+    alignSelf: 'flex-end',
     paddingHorizontal: 16,
-  },
-
-  chevron: {
-    justifyContent: "flex-end",
-    fontSize: 20,
-    color: "#3A3A3A",
+    backgroundColor:"#000000",
+    borderRadius:20,
+    padding:5,
+    marginBottom:"4%",
   },
 
 });

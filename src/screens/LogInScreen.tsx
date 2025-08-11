@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 export default function LogInScreen() {
@@ -29,22 +29,26 @@ export default function LogInScreen() {
     <>
     <ScrollView contentContainerStyle={styles.container}>
 
-      <Text style={styles.title}>SaveFlow</Text>
+      <Text style={styles.title}>OneDrop</Text>
+      
+      <View style={styles.BoxOfInputs}>
+        <TextInput
+          style={styles.input}
+          placeholderTextColor="#A1A1A1"
+          placeholder="Email"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          value={email}
+          onChangeText={setEmail} />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        value={email}
-        onChangeText={setEmail} />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword} />
+        <TextInput
+          style={styles.input}
+          placeholderTextColor="#A1A1A1"
+          placeholder="Password"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword} />
+      </View>
 
       <TouchableOpacity
         style={styles.button}
@@ -61,12 +65,12 @@ export default function LogInScreen() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-evenly',
     paddingHorizontal: 24,
-    paddingVertical: 48,
     backgroundColor: '#fff',
   },
   title: {
+    fontFamily:"inter",
     fontSize: 20,
     fontWeight: '600',
     marginBottom: 32,
@@ -76,40 +80,32 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 44,
-    borderColor: '#ccc',
+    borderColor: '#A1A1A1',
     borderWidth: 1,
     borderRadius: 22,
     paddingHorizontal: 16,
     marginBottom: 12,
-    color: '#3A3A3A',
-  },
-  dropdown: {
-    height: 44,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 22,
-    paddingHorizontal: 16,
-    justifyContent: 'center',
-    marginBottom: 32,
-  },
-  dropdownText: {
-    color: '#C7C7CD',
+    backgroundColor:"#F5EDEB",
   },
   button: {
     alignItems: "center",
     justifyContent: "center",
     height: 44,
     borderRadius: 16,
-    backgroundColor: '#ddd',
+    backgroundColor: '#ED5A5A',
     alignSelf: 'center',
     width: 160,
+    marginBottom:"20%",
   },
 
   buttonText: {
-    color: '#000000',
+    color: '#FAFAFA',
     fontWeight: '600',
     fontSize: 16,
   },
 
+  BoxOfInputs: {
+    marginBottom:"-20%",
+  },
 
 });
