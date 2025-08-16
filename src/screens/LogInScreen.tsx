@@ -10,16 +10,16 @@ export default function LogInScreen() {
   
 
   const handleSignUp = () => {
-    if (!email || !password) {
-      Alert.alert("Помилка", "Заповни всі поля");
-      return;
-    }
+    // if (!email || !password) {
+    //   Alert.alert("Помилка", "Заповни всі поля");
+    //   return;
+    // }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      Alert.alert("Невірний email", "Введи правильну адресу електронної пошти");
-      return;
-    }
+    // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // if (!emailRegex.test(email)) {
+    //   Alert.alert("Невірний email", "Введи правильну адресу електронної пошти");
+    //   return;
+    // }
 
     navigation.navigate("Home");
   };
