@@ -65,7 +65,8 @@ export default function LogInScreen() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    justifyContent: 'space-evenly',
+    justifyContent: 'center',
+    gap:"10%",
     paddingHorizontal: 24,
     backgroundColor: '#fff',
   },
@@ -105,7 +106,7 @@ const styles = StyleSheet.create({
   },
 
   BoxOfInputs: {
-    marginBottom:"-20%",
+    marginBottom:"-6%",
   },
 
 });
