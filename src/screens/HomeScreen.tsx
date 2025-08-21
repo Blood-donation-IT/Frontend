@@ -1,10 +1,21 @@
 import React from 'react';
-import { View, StyleSheet, Text, ScrollView, Image } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 
 export default function HomeScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
+
+      <TouchableOpacity
+        // onPress={() => handleSignUp()}
+      >
+        <Image 
+          source={require('../images/notification.png')}
+          style={styles.notificationImg}  
+        />
+      </TouchableOpacity>
+      
+
       <View style={styles.calendarWrapper}>
         <Calendar
           current={'2024-08-01'}
@@ -54,7 +65,6 @@ export default function HomeScreen() {
 
         {Array(4).fill(0).map((_, index) => (
           <View style={styles.listItem} key={index}>
-            {/* <Ionicons name="water" size={20} color="#E53935" /> */}
             <Image 
               source={require('../images/drop.png')}
               style={{ width: 18, height: 28, marginRight: 8, resizeMode: 'contain' }}  
@@ -75,7 +85,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     minHeight:"100%",
-    paddingHorizontal: 24,
+    paddingHorizontal: "5%",
     paddingVertical: 48,
     backgroundColor: '#fff',
     gap:20,
@@ -118,6 +128,13 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     lineHeight: 18, 
     letterSpacing: 0,
+  },
+
+  notificationImg: {
+    alignSelf:'flex-end',
+    width: 28, 
+    height: 28, 
+    resizeMode: 'contain',
   },
   
 });
