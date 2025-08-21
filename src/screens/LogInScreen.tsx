@@ -57,6 +57,15 @@ export default function LogInScreen() {
         <Text style={styles.buttonText}>Log In</Text>
       </TouchableOpacity>
 
+      <View style={styles.goToSignUpButton}>
+        <Text style={[styles.buttonText, { color: '#8C8C8C' }]}> Don’t have an account?</Text>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('SignIn')}
+        >
+          <Text style={[styles.buttonText, { color: '#ED5A5A' }]}> Sign Up</Text>
+        </TouchableOpacity>
+      </View>
+
     </ScrollView>
     </>
   );
@@ -107,6 +116,15 @@ const styles = StyleSheet.create({
 
   BoxOfInputs: {
     marginBottom:"-6%",
+  },
+
+  goToSignUpButton: {
+    flexDirection:"row",
+    alignSelf: 'center',
+    paddingHorizontal: 16,
+    borderRadius:20,
+    padding:5,
+    marginBottom:"4%",
   },
 
 });

@@ -81,12 +81,7 @@ export default function SignUpScreen() {
       </View>
 
       <View>
-        <TouchableOpacity
-          style={styles.goToLogInButton}
-          onPress={() => navigation.navigate('LogIn')}
-        >
-          <Text style={styles.buttonText}>Log In</Text>
-        </TouchableOpacity>
+
 
         <TouchableOpacity
           style={styles.button}
@@ -94,6 +89,17 @@ export default function SignUpScreen() {
         >
           <Text style={styles.buttonText}>Sign In</Text>
         </TouchableOpacity>
+
+        <View style={styles.goToLogInButton}>
+          <Text style={[styles.buttonText, { color: '#8C8C8C' }]}> Already have an account?</Text>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('LogIn')}
+          >
+            <Text style={[styles.buttonText, { color: '#ED5A5A' }]}> Log in</Text>
+          </TouchableOpacity>
+        </View>
+
+
       </View>
 
     </ScrollView>
@@ -150,9 +156,9 @@ const styles = StyleSheet.create({
   },
 
   goToLogInButton: {
-    alignSelf: 'flex-end',
+    flexDirection:"row",
+    alignSelf: 'center',
     paddingHorizontal: 16,
-    backgroundColor:"#000000",
     borderRadius:20,
     padding:5,
     marginBottom:"4%",
