@@ -1,7 +1,10 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import ProfileScreen from '../screens/ProfileScreen';
+import { Image } from "react-native";
+
+
 
 const Tab = createBottomTabNavigator();
 
@@ -16,22 +19,33 @@ export default function MainTabs() {
         },
         tabBarActiveTintColor: '#fff',
         tabBarInactiveTintColor: '#aaa',
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
+        tabBarIcon: ({ focused, size }) => {
+          let iconSource;
 
           if (route.name === 'Home') {
-            iconName = focused ? 'home' : 'home-outline';
+            iconSource = focused
+              ? require('../images/home-active.png')
+              : require('../images/home.png'); 
           } else if (route.name === 'Profile') {
-            iconName = focused ? 'person' : 'person-outline';
+            iconSource = focused
+              ? require('../images/profile.png')//-active
+              : require('../images/profile.png');
           }
 
-          return <Ionicons name={iconName} size={size} color={color} />;
+          return (
+            <Image
+              source={iconSource}
+              style={{ width: size, height: size }}
+              resizeMode="contain"
+            />
+          );
         },
         headerShown: false,
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} options={{ title: '' }} />
-      {/* <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: '' }} /> */}
+      <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: '' }} />
     </Tab.Navigator>
   );
 }
+
