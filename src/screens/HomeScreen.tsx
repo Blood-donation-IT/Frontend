@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 
-export default function HomeScreen() {
+export default function HomeScreen({navigation}) {
 
   const bloodData = [
     { type: "0+", status: "low" },
@@ -14,6 +14,33 @@ export default function HomeScreen() {
     { type: "B-", status: "high" },
     { type: "AB-", status: "low" },
   ];
+
+
+
+  const redDates = {
+    "2024-08-05": { selected: true, selectedColor: "#E53935" },
+    "2024-08-06": { selected: true, selectedColor: "#E53935" },
+    "2024-08-07": { selected: true, selectedColor: "#E53935" },
+    "2024-08-08": { selected: true, selectedColor: "#E53935" },
+    "2024-08-09": { selected: true, selectedColor: "#E53935" },
+    "2024-08-10": { selected: true, selectedColor: "#E53935" },
+    "2024-08-11": { selected: true, selectedColor: "#E53935" },
+    "2024-08-14": { selected: true, selectedColor: "#E53935" },
+    "2024-08-19": { selected: true, selectedColor: "#E53935" },
+    "2024-08-20": { selected: true, selectedColor: "#E53935" },
+    "2024-08-21": { selected: true, selectedColor: "#E53935" },
+    "2024-08-22": { selected: true, selectedColor: "#E53935" },
+    "2024-08-23": { selected: true, selectedColor: "#E53935" },
+    "2024-08-24": { selected: true, selectedColor: "#E53935" },
+    "2024-08-29": { selected: true, selectedColor: "#E53935" },
+  };
+
+  const handleDayPress = (day) => {
+    if (redDates[day.dateString]) {
+      navigation.navigate("Registration",{"day":day.dateString})
+    }
+  };
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -30,38 +57,23 @@ export default function HomeScreen() {
 
       <View style={styles.calendarWrapper}>
         <Calendar
-          current={'2024-08-01'}
-          monthFormat={'MMMM'}
+          current={"2024-08-01"}
+          monthFormat={"MMMM"}
           enableSwipeMonths={true}
           hideExtraDays={true}
-          markedDates={{
-            '2024-08-05': { selected: true, selectedColor: '#E53935' },
-            '2024-08-06': { selected: true, selectedColor: '#E53935' },
-            '2024-08-07': { selected: true, selectedColor: '#E53935' },
-            '2024-08-08': { selected: true, selectedColor: '#E53935' },
-            '2024-08-09': { selected: true, selectedColor: '#E53935' },
-            '2024-08-10': { selected: true, selectedColor: '#E53935' },
-            '2024-08-11': { selected: true, selectedColor: '#E53935' },
-            '2024-08-14': { selected: true, selectedColor: '#E53935' },
-            '2024-08-19': { selected: true, selectedColor: '#E53935' },
-            '2024-08-20': { selected: true, selectedColor: '#E53935' },
-            '2024-08-21': { selected: true, selectedColor: '#E53935' },
-            '2024-08-22': { selected: true, selectedColor: '#E53935' },
-            '2024-08-23': { selected: true, selectedColor: '#E53935' },
-            '2024-08-24': { selected: true, selectedColor: '#E53935' },
-            '2024-08-29': { selected: true, selectedColor: '#E53935' },
-          }}
+          markedDates={redDates}
+          onDayPress={handleDayPress}
           theme={{
-            backgroundColor: '#fff',
-            calendarBackground: '#fff',
-            textSectionTitleColor: '#000',
-            textMonthFontWeight: 'bold',
+            backgroundColor: "#fff",
+            calendarBackground: "#fff",
+            textSectionTitleColor: "#000",
+            textMonthFontWeight: "bold",
             textDayFontSize: 16,
-            monthTextColor: '#000',
-            selectedDayBackgroundColor: '#E53935',
-            selectedDayTextColor: '#fff',
-            todayTextColor: '#E53935',
-            arrowColor: '#000',
+            monthTextColor: "#000",
+            selectedDayBackgroundColor: "#E53935",
+            selectedDayTextColor: "#fff",
+            todayTextColor: "#E53935",
+            arrowColor: "#000",
           }}
         />
       </View>
