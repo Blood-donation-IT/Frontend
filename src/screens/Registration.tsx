@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
   option: {
     borderWidth: 1,
     borderColor: "#E66A6A1A",
-    borderRadius: 20,
+    borderRadius: 15,
     paddingVertical: 8,
     paddingHorizontal: 16,
     marginBottom: 8,
@@ -230,8 +230,6 @@ const styles = StyleSheet.create({
   },
 
   icon: {
-    // height:23,
-    // width:23,
     fontSize:23,
     color:"#E66A6A80",
     position: "absolute",
