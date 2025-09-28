@@ -1,37 +1,90 @@
-import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import HomeScreen from '../screens/HomeScreen';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import React from "react";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { View, TouchableOpacity, Image, StyleSheet } from "react-native";
+import HomeScreen from "../screens/HomeScreen";
+import ProfileScreen from "../screens/ProfileScreen";
 
 const Tab = createBottomTabNavigator();
+
+function CustomTabBar({ state, descriptors, navigation }) {
+  return (
+    <View style={styles.tabBar}>
+      {state.routes.map((route, index) => {
+        const { options } = descriptors[route.key];
+        const isFocused = state.index === index;
+
+        let iconSource;
+        if (route.name === "Home") {
+          iconSource = isFocused
+            ? require("../images/home-active.png")
+            : require("../images/home.png");
+        } else if (route.name === "Profile") {
+          iconSource = isFocused
+            ? require("../images/profile.png")
+            : require("../images/profile.png");
+        }
+
+        const onPress = () => {
+          const event = navigation.emit({
+            type: "tabPress",
+            target: route.key,
+          });
+
+          if (!isFocused && !event.defaultPrevented) {
+            navigation.navigate(route.name);
+          }
+        };
+
+        return (
+          <TouchableOpacity
+            key={route.key}
+            onPress={onPress}
+            style={styles.tabButton}
+            activeOpacity={0.8}
+          >
+            <Image
+              source={iconSource}
+              style={{ width: 28, height: 28}}
+            />
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+}
 
 export default function MainTabs() {
   return (
     <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarStyle: {
-          backgroundColor: '#000',
-          borderTopWidth: 0,
-          height: 60,
-        },
-        tabBarActiveTintColor: '#fff',
-        tabBarInactiveTintColor: '#aaa',
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
-
-          if (route.name === 'Home') {
-            iconName = focused ? 'home' : 'home-outline';
-          } else if (route.name === 'Profile') {
-            iconName = focused ? 'person' : 'person-outline';
-          }
-
-          return <Ionicons name={iconName} size={size} color={color} />;
-        },
-        headerShown: false,
-      })}
+      screenOptions={{ headerShown: false }}
+      tabBar={(props) => <CustomTabBar {...props} />}
     >
-      <Tab.Screen name="Home" component={HomeScreen} options={{ title: '' }} />
-      {/* <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: '' }} /> */}
+      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
 }
+
+const styles = StyleSheet.create({
+  tabBar: {
+    flexDirection: "row",
+    backgroundColor: "#2B2B2B",
+    // marginHorizontal: 20,
+    marginBottom: 20,
+    
+    borderRadius: 33,
+    paddingVertical: 15,
+    justifyContent: "space-between",
+    alignItems: "center",
+    
+    position: "absolute",
+    left: 20,
+    right: 20,
+    bottom: 20,
+
+  },
+  tabButton: {
+    flex: 1,
+    alignItems: "center",
+  },
+});
