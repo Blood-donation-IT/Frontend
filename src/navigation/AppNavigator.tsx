@@ -5,6 +5,8 @@ import HomeScreen from '../screens/HomeScreen';
 import LogInScreen from '../screens/LogInScreen';
 import Registration from '../screens/Registration';
 import BottomTabNavigator from './BottomTabNavigator';
+import SettingsScreen from '../screens/SettingsScreen';
+
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
@@ -19,6 +21,7 @@ export default function AppNavigator() {
           options={{ headerShown: false }}
         />
         <Stack.Screen name="Registration" component={Registration} />
+        <Stack.Screen name="Settings" component={SettingsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

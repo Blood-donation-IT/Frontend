@@ -1,0 +1,107 @@
+import React, { useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Switch, ScrollView } from "react-native";
+import { Ionicons } from '@expo/vector-icons';
+
+const SettingsScreen = () => {
+  const [isLightMode, setIsLightMode] = useState(true);
+
+  const toggleSwitch = () => setIsLightMode(previousState => !previousState);
+
+  const [language, setLanguage] = useState("en");
+
+  const languages = [
+    { code: "en", label: "English", flag: "🇺🇸" },
+    { code: "uk", label: "Українська", flag: "🇺🇦" },
+  ];
+
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.header}>Settings</Text>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Language</Text>
+        {languages.map((lang) => (
+          <TouchableOpacity
+            key={lang.code}
+            style={styles.option}
+            onPress={() => setLanguage(lang.code)}
+          >
+            <Text style={styles.optionText}>{lang.label}</Text>
+            {language === lang.code && <Text style={styles.flag}>{lang.flag}</Text>}
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>System</Text>
+        <View style={styles.option}>
+          <Text style={styles.optionText}>Light Mode</Text>
+          <Switch
+            trackColor={{ false: "#fff", true: "#E66A6A" }}
+            ios_backgroundColor="#fff"
+            thumbColor={isLightMode ? "#F5EDEB80" : "#E66A6A"}
+            onValueChange={toggleSwitch}
+            value={isLightMode}
+          />
+
+        </View>
+      </View>
+
+      <TouchableOpacity style={styles.deleteOption}>
+        <Text style={styles.deleteText}>Delete account</Text>
+        <Ionicons name="trash-outline" size={25} color="#E66A6A" />
+      </TouchableOpacity>
+    </ScrollView>
+  );
+};
+
+const styles = StyleSheet.create({
+  flag: { fontSize: 18 },
+  container: {
+    padding: 20,
+    flexGrow: 1,
+    backgroundColor: "#fff",
+  },
+  header: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  section: {
+    marginBottom: 30,
+  },
+  sectionTitle: {
+    color: "#E66A6A",
+    fontSize: 15,
+    marginBottom: 10,
+  },
+  option: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 10,
+    paddingHorizontal:15,
+  },
+  optionText: {
+    // paddingHorizontal:10,
+    fontSize: 18,
+    // marginLeft: 20,
+  },
+  deleteOption: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 10,
+    paddingHorizontal:15,
+    marginTop: "auto",
+    marginBottom: 30,
+  },
+  deleteText: {
+    color: "#E66A6A",
+    fontSize: 16,
+    marginRight: 10,
+  },
+});
+
+export default SettingsScreen;

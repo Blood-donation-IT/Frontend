@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontStyle: "normal",
     fontSize: 18,
-    lineHeight: 18,
+    lineHeight: 20,
     letterSpacing: 0,
     marginBottom: 10,
     color: "#000",
