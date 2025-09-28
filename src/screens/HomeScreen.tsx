@@ -103,9 +103,6 @@ export default function HomeScreen() {
         </View>
       </View>
 
-
-      
-
     </ScrollView>
   );
 }
@@ -117,6 +114,7 @@ const styles = StyleSheet.create({
     paddingVertical: 48,
     backgroundColor: "#fff",
     gap: 20,
+    marginBottom:100,
   },
 
   calendarWrapper: {
@@ -175,6 +173,7 @@ const styles = StyleSheet.create({
 
   bloodContainer: {
     marginTop: 16,
+    marginBottom:80
   },
   bloodTitle: {
     fontSize: 16,

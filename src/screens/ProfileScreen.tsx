@@ -4,45 +4,38 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from "rea
 const ProfileScreen = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
-    
-        <TouchableOpacity
-            // onPress={() => handleSignUp()}
-        >
-            <Image 
-                source={require('../images/menu.png')}
-                style={styles.menuImg}  
-            />
+      <TouchableOpacity style={styles.menuBtn}>
+        <Image source={require("../images/menu.png")} style={styles.menuImg} />
+      </TouchableOpacity>
+
+      <View style={styles.avatarContainer}>
+        <View style={styles.avatar} />
+        <Text style={styles.name}>Somebody</Text>
+        <TouchableOpacity style={styles.editButton}>
+          <Text style={styles.editButtonText}>Edit Profile</Text>
         </TouchableOpacity>
+        <Text style={styles.lastDonation}>Last Donation: September 11, 2001</Text>
+      </View>
 
-        {/* Avatar */}
-        <View style={styles.avatarContainer}>
-            <View style={styles.avatar} />
-            <Text style={styles.name}>Lorem Lorem</Text>
-            <TouchableOpacity style={styles.editButton}>
-                <Text style={styles.editButtonText}>Edit Profile</Text>
-                    <Image 
-                        source={require('../images/exclamation_mark.png')}
-                        style={styles.imgOverlay}  
-                    />
-                
-            </TouchableOpacity>
+      <View style={styles.statsRow}>
+        <View style={styles.statBox}>
+          <Text style={styles.statLabel}>Donated</Text>
+          <Text style={styles.statValue}>01</Text>
         </View>
+        <View style={styles.statBox}>
+          <Text style={styles.statLabel}>Blood Type</Text>
+          <Text style={styles.statValue}>A-</Text>
+        </View>
+        <View style={styles.statBox}>
+          <Text style={styles.statLabel}>Life Saved</Text>
+          <Text style={styles.statValue}>02</Text>
+        </View>
+      </View>
 
-        {/* Donor History */}
-        <Text style={styles.cardTitle}>Donor History</Text>
-        <View style={[styles.card, styles.firstCard]}>
-            
-            <Text style={styles.cardContent}>
-            300 ml donated at Lorem Ipsum on Month 1
-            </Text>
-        </View>
-
-        {/* Donor Status */}
-        <Text style={styles.cardTitle}>Donor Status</Text>
-        <View style={styles.card}>
-            
-            <Text style={styles.cardContent}>Regular Donor</Text>
-        </View>
+      <View style={styles.statusCard}>
+        <Text style={styles.statusLabel}>Donor Status</Text>
+        <Text style={styles.statusValue}>Honorary Donor of Ukraine</Text>
+      </View>
     </ScrollView>
   );
 };
@@ -55,79 +48,91 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     gap: 20,
   },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 24,
+  menuBtn: {
+    marginTop:20,
+    alignSelf: "flex-end",
   },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#000",
+  menuImg: {
+    width: 30,
+    height: 30,
+    resizeMode: "contain",
   },
   avatarContainer: {
     alignItems: "center",
-    gap:10,
-    marginBottom: 24,
+    marginTop: 20,
+    marginBottom: 30,
   },
   avatar: {
     width: 120,
     height: 120,
     borderRadius: 60,
     backgroundColor: "#ccc",
-    marginBottom: 8,
+    marginBottom: 12,
   },
   name: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 8,
+    color: "#000",
+    marginBottom: 12,
   },
   editButton: {
-    position:"relative",
-    borderWidth: 2,
-    borderColor: "#E53935",
-    borderRadius: 21.5,
-    paddingVertical: 14,
-    paddingHorizontal: 32,
+    backgroundColor: "#E66A6A",
+    borderColor:"#F5EDEB66",
+    borderWidth:2,
+    borderRadius: 15,
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+    marginBottom: 12,
   },
   editButtonText: {
-    color: "#000000",
-    fontWeight: "bold",
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 14,
   },
-  card: {
-    borderWidth: 1,
-    borderColor: "#E66A6A1A",
-    borderRadius: 15,
-    padding: 16,
-    marginBottom: 16,
+  lastDonation: {
+    color: "#636363",
+    fontSize: 13,
   },
-  cardTitle: {
-    fontWeight: "bold",
+  statsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 30,
+  },
+  statBox: {
+    flex: 1,
+    backgroundColor: "#F5EDEB80",
+    borderWidth: 3,
+    borderColor: "#E66A6A33",
+    borderRadius: 20,
+    paddingVertical: 10,
+    marginHorizontal: 8,
+    alignItems: "center",
+  },
+  statLabel: {
+    fontSize: 12,
+    color: "#E66A6A",
     marginBottom: 4,
   },
-  cardContent: {
-    color: "#000000",
+  statValue: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#000",
   },
-  firstCard: {
-    paddingBottom: 64, 
+  statusCard: {
+    borderWidth: 1,
+    borderColor: "#E66A6A50",
+    borderRadius: 16,
+    padding: 12,
+    backgroundColor: "#FFF7F7",
   },
-
-
-  menuImg: {
-    marginBottom:"10%",
-    alignSelf:"flex-end",
-    width: 30,
-    height: 30,
-    resizeMode: "contain",
+  statusLabel: {
+    fontSize: 12,
+    color: "#E66A6A",
+    marginBottom: 4,
   },
-
-  imgOverlay: {
-    width: 25,
-    height: 30,
-    position: 'absolute',
-    top: -10,
-    right: -4,
+  statusValue: {
+    fontSize: 14,
+    color: "#000",
   },
 });
 
