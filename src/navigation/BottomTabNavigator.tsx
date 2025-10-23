@@ -1,6 +1,6 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { View, TouchableOpacity, Image, StyleSheet } from "react-native";
+import { View, TouchableOpacity, Image, StyleSheet ,Text } from "react-native";
 import HomeScreen from "../screens/HomeScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 
@@ -14,11 +14,11 @@ function CustomTabBar({ state, descriptors, navigation }) {
         const isFocused = state.index === index;
 
         let iconSource;
-        if (route.name === "Home") {
+        if (route.name === "HomeTab") {
           iconSource = isFocused
             ? require("../images/home-active.png")
             : require("../images/home.png");
-        } else if (route.name === "Profile") {
+        } else if (route.name === "ProfileTab") {
           iconSource = isFocused
             ? require("../images/profile.png")
             : require("../images/profile.png");
@@ -46,6 +46,9 @@ function CustomTabBar({ state, descriptors, navigation }) {
               source={iconSource}
               style={{ width: 28, height: 28}}
             />
+            <Text style={[styles.tabLabel, isFocused && styles.tabLabelActive]}>
+              {route.name === "HomeTab" ? "Home" : "Profile"}
+            </Text>
           </TouchableOpacity>
         );
       })}
@@ -59,8 +62,8 @@ export default function MainTabs() {
       screenOptions={{ headerShown: false }}
       tabBar={(props) => <CustomTabBar {...props} />}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen name="HomeTab" component={HomeScreen} />
+      <Tab.Screen name="ProfileTab" component={ProfileScreen} />
     </Tab.Navigator>
   );
 }
@@ -86,5 +89,14 @@ const styles = StyleSheet.create({
   tabButton: {
     flex: 1,
     alignItems: "center",
+  },
+  tabLabel: {
+    color: "#aaa",
+    fontSize: 12,
+    marginTop: 4,
+  },
+  tabLabelActive: {
+    color: "#E66A6A",
+    fontWeight: "bold",
   },
 });

@@ -1,10 +1,13 @@
 import React from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from "react-native";
 
-const ProfileScreen = () => {
+const ProfileScreen = ({navigation}) => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <TouchableOpacity style={styles.menuBtn}>
+      <TouchableOpacity 
+        style={styles.menuBtn}
+        onPress={() => navigation.navigate("Settings")}
+      >
         <Image source={require("../images/menu.png")} style={styles.menuImg} />
       </TouchableOpacity>
 
