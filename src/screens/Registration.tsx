@@ -6,13 +6,16 @@ import {
   TouchableOpacity,
   StyleSheet,
   Modal,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MapView, { Marker } from "react-native-maps";
-import { Keyboard, TouchableWithoutFeedback } from "react-native";
+import { useTranslation } from "react-i18next";
 
 export default function RegistrationScreen({ route }) {
+  const { t } = useTranslation();
   const [bloodType, setBloodType] = useState<string | null>(null);
   const [time, setTime] = useState<string | null>(null);
   const [location, setLocation] = useState("");
@@ -24,53 +27,40 @@ export default function RegistrationScreen({ route }) {
     longitude: 24.0315,
   });
   const mapRef = useRef<MapView>(null);
-
-
-  const points = [
-    {
-      id: 1,
-      title: "Площа Ринок",
-      coords: { latitude: 49.8419, longitude: 24.0315 },
-    },
-    {
-      id: 2,
-      title: "Оперний театр",
-      coords: { latitude: 49.8456, longitude: 24.0269 },
-    },
-    {
-      id: 3,
-      title: "Львівський університет",
-      coords: { latitude: 49.8392, longitude: 24.0235 },
-    },
-  ];
-
-  const [suggestions, setSuggestions] = useState(points);
-
+  const [suggestions, setSuggestions] = useState([]);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const day = route.params["day"];
   const bloodTypes = ["0+", "0-", "A+", "A-", "B+", "B-", "AB+", "AB-"];
   const times = ["8:00", "9:00", "10:30", "11:00", "11:30"];
+  const points = [
+    { id: 1, title: t("main_square"), coords: { latitude: 49.8419, longitude: 24.0315 } },
+    { id: 2, title: t("opera_theater"), coords: { latitude: 49.8456, longitude: 24.0269 } },
+    { id: 3, title: t("university"), coords: { latitude: 49.8392, longitude: 24.0235 } },
+  ];
+
+  useEffect(() => {
+    setSuggestions(points);
+  }, []);
 
   const validate = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!bloodType) newErrors.bloodType = "Please select your blood type";
-    if (!time) newErrors.time = "Please select a time";
-    if (!location.trim()) newErrors.location = "Location is required";
-    if (!name.trim()) newErrors.name = "Name is required";
-    if (!age.trim()) newErrors.age = "Age is required";
+    if (!bloodType) newErrors.bloodType = t("please_select_blood");
+    if (!time) newErrors.time = t("please_select_time");
+    if (!location.trim()) newErrors.location = t("location_required");
+    if (!name.trim()) newErrors.name = t("name_required");
+    if (!age.trim()) newErrors.age = t("age_required");
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleRegister = () => {
-    if (validate()) {
-      // TODO: відправити дані
-    }
+    if (validate()) {}
   };
 
   const handleSelectPoint = (point) => {
     setSelectedLocation(point.coords);
     setLocation(point.title);
+    setSuggestions([]);
   };
 
   return (
@@ -84,9 +74,9 @@ export default function RegistrationScreen({ route }) {
         <View style={styles.dateBox}>
           <Text style={styles.dateText}>{day}</Text>
         </View>
-        <Text style={styles.changeText}>Change</Text>
+        <Text style={styles.changeText}>{t("change")}</Text>
 
-        <Text style={styles.sectionTitle}>Your Blood Type</Text>
+        <Text style={styles.sectionTitle}>{t("your_blood_type")}</Text>
         <View style={styles.optionsRow}>
           {bloodTypes.map((type) => (
             <TouchableOpacity
@@ -112,32 +102,30 @@ export default function RegistrationScreen({ route }) {
             </TouchableOpacity>
           ))}
         </View>
-        {errors.bloodType && (
-          <Text style={styles.errorText}>{errors.bloodType}</Text>
-        )}
+        {errors.bloodType && <Text style={styles.errorText}>{errors.bloodType}</Text>}
 
-        <Text style={styles.sectionTitle}>Time</Text>
+        <Text style={styles.sectionTitle}>{t("time")}</Text>
         <View style={styles.optionsRow}>
-          {times.map((t) => (
+          {times.map((timen) => (
             <TouchableOpacity
-              key={t}
+              key={timen}
               style={[
                 styles.option,
-                time === t && styles.optionSelected,
+                time === timen && styles.optionSelected,
                 errors.time && !time ? styles.optionError : null,
               ]}
               onPress={() => {
-                setTime(t);
+                setTime(timen);
                 setErrors({ ...errors, time: "" });
               }}
             >
               <Text
                 style={[
                   styles.optionText,
-                  time === t && styles.optionTextSelected,
+                  time === timen && styles.optionTextSelected,
                 ]}
               >
-                {t}
+                {timen}
               </Text>
             </TouchableOpacity>
           ))}
@@ -145,30 +133,19 @@ export default function RegistrationScreen({ route }) {
         {errors.time && <Text style={styles.errorText}>{errors.time}</Text>}
 
         <TouchableOpacity
-          style={[
-            styles.input,
-            styles.inputWithIcon,
-            errors.location ? styles.inputError : null,
-          ]}
+          style={[styles.input, styles.inputWithIcon, errors.location ? styles.inputError : null]}
           onPress={() => setModalVisible(true)}
         >
           <Text style={{ color: location ? "#000" : "#E66A6A80" }}>
-            {location || "Location"}
+            {location || t("location")}
           </Text>
-          <Ionicons
-            name="location-outline"
-            size={20}
-            color="#E53935"
-            style={styles.icon}
-          />
+          <Ionicons name="location-outline" size={20} color="#E53935" style={styles.icon} />
         </TouchableOpacity>
-        {errors.location && (
-          <Text style={styles.errorText}>{errors.location}</Text>
-        )}
+        {errors.location && <Text style={styles.errorText}>{errors.location}</Text>}
 
         <TextInput
           style={[styles.input, errors.name ? styles.inputError : null]}
-          placeholder="Your Name"
+          placeholder={t("your_name")}
           placeholderTextColor="#E66A6A80"
           value={name}
           onChangeText={(text) => {
@@ -180,7 +157,7 @@ export default function RegistrationScreen({ route }) {
 
         <TextInput
           style={[styles.input, errors.age ? styles.inputError : null]}
-          placeholder="Your Age"
+          placeholder={t("your_age")}
           keyboardType="numeric"
           placeholderTextColor="#E66A6A80"
           value={age}
@@ -192,7 +169,7 @@ export default function RegistrationScreen({ route }) {
         {errors.age && <Text style={styles.errorText}>{errors.age}</Text>}
 
         <TouchableOpacity style={styles.button} onPress={handleRegister}>
-          <Text style={styles.buttonText}>Register</Text>
+          <Text style={styles.buttonText}>{t("register")}</Text>
         </TouchableOpacity>
       </KeyboardAwareScrollView>
 
@@ -200,34 +177,27 @@ export default function RegistrationScreen({ route }) {
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
           <View style={styles.overlay}>
             <View style={styles.modalBox}>
-              <Text style={styles.modalTitle}>Select a location</Text>
-
+              <Text style={styles.modalTitle}>{t("select_location")}</Text>
               <TextInput
                 style={styles.modalInput}
-                placeholder="Enter location name"
+                placeholder={t("enter_location_name")}
                 placeholderTextColor="#E66A6A80"
                 value={location}
-                onFocus={() => setSuggestions(points)} // при фокусі показує всі варіанти
+                onFocus={() => setSuggestions(points)}
                 onChangeText={(text) => {
                   setLocation(text);
-                  // фільтруємо варіанти за текстом
                   const filtered = points.filter((p) =>
                     p.title.toLowerCase().startsWith(text.toLowerCase())
                   );
                   setSuggestions(filtered);
                 }}
               />
-
               {suggestions.length > 0 && (
                 <View style={styles.suggestionsBox}>
                   {suggestions.map((p) => (
                     <TouchableOpacity
                       key={p.id}
-                      onPress={() => {
-                        setLocation(p.title);
-                        setSelectedLocation(p.coords);
-                        setSuggestions([]); // приховуємо список після вибору
-                      }}
+                      onPress={() => handleSelectPoint(p)}
                       style={styles.suggestionItem}
                     >
                       <Text>{p.title}</Text>
@@ -235,7 +205,6 @@ export default function RegistrationScreen({ route }) {
                   ))}
                 </View>
               )}
-
               <View style={styles.mapContainer}>
                 <MapView
                   ref={mapRef}
@@ -256,29 +225,23 @@ export default function RegistrationScreen({ route }) {
                       key={point.id}
                       coordinate={point.coords}
                       title={point.title}
-                      onPress={() => {
-                        setSelectedLocation(point.coords);
-                        setLocation(point.title);
-                      }}
+                      onPress={() => handleSelectPoint(point)}
                       pinColor={point.title === location ? "#E66A6A" : "#E66A6A80"}
                     />
                   ))}
                 </MapView>
               </View>
-
               <Text style={styles.selectedText}>
-                {location ? `Selected: ${location}` : "Tap a marker to select"}
+                {location ? `${t("selected")}: ${location}` : t("tap_marker")}
               </Text>
-
               <TouchableOpacity
                 style={styles.saveButton}
                 onPress={() => setModalVisible(false)}
               >
-                <Text style={styles.saveButtonText}>Save</Text>
+                <Text style={styles.saveButtonText}>{t("save")}</Text>
               </TouchableOpacity>
-
               <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <Text style={styles.cancelText}>Cancel</Text>
+                <Text style={styles.cancelText}>{t("cancel")}</Text>
               </TouchableOpacity>
             </View>
           </View>

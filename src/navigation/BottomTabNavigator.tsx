@@ -3,10 +3,12 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { View, TouchableOpacity, Image, StyleSheet ,Text } from "react-native";
 import HomeScreen from "../screens/HomeScreen";
 import ProfileScreen from "../screens/ProfileScreen";
+import { useTranslation } from "react-i18next";
 
 const Tab = createBottomTabNavigator();
 
 function CustomTabBar({ state, descriptors, navigation }) {
+  const { t } = useTranslation()
   return (
     <View style={styles.tabBar}>
       {state.routes.map((route, index) => {
@@ -47,7 +49,8 @@ function CustomTabBar({ state, descriptors, navigation }) {
               style={{ width: 28, height: 28}}
             />
             <Text style={[styles.tabLabel, isFocused && styles.tabLabelActive]}>
-              {route.name === "HomeTab" ? "Home" : "Profile"}
+              {/* {route.name === "HomeTab" ? "Home" : "Profile"} */}
+              {route.name === "HomeTab" ? t("home") : t("profile")}
             </Text>
           </TouchableOpacity>
         );
