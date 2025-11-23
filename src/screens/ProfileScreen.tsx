@@ -19,7 +19,10 @@ const ProfileScreen = ({navigation}) => {
       <View style={styles.avatarContainer}>
         <View style={styles.avatar} />
         <Text style={styles.name}>Somebody</Text>
-        <TouchableOpacity style={styles.editButton}>
+        <TouchableOpacity 
+          style={styles.editButton}
+          onPress={() => navigation.navigate("EditProfile")}
+        >
           <Text style={styles.editButtonText}>{t("edit_profile")}</Text>
         </TouchableOpacity>
         <Text style={styles.lastDonation}>{t("last_donation")}: September 11, 2001</Text>
