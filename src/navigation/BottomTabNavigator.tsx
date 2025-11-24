@@ -4,27 +4,34 @@ import { View, TouchableOpacity, Image, StyleSheet ,Text } from "react-native";
 import HomeScreen from "../screens/HomeScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import { useTranslation } from "react-i18next";
+import GetBookScreen from "../screens/GetBookScreen";
+import BookScreen from "../screens/BookScreen";
+
 
 const Tab = createBottomTabNavigator();
 
 function CustomTabBar({ state, descriptors, navigation }) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
+
+  const tabConfig = {
+    HomeTab: { label: t("home"), active: require("../images/home-active.png"), inactive: require("../images/home.png") },
+    GetDonorBook: { label: t("donors_book"), active: require("../images/book-active.png"), inactive: require("../images/book.png") },
+    ProfileTab: { label: t("profile"), active: require("../images/profile-active.png"), inactive: require("../images/profile.png") },
+  };
+
+  const isDonorBook = true;
+
   return (
     <View style={styles.tabBar}>
       {state.routes.map((route, index) => {
-        const { options } = descriptors[route.key];
-        const isFocused = state.index === index;
 
-        let iconSource;
-        if (route.name === "HomeTab") {
-          iconSource = isFocused
-            ? require("../images/home-active.png")
-            : require("../images/home.png");
-        } else if (route.name === "ProfileTab") {
-          iconSource = isFocused
-            ? require("../images/profile.png")
-            : require("../images/profile.png");
-        }
+        if (route.name === "BookScreen") return null;
+
+        const currentRoute = state.routes[state.index].name;
+
+        const isFocused =
+          currentRoute === route.name ||
+          (currentRoute === "BookScreen" && route.name === "GetDonorBook");
 
         const onPress = () => {
           const event = navigation.emit({
@@ -32,10 +39,24 @@ function CustomTabBar({ state, descriptors, navigation }) {
             target: route.key,
           });
 
-          if (!isFocused && !event.defaultPrevented) {
-            navigation.navigate(route.name);
+          if (event.defaultPrevented) return;
+
+          if (route.name === "GetDonorBook") {
+            if (isDonorBook) {
+              navigation.navigate("BookScreen");
+            } else {
+              navigation.navigate("GetDonorBook");
+            }
+            return;
           }
+
+          navigation.navigate(route.name);
         };
+
+
+        const iconSource = isFocused
+          ? tabConfig[route.name].active
+          : tabConfig[route.name].inactive;
 
         return (
           <TouchableOpacity
@@ -44,13 +65,9 @@ function CustomTabBar({ state, descriptors, navigation }) {
             style={styles.tabButton}
             activeOpacity={0.8}
           >
-            <Image
-              source={iconSource}
-              style={{ width: 28, height: 28}}
-            />
+            <Image source={iconSource} style={styles.tabImage} />
             <Text style={[styles.tabLabel, isFocused && styles.tabLabelActive]}>
-              {/* {route.name === "HomeTab" ? "Home" : "Profile"} */}
-              {route.name === "HomeTab" ? t("home") : t("profile")}
+                {tabConfig[route.name].label}
             </Text>
           </TouchableOpacity>
         );
@@ -59,6 +76,7 @@ function CustomTabBar({ state, descriptors, navigation }) {
   );
 }
 
+
 export default function MainTabs() {
   return (
     <Tab.Navigator
@@ -66,6 +84,12 @@ export default function MainTabs() {
       tabBar={(props) => <CustomTabBar {...props} />}
     >
       <Tab.Screen name="HomeTab" component={HomeScreen} />
+      <Tab.Screen name="GetDonorBook" component={GetBookScreen} />
+      <Tab.Screen
+        name="BookScreen"
+        component={BookScreen}
+        options={{ tabBarButton: () => null, headerShown: false }}
+      />
       <Tab.Screen name="ProfileTab" component={ProfileScreen} />
     </Tab.Navigator>
   );
@@ -77,17 +101,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#2B2B2B",
     // marginHorizontal: 20,
     marginBottom: 20,
-    
     borderRadius: 33,
     paddingVertical: 15,
-    justifyContent: "space-between",
+    justifyContent: "space-around",
     alignItems: "center",
-    
     position: "absolute",
     left: 20,
     right: 20,
     bottom: 20,
-
   },
   tabButton: {
     flex: 1,
@@ -102,4 +123,9 @@ const styles = StyleSheet.create({
     color: "#E66A6A",
     fontWeight: "bold",
   },
+
+  tabImage: {
+    width: 28, 
+    height: 28
+  }
 });

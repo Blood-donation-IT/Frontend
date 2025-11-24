@@ -50,6 +50,7 @@
   "error": "Error",
   "fill_all_fields": "Please fill all fields",
   "passwords_do_not_match": "Passwords do not match",
-  "invalid_email": "Invalid email address"
+  "invalid_email": "Invalid email address",
+  "donors_book": "Donor's book"
 
 }
