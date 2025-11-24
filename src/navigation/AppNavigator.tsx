@@ -8,6 +8,7 @@ import LogInScreen from '../screens/LogInScreen';
 import Registration from '../screens/Registration';
 import BottomTabNavigator from './BottomTabNavigator';
 import SettingsScreen from '../screens/SettingsScreen';
+import EditProfileScreen from '../screens/EditProfileScreen';
 
 import BookScreen from '../screens/BookScreen';
 const Stack = createNativeStackNavigator();
@@ -30,6 +31,7 @@ export default function AppNavigator() {
           component={BookScreen} 
           options={{ headerShown: false }}
         />
+        <Stack.Screen name="EditProfile" component={EditProfileScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
