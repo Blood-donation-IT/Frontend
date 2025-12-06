@@ -89,3 +89,5 @@ yarn-error.*
 /android/captures/
 
 /.env
+
+.android/app/google-services.json
