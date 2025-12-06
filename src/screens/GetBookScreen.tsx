@@ -8,6 +8,8 @@ const { width, height } = Dimensions.get("window");
 const GetBookScreen = () => {
   const navigation = useNavigation();
 
+  const donations_count = 5;
+
   return (
     <View style={styles.container}>
       <View style={styles.topSection}>
@@ -22,7 +24,14 @@ const GetBookScreen = () => {
       </View>
 
       <View style={styles.bottomSection}>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("BookScreen")}>
+        <TouchableOpacity  
+          style={[
+            styles.button,
+            donations_count >= 5 ? null : styles.buttonDisabled
+          ]} 
+          onPress={() => navigation.navigate("BookScreen")}
+          disabled={donations_count < 5}
+        >
           <Text style={styles.buttonText}>Get Donor Book</Text>
         </TouchableOpacity>
       </View>
@@ -78,7 +87,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     borderRadius: 25,
     marginTop: -200,
-
+  },
+  buttonDisabled: {
+    backgroundColor: "#D9D9D9",
   },
   buttonText: {
     color: "#fff",

@@ -19,7 +19,7 @@ function CustomTabBar({ state, descriptors, navigation }) {
     ProfileTab: { label: t("profile"), active: require("../images/profile-active.png"), inactive: require("../images/profile.png") },
   };
 
-  const isDonorBook = true;
+  const isDonorBook = false;
 
   return (
     <View style={styles.tabBar}>

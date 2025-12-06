@@ -4,7 +4,6 @@ import "./src/i18n";
 import { useEffect, useState } from 'react';
 import i18n from './src/i18n';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ThemeProvider } from './src/themeContext';
 
 export default function App() {
   const [isReady, setIsReady] = useState(false);
@@ -21,9 +20,5 @@ export default function App() {
 
   if (!isReady) return null;
 
-  return (
-    <ThemeProvider>
-      <AppNavigator />
-    </ThemeProvider>
-  );
+  return <AppNavigator />;
 }

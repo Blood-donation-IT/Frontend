@@ -13,6 +13,8 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MapView, { Marker } from "react-native-maps";
 import { useTranslation } from "react-i18next";
+import { scheduleDateNotification } from "../services/localNotificationService";
+import * as Notifications from 'expo-notifications';
 
 export default function RegistrationScreen({ route }) {
   const { t } = useTranslation();
@@ -53,9 +55,33 @@ export default function RegistrationScreen({ route }) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleRegister = () => {
-    if (validate()) {}
+
+  const handleRegister = async () => {
+    if (validate()) {
+      // const triggerDate = new Date(Date.now() + 10 * 1000);
+      const triggerDate = buildDateFromDayAndTime(day, time);
+      await scheduleDateNotification(
+        "Тестове сповіщення",
+        `Спрацює о ${triggerDate.toLocaleTimeString()}`,
+        triggerDate
+      );
+    }
   };
+
+
+  function buildDateFromDayAndTime(day: string, time: string): Date {
+    const [year, month, dayOfMonth] = day.split('-').map(Number);
+    const [hours, minutes] = time.split(':').map(Number);
+
+    // Це створює дату у ЛОКАЛЬНІЙ зоні
+    const date = new Date();
+    date.setFullYear(year, month - 1, dayOfMonth);
+    date.setHours(hours, minutes, 0, 0);
+
+    return date;
+  }
+
+
 
   const handleSelectPoint = (point) => {
     setSelectedLocation(point.coords);

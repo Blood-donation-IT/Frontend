@@ -4,16 +4,13 @@ import { Ionicons } from '@expo/vector-icons';
 import i18n from "../i18n";
 import { useTranslation } from "react-i18next";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useTheme } from "../themeContext";
 
 const SettingsScreen = () => {
   const { t } = useTranslation();
 
-  const { isLight, colors, toggleTheme } = useTheme();
+  const [isLight, setIsLight] = useState(true);
 
-  const toggleSwitch = () => {
-    toggleTheme();
-  };
+  const toggleSwitch = () => setIsLight(previousState => !previousState);
   const [language, setLanguage] = useState("en");
 
   const languages = [
@@ -36,56 +33,6 @@ const SettingsScreen = () => {
     i18n.changeLanguage(langCode);
     await AsyncStorage.setItem("appLanguage", langCode);
   };
-
-//   const styles = StyleSheet.create({
-//   flag: { fontSize: 18 },
-//   container: {
-//     padding: 20,
-//     flexGrow: 1,
-//     backgroundColor: colors.background,
-//     color:colors.text
-//   },
-//   header: {
-//     color: colors.text,
-//     fontSize: 22,
-//     fontWeight: "bold",
-//     marginBottom: 20,
-//     textAlign: "center",
-//   },
-//   section: {
-//     marginBottom: 30,
-//   },
-//   sectionTitle: {
-//     color: colors.text,//"#E66A6A",
-//     fontSize: 15,
-//     marginBottom: 10,
-//   },
-//   option: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     alignItems: "center",
-//     paddingVertical: 10,
-//     paddingHorizontal:15,
-//   },
-//   optionText: {
-//     color: colors.text,
-//     fontSize: 18,
-//   },
-//   deleteOption: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     alignItems: "center",
-//     paddingVertical: 10,
-//     paddingHorizontal:15,
-//     marginTop: "auto",
-//     marginBottom: 30,
-//   },
-//   deleteText: {
-//     color: colors.text,//"#E66A6A",
-//     fontSize: 16,
-//     marginRight: 10,
-//   },
-// });
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
