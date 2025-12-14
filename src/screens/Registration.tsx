@@ -14,260 +14,198 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import MapView, { Marker } from "react-native-maps";
 import { useTranslation } from "react-i18next";
 import { scheduleDateNotification } from "../services/localNotificationService";
-import * as Notifications from 'expo-notifications';
+import { useTheme } from "../Theme/ThemeContext";
 
-export default function RegistrationScreen({ route }) {
+export default function RegistrationScreen({ route }: any) {
   const { t } = useTranslation();
+  const { colors } = useTheme();
+
+  const day: string = route.params.day;
+
   const [bloodType, setBloodType] = useState<string | null>(null);
   const [time, setTime] = useState<string | null>(null);
   const [location, setLocation] = useState("");
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
   const [isModalVisible, setModalVisible] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState({
-    latitude: 49.8419,
-    longitude: 24.0315,
-  });
-  const mapRef = useRef<MapView>(null);
-  const [suggestions, setSuggestions] = useState([]);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const day = route.params["day"];
-  const bloodTypes = ["0+", "0-", "A+", "A-", "B+", "B-", "AB+", "AB-"];
-  const times = ["8:00", "9:00", "10:30", "11:00", "11:30"];
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+
+  const mapRef = useRef<MapView>(null);
+
   const points = [
     { id: 1, title: t("main_square"), coords: { latitude: 49.8419, longitude: 24.0315 } },
     { id: 2, title: t("opera_theater"), coords: { latitude: 49.8456, longitude: 24.0269 } },
     { id: 3, title: t("university"), coords: { latitude: 49.8392, longitude: 24.0235 } },
   ];
 
+  const bloodTypes = ["0+", "0-", "A+", "A-", "B+", "B-", "AB+", "AB-"];
+  const times = ["8:00", "9:00", "10:30", "11:00", "11:30"];
+
   useEffect(() => {
     setSuggestions(points);
   }, []);
 
   const validate = () => {
-    const newErrors: { [key: string]: string } = {};
-    if (!bloodType) newErrors.bloodType = t("please_select_blood");
-    if (!time) newErrors.time = t("please_select_time");
-    if (!location.trim()) newErrors.location = t("location_required");
-    if (!name.trim()) newErrors.name = t("name_required");
-    if (!age.trim()) newErrors.age = t("age_required");
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    const e: any = {};
+    if (!bloodType) e.bloodType = t("please_select_blood");
+    if (!time) e.time = t("please_select_time");
+    if (!location) e.location = t("location_required");
+    if (!name) e.name = t("name_required");
+    if (!age) e.age = t("age_required");
+    setErrors(e);
+    return Object.keys(e).length === 0;
   };
 
+  const buildDateFromDayAndTime = (day: string, time: string) => {
+    const [y, m, d] = day.split("-").map(Number);
+    const [h, min] = time.split(":").map(Number);
+    const date = new Date();
+    date.setFullYear(y, m - 1, d);
+    date.setHours(h, min, 0, 0);
+    return date;
+  };
 
   const handleRegister = async () => {
-    if (validate()) {
-      // const triggerDate = new Date(Date.now() + 10 * 1000);
-      const triggerDate = buildDateFromDayAndTime(day, time);
-      await scheduleDateNotification(
-        "Тестове сповіщення",
-        `Спрацює о ${triggerDate.toLocaleTimeString()}`,
-        triggerDate
-      );
-    }
+    if (!validate()) return;
+    const triggerDate = buildDateFromDayAndTime(day, time!);
+    await scheduleDateNotification(
+      t("notification_title"),
+      `${t("notification_time")} ${triggerDate.toLocaleTimeString()}`,
+      triggerDate
+    );
   };
 
-
-  function buildDateFromDayAndTime(day: string, time: string): Date {
-    const [year, month, dayOfMonth] = day.split('-').map(Number);
-    const [hours, minutes] = time.split(':').map(Number);
-
-    // Це створює дату у ЛОКАЛЬНІЙ зоні
-    const date = new Date();
-    date.setFullYear(year, month - 1, dayOfMonth);
-    date.setHours(hours, minutes, 0, 0);
-
-    return date;
-  }
-
-
-
-  const handleSelectPoint = (point) => {
-    setSelectedLocation(point.coords);
-    setLocation(point.title);
+  const handleSelectPoint = (p: any) => {
+    setLocation(p.title);
     setSuggestions([]);
+    setModalVisible(false);
   };
 
   return (
     <>
       <KeyboardAwareScrollView
-        contentContainerStyle={styles.container}
-        extraScrollHeight={20}
-        enableOnAndroid={true}
-        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={[
+          styles.container,
+          { backgroundColor: colors.backgroundMain },
+        ]}
       >
-        <View style={styles.dateBox}>
-          <Text style={styles.dateText}>{day}</Text>
-        </View>
-        <Text style={styles.changeText}>{t("change")}</Text>
+        <Text style={[styles.dateText, { color: colors.text }]}>{day}</Text>
 
-        <Text style={styles.sectionTitle}>{t("your_blood_type")}</Text>
+        <Text style={[styles.sectionTitle, { color: colors.primary }]}>
+          {t("your_blood_type")}
+        </Text>
+
         <View style={styles.optionsRow}>
           {bloodTypes.map((type) => (
             <TouchableOpacity
               key={type}
               style={[
                 styles.option,
-                bloodType === type && styles.optionSelected,
-                errors.bloodType && !bloodType ? styles.optionError : null,
+                bloodType === type && { backgroundColor: colors.primary },
               ]}
-              onPress={() => {
-                setBloodType(type);
-                setErrors({ ...errors, bloodType: "" });
-              }}
+              onPress={() => setBloodType(type)}
             >
               <Text
-                style={[
-                  styles.optionText,
-                  bloodType === type && styles.optionTextSelected,
-                ]}
+                style={{
+                  color: bloodType === type ? "#fff" : colors.text,
+                }}
               >
                 {type}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
-        {errors.bloodType && <Text style={styles.errorText}>{errors.bloodType}</Text>}
 
-        <Text style={styles.sectionTitle}>{t("time")}</Text>
+        <Text style={[styles.sectionTitle, { color: colors.primary }]}>
+          {t("time")}
+        </Text>
+
         <View style={styles.optionsRow}>
           {times.map((timen) => (
             <TouchableOpacity
               key={timen}
               style={[
                 styles.option,
-                time === timen && styles.optionSelected,
-                errors.time && !time ? styles.optionError : null,
+                time === timen && { backgroundColor: colors.primary },
               ]}
-              onPress={() => {
-                setTime(timen);
-                setErrors({ ...errors, time: "" });
-              }}
+              onPress={() => setTime(timen)}
             >
-              <Text
-                style={[
-                  styles.optionText,
-                  time === timen && styles.optionTextSelected,
-                ]}
-              >
+              <Text style={{ color: time === timen ? "#fff" : colors.text }}>
                 {timen}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
-        {errors.time && <Text style={styles.errorText}>{errors.time}</Text>}
 
         <TouchableOpacity
-          style={[styles.input, styles.inputWithIcon, errors.location ? styles.inputError : null]}
+          style={[
+            styles.input,
+            { backgroundColor: colors.backgroundCard },
+          ]}
           onPress={() => setModalVisible(true)}
         >
-          <Text style={{ color: location ? "#000" : "#E66A6A80" }}>
+          <Text style={{ color: location ? colors.text : colors.primary }}>
             {location || t("location")}
           </Text>
-          <Ionicons name="location-outline" size={20} color="#E53935" style={styles.icon} />
+          <Ionicons name="location-outline" size={20} color={colors.primary} />
         </TouchableOpacity>
-        {errors.location && <Text style={styles.errorText}>{errors.location}</Text>}
 
         <TextInput
-          style={[styles.input, errors.name ? styles.inputError : null]}
+          style={[styles.input, { backgroundColor: colors.backgroundCard, color: colors.text }]}
           placeholder={t("your_name")}
-          placeholderTextColor="#E66A6A80"
+          placeholderTextColor={colors.text}
           value={name}
-          onChangeText={(text) => {
-            setName(text);
-            setErrors({ ...errors, name: "" });
-          }}
+          onChangeText={setName}
         />
-        {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
 
         <TextInput
-          style={[styles.input, errors.age ? styles.inputError : null]}
+          style={[styles.input, { backgroundColor: colors.backgroundCard, color: colors.text }]}
           placeholder={t("your_age")}
           keyboardType="numeric"
-          placeholderTextColor="#E66A6A80"
+          placeholderTextColor={colors.text}
           value={age}
-          onChangeText={(text) => {
-            setAge(text);
-            setErrors({ ...errors, age: "" });
-          }}
+          onChangeText={setAge}
         />
-        {errors.age && <Text style={styles.errorText}>{errors.age}</Text>}
 
-        <TouchableOpacity style={styles.button} onPress={handleRegister}>
-          <Text style={styles.buttonText}>{t("register")}</Text>
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: colors.primary }]}
+          onPress={handleRegister}
+        >
+          <Text style={{ color: "#fff", fontWeight: "600" }}>
+            {t("register")}
+          </Text>
         </TouchableOpacity>
       </KeyboardAwareScrollView>
 
-      <Modal animationType="fade" transparent visible={isModalVisible}>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      {/* MODAL */}
+      <Modal transparent animationType="fade" visible={isModalVisible}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.overlay}>
-            <View style={styles.modalBox}>
-              <Text style={styles.modalTitle}>{t("select_location")}</Text>
-              <TextInput
-                style={styles.modalInput}
-                placeholder={t("enter_location_name")}
-                placeholderTextColor="#E66A6A80"
-                value={location}
-                onFocus={() => setSuggestions(points)}
-                onChangeText={(text) => {
-                  setLocation(text);
-                  const filtered = points.filter((p) =>
-                    p.title.toLowerCase().startsWith(text.toLowerCase())
-                  );
-                  setSuggestions(filtered);
-                }}
-              />
-              {suggestions.length > 0 && (
-                <View style={styles.suggestionsBox}>
-                  {suggestions.map((p) => (
-                    <TouchableOpacity
-                      key={p.id}
-                      onPress={() => handleSelectPoint(p)}
-                      style={styles.suggestionItem}
-                    >
-                      <Text>{p.title}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              )}
-              <View style={styles.mapContainer}>
-                <MapView
-                  ref={mapRef}
-                  style={styles.map}
-                  scrollEnabled
-                  zoomEnabled
-                  rotateEnabled={false}
-                  pitchEnabled={false}
-                  onMapReady={() => {
-                    mapRef.current?.fitToCoordinates(points.map((p) => p.coords), {
-                      edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
-                      animated: true,
-                    });
-                  }}
-                >
-                  {points.map((point) => (
-                    <Marker
-                      key={point.id}
-                      coordinate={point.coords}
-                      title={point.title}
-                      onPress={() => handleSelectPoint(point)}
-                      pinColor={point.title === location ? "#E66A6A" : "#E66A6A80"}
-                    />
-                  ))}
-                </MapView>
-              </View>
-              <Text style={styles.selectedText}>
-                {location ? `${t("selected")}: ${location}` : t("tap_marker")}
+            <View
+              style={[
+                styles.modalBox,
+                { backgroundColor: colors.backgroundMain },
+              ]}
+            >
+              <Text style={{ color: colors.text, marginBottom: 10 }}>
+                {t("select_location")}
               </Text>
-              <TouchableOpacity
-                style={styles.saveButton}
-                onPress={() => setModalVisible(false)}
-              >
-                <Text style={styles.saveButtonText}>{t("save")}</Text>
-              </TouchableOpacity>
+
+              {points.map((p) => (
+                <TouchableOpacity
+                  key={p.id}
+                  style={styles.suggestionItem}
+                  onPress={() => handleSelectPoint(p)}
+                >
+                  <Text style={{ color: colors.text }}>{p.title}</Text>
+                </TouchableOpacity>
+              ))}
+
               <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <Text style={styles.cancelText}>{t("cancel")}</Text>
+                <Text style={{ color: colors.primary, marginTop: 10 }}>
+                  {t("cancel")}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -281,33 +219,11 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
     flexGrow: 1,
-    backgroundColor: "#fff",
-  },
-  dateBox: {
-    borderWidth: 1,
-    borderColor: "#E66A6A4D",
-    borderRadius: 15,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    alignSelf: "flex-start",
-  },
-  dateText: {
-    color: "#E66A6A80",
-    fontSize: 16,
-    fontWeight: "500",
-  },
-  changeText: {
-    color: "#E66A6A80",
-    marginTop: 4,
-    marginBottom: 16,
-    fontSize: 12,
   },
   sectionTitle: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#E66A6A",
     marginTop: 20,
     marginBottom: 10,
+    fontWeight: "600",
   },
   optionsRow: {
     flexDirection: "row",
@@ -316,71 +232,24 @@ const styles = StyleSheet.create({
   },
   option: {
     borderWidth: 1,
-    borderColor: "#E66A6A1A",
     borderRadius: 15,
     paddingVertical: 8,
     paddingHorizontal: 16,
-    marginBottom: 8,
-  },
-  optionSelected: {
-    backgroundColor: "#E66A6A",
-    borderWidth: 2,
-    borderColor: "#F5EDEB66",
-  },
-  optionError: {
-    borderColor: "#FF0000",
-  },
-  optionText: {
-    color: "#000000",
-    fontWeight: "500",
-  },
-  optionTextSelected: {
-    color: "#FFFFFF",
   },
   input: {
-    borderWidth: 1,
-    borderColor: "#E66A6A80",
-    backgroundColor: "#F5EDEB66",
-    borderRadius: 20,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
     marginTop: 12,
-  },
-  inputError: {
-    borderColor: "#FF0000",
-  },
-  errorText: {
-    color: "#FF0000",
-    fontSize: 12,
-    marginTop: 4,
+    padding: 14,
+    borderRadius: 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   button: {
-    backgroundColor: "#E66A6A",
-    width:"55%",
-    borderRadius: 18,
+    marginTop: 24,
     paddingVertical: 14,
-    marginTop: 20,
+    borderRadius: 18,
     alignItems: "center",
-    alignSelf:"center",
   },
-  buttonText: {
-    color: "#FAFAFA",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-
-  icon: {
-    fontSize:23,
-    color:"#E66A6A80",
-    position: "absolute",
-    right:12,
-    top:"50%",
-    // transform: [{ translateY: - }],
-  },
-  inputWithIcon: {
-    paddingRight: 40,
-  },
-  // container: { padding: 20, flexGrow: 1, backgroundColor: "#fff" },
   overlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
@@ -388,64 +257,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalBox: {
-    backgroundColor: "#fff",
+    width: "90%",
     borderRadius: 20,
     padding: 20,
-    width: "90%",
-  },
-  modalTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#E66A6A",
-    marginBottom: 10,
-  },
-  modalInput: {
-    borderWidth: 1,
-    borderColor: "#E66A6A80",
-    borderRadius: 15,
-    padding: 12,
-    backgroundColor: "#F5EDEB66",
-    // marginBottom: 14,
-  },
-  mapContainer: {
-    height: 180,
-    borderRadius: 15,
-    overflow: "hidden",
-    borderWidth: 1,
-    borderColor: "#E66A6A80",
-    marginBottom: 16,
-    marginTop:14,
-  },
-  map: { flex: 1 },
-  saveButton: {
-    backgroundColor: "#E66A6A",
-    borderRadius: 15,
-    paddingVertical: 12,
-    alignItems: "center",
-  },
-  saveButtonText: { color: "#fff", fontWeight: "600" },
-  cancelText: {
-    color: "#E66A6A",
-    marginTop: 10,
-    textAlign: "center",
-  },
-  selectedText: {
-    textAlign: "center",
-    color: "#444",
-    marginBottom: 10,
-  },
-  suggestionsBox: {
-    maxHeight: 150,
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    // marginTop: 4,
-    borderWidth: 1,
-    borderColor: "#E66A6A80",
-    marginBottom:12,
   },
   suggestionItem: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E66A6A1A",
+    paddingVertical: 10,
+  },
+  dateText: {
+    fontSize: 16,
+    marginBottom: 10,
   },
 });

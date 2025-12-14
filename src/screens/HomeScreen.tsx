@@ -1,20 +1,10 @@
 import React from 'react';
 import { View, StyleSheet, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { Calendar } from 'react-native-calendars';
-import { todayString } from 'react-native-calendars/src/expandableCalendar/commons';
+import { useTheme } from "../Theme/ThemeContext";
 
-export default function HomeScreen({navigation}) {
-
-  const getTodayString = () => {
-    const date = new Date();
-    const year = date.getFullYear();
-    // Місяці нумеруються з 0, тому додаємо 1. padStart забезпечує '08' замість '8'.
-    const month = String(date.getMonth() + 1).padStart(2, '0'); 
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-
-  const TODAY_STRING = getTodayString();
+export default function HomeScreen({ navigation }) {
+  const { colors } = useTheme(); 
 
   const bloodData = [
     { type: "0+", status: "low" },
@@ -26,8 +16,6 @@ export default function HomeScreen({navigation}) {
     { type: "B-", status: "high" },
     { type: "AB-", status: "low" },
   ];
-
-
 
   const redDates = {
     "2024-08-05": { selected: true, selectedColor: "#E53935" },
@@ -44,83 +32,78 @@ export default function HomeScreen({navigation}) {
     "2024-08-22": { selected: true, selectedColor: "#E53935" },
     "2024-08-23": { selected: true, selectedColor: "#E53935" },
     "2024-08-24": { selected: true, selectedColor: "#E53935" },
-    [TODAY_STRING]: { selected: true, selectedColor: "#E53935" },
+    "2024-08-29": { selected: true, selectedColor: "#E53935" },
   };
 
   const handleDayPress = (day) => {
     if (redDates[day.dateString]) {
-      navigation.navigate("Registration",{"day":day.dateString})
+      navigation.navigate("Registration", { day: day.dateString });
     }
   };
 
-
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-
-      <TouchableOpacity
-        // onPress={() => handleSignUp()}
-      >
-        <Image 
+    <ScrollView contentContainerStyle={[styles.container, { backgroundColor: colors.backgroundMain }]}>
+      
+      <TouchableOpacity>
+        <Image
           source={require('../images/notification.png')}
-          style={styles.notificationImg}  
+          style={[styles.notificationImg, { tintColor: colors.text }]}
         />
       </TouchableOpacity>
-      
 
-      <View style={styles.calendarWrapper}>
+     <View style={[styles.calendarWrapper, { backgroundColor: colors.backgroundCard, borderColor: colors.text }]}>
         <Calendar
-          current={TODAY_STRING}
+          key={colors.backgroundCard} 
+          current={"2024-08-01"}
           monthFormat={"MMMM"}
           enableSwipeMonths={true}
           hideExtraDays={true}
           markedDates={redDates}
           onDayPress={handleDayPress}
           theme={{
-            backgroundColor: "#fff",
-            calendarBackground: "#fff",
-            textSectionTitleColor: "#000",
+            backgroundColor: colors.backgroundMain,
+            calendarBackground: colors.backgroundCard,
+            textSectionTitleColor: colors.text,
+            dayTextColor: colors.text,
             textMonthFontWeight: "bold",
             textDayFontSize: 16,
-            monthTextColor: "#000",
+            monthTextColor: colors.text,
             selectedDayBackgroundColor: "#E53935",
-            selectedDayTextColor: "#fff",
+            selectedDayTextColor: "#E0E0E0",
             todayTextColor: "#E53935",
-            arrowColor: "#000",
+            arrowColor: colors.text,
           }}
         />
       </View>
 
       <View>
-        <Text style={styles.heading}>
+        <Text style={[styles.heading, { color: colors.text }]}>
           Те що може зацікавити тебе 🤭👀
         </Text>
 
-        <Text style={styles.paragraph}>
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. In expedita illum assumenda placeat possimus fuga eos nulla labore ea pariatur porro eum quasi a praesentium necessitatibus maxime numquam aut, ipsa aspernatur nemo? Quisquam vel accusantium praesentium dolor voluptate architecto! Rem, vel fuga sunt harum iusto voluptate culpa illo assumenda veniam mollitia, totam itaque nemo ex hic? Atque nihil error dicta eveniet voluptate, cupiditate quis. Corporis iusto laboriosam accusamus! Sapiente magnam odio at delectus corporis, error alias aperiam iusto hic sunt omnis eaque, impedit nam totam quaerat tenetur quas voluptas rem eveniet voluptatem consectetur! Veniam id quod doloribus fugit aut quia.
+        <Text style={[styles.paragraph, { color: colors.text }]}>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+          Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+          Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
+          Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
         </Text>
       </View>
 
       <View style={styles.bloodContainer}>
-        <Text style={styles.bloodTitle}>
+        <Text style={[styles.bloodTitle, { color: colors.text }]}>
           Яка кров зараз найбільш потрібна? <Text style={{ color: "red" }}>🩸</Text>
         </Text>
 
-        <View style={styles.bloodGrid}>
+        <View style={[styles.bloodGrid, { borderColor: colors.text + '1A' }]}>
           {bloodData.map((item, index) => {
-            
-            const icon =
-              item.status === "low"
-                ? require("../images/drop_high.png")
-                : require("../images/drop_low.png");
-
-            const textColor = item.status === "low" ? "#FAFAFA" : "#2B2B2B";
+            const icon = item.status === "low"
+              ? require("../images/drop_high.png")
+              : require("../images/drop_low.png");
 
             return (
               <View key={index} style={styles.bloodItem}>
                 <Image source={icon} style={styles.bloodIcon} />
-                <View style={styles.textOverlay}>
-                  <Text style={[styles.bloodLabel, { color: textColor }]}>{item.type}</Text>
-                </View>
+                <Text style={[styles.bloodLabel, { color: colors.text }]}>{item.type}</Text>
               </View>
             );
           })}
@@ -136,17 +119,13 @@ const styles = StyleSheet.create({
     minHeight: "100%",
     paddingHorizontal: "5%",
     paddingVertical: 48,
-    backgroundColor: "#fff",
     gap: 20,
-    marginBottom:100,
+    marginBottom: 100,
   },
-
   calendarWrapper: {
-    backgroundColor: "#fff",
     borderRadius: 16,
     padding: 8,
     borderWidth: 1,
-    borderColor: "#A1A1A1",
     marginBottom: 20,
     marginTop: 5,
     shadowColor: "#000",
@@ -155,49 +134,29 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     elevation: 3,
   },
-
   heading: {
     fontFamily: "SF Pro Rounded",
     fontWeight: "700",
-    fontStyle: "normal",
     fontSize: 18,
     lineHeight: 20,
     letterSpacing: 0,
     marginBottom: 10,
-    color: "#000",
   },
-
   paragraph: {
     fontFamily: "Inter",
     fontWeight: "500",
-    lineHeight: 18,
+    lineHeight: 20,
     letterSpacing: 0,
   },
-
-  listItem: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    marginBottom: 10,
-  },
-
-  listText: {
-    fontFamily: "Inter",
-    fontWeight: "500",
-    lineHeight: 18,
-    letterSpacing: 0,
-  },
-
   notificationImg: {
     alignSelf: "flex-end",
     width: 28,
     height: 28,
     resizeMode: "contain",
   },
-
-
   bloodContainer: {
     marginTop: 16,
-    marginBottom:80
+    marginBottom: 80,
   },
   bloodTitle: {
     fontSize: 16,
@@ -209,20 +168,18 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 8,
     borderWidth: 1,
-    borderColor: "#E66A6A1A",
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
-    alignItems:"center"
+    alignItems: "center",
   },
   bloodItem: {
-    width: "22%", 
+    width: "22%",
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
   },
   bloodIcon: {
-    position:"relative",
     width: 60,
     height: 60,
     resizeMode: "contain",
@@ -232,11 +189,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "500",
     fontFamily: "Inter",
-  },
-  textOverlay: {
-    position: 'absolute',
-    justifyContent: 'center',
-    alignItems: 'center',
+    textAlign: 'center',
   },
 });
-
