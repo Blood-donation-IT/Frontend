@@ -22,7 +22,12 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.dmytro228.MyApp"
+      "package": "com.dmytro228.MyApp",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyDcpzVAbCyySd7Qj7uBEAIwp_SaJY368VM"
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
