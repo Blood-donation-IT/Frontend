@@ -1,12 +1,15 @@
-import React, { useRef, useState } from "react";
-import { StyleSheet, View, Text, Dimensions, TouchableWithoutFeedback, Animated, TouchableOpacity } from "react-native";
-import Svg, { Defs, RadialGradient, Rect, Stop } from "react-native-svg";
+import React, { useState } from "react";
+import { StyleSheet, View, Text, Dimensions, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 const { width, height } = Dimensions.get("window");
 
-const GetBookScreen = () => {
+const GetBookScreen = ({ activateCallback }: { activateCallback?: () => void }) => {
   const navigation = useNavigation();
+
+  const [donations, setDonations] = useState(0);
+  const maxDonations = 5;
+  const isActive = donations >= maxDonations;
 
   return (
     <View style={styles.container}>
@@ -22,8 +25,20 @@ const GetBookScreen = () => {
       </View>
 
       <View style={styles.bottomSection}>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("BookScreen")}>
-          <Text style={styles.buttonText}>Get Donor Book</Text>
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: isActive ? "#D96E6E" : "#d3d3d3ff" }]}
+          onPress={() => {
+            if (!isActive) {
+              setDonations(d => Math.min(d + 1, maxDonations));
+              return;
+            }
+            if (activateCallback) activateCallback(); // викликаємо callback для активування кнопки на таббарі
+            navigation.navigate("BookScreen");
+          }}
+        >
+          <Text style={[styles.buttonText, { color: isActive ? "#fff" : "#5b5a5aff" }]}>
+            Get Donor Book
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -73,15 +88,13 @@ const styles = StyleSheet.create({
     marginTop: 0,
   },
   button: {
-    backgroundColor: "#D96E6E",
     paddingVertical: 15,
     paddingHorizontal: 40,
     borderRadius: 25,
     marginTop: -200,
-
   },
   buttonText: {
-    color: "#fff",
+    color: "#5b5a5aff",
     fontSize: 18,
     fontWeight: "600",
   },

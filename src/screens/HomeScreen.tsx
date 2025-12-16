@@ -46,7 +46,7 @@ export default function HomeScreen({navigation}) {
     <ScrollView contentContainerStyle={styles.container}>
 
       <TouchableOpacity
-        // onPress={() => handleSignUp()}
+        onPress={() => navigation.navigate("NotificationScreen")}
       >
         <Image 
           source={require('../images/notification.png')}
@@ -227,4 +227,3 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
-

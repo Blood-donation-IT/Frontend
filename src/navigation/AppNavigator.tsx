@@ -6,6 +6,8 @@ import LogInScreen from '../screens/LogInScreen';
 import Registration from '../screens/Registration';
 import BottomTabNavigator from './BottomTabNavigator';
 import BookScreen from '../screens/BookScreen';
+import NotificationScreen from '../screens/NotificationScreen';
+
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
@@ -24,6 +26,10 @@ export default function AppNavigator() {
           name="BookScreen" 
           component={BookScreen} 
           options={{ headerShown: false }}
+        />
+        <Stack.Screen 
+          name="NotificationScreen" 
+          component={NotificationScreen} 
         />
       </Stack.Navigator>
     </NavigationContainer>
