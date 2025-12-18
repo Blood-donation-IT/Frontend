@@ -60,9 +60,9 @@ export default function LogInScreen() {
         <Text style={styles.buttonText}>{t("log_in")}</Text>
       </TouchableOpacity>
 
-      <View style={{ marginVertical: 20 }}>
+      {/* <View style={{ marginVertical: 20 }}>
         <GoogleLogin />
-      </View>
+      </View> */}
 
       <View style={styles.goToSignUpButton}>
         <Text style={[styles.buttonText, { color: '#8C8C8C' }]}> {t("dont_have_account")}</Text>

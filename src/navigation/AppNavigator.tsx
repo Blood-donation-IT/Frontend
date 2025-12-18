@@ -7,10 +7,12 @@ import HomeScreen from '../screens/HomeScreen';
 import LogInScreen from '../screens/LogInScreen';
 import Registration from '../screens/Registration';
 import BottomTabNavigator from './BottomTabNavigator';
+import BookScreen from '../screens/BookScreen';
+import NotificationScreen from '../screens/NotificationScreen';
+
 import SettingsScreen from '../screens/SettingsScreen';
 import EditProfileScreen from '../screens/EditProfileScreen';
 
-import BookScreen from '../screens/BookScreen';
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
@@ -30,6 +32,10 @@ export default function AppNavigator() {
           name="BookScreen" 
           component={BookScreen} 
           options={{ headerShown: false }}
+        />
+        <Stack.Screen 
+          name="NotificationScreen" 
+          component={NotificationScreen} 
         />
         <Stack.Screen name="EditProfile" component={EditProfileScreen} />
       </Stack.Navigator>
