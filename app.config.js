@@ -1,4 +1,6 @@
-{
+import 'dotenv/config';
+
+export default {
   "expo": {
     "name": "MyApp",
     "slug": "MyApp",
@@ -25,7 +27,7 @@
       "package": "com.dmytro228.MyApp",
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyDcpzVAbCyySd7Qj7uBEAIwp_SaJY368VM"
+          "apiKey": process.env.GOOGLE_API_KEY
         }
       }
     },
