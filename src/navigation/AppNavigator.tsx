@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import SignInScreen from '../screens/SignInScreen';
@@ -7,6 +9,9 @@ import Registration from '../screens/Registration';
 import BottomTabNavigator from './BottomTabNavigator';
 import BookScreen from '../screens/BookScreen';
 import NotificationScreen from '../screens/NotificationScreen';
+
+import SettingsScreen from '../screens/SettingsScreen';
+import EditProfileScreen from '../screens/EditProfileScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -22,6 +27,7 @@ export default function AppNavigator() {
           options={{ headerShown: false }}
         />
         <Stack.Screen name="Registration" component={Registration} />
+        <Stack.Screen name="Settings" component={SettingsScreen} />
         <Stack.Screen 
           name="BookScreen" 
           component={BookScreen} 
@@ -31,6 +37,7 @@ export default function AppNavigator() {
           name="NotificationScreen" 
           component={NotificationScreen} 
         />
+        <Stack.Screen name="EditProfile" component={EditProfileScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

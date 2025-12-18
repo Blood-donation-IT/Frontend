@@ -32,7 +32,6 @@ const GetBookScreen = ({ activateCallback }: { activateCallback?: () => void }) 
               setDonations(d => Math.min(d + 1, maxDonations));
               return;
             }
-            if (activateCallback) activateCallback(); // викликаємо callback для активування кнопки на таббарі
             navigation.navigate("BookScreen");
           }}
         >

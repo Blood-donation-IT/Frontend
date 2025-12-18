@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
+import GoogleLogin from './googleLogin';
 
 export default function LogInScreen() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -35,7 +38,7 @@ export default function LogInScreen() {
         <TextInput
           style={styles.input}
           placeholderTextColor="#A1A1A1"
-          placeholder="Email"
+          placeholder={t("email")}
           keyboardType="email-address"
           autoCapitalize="none"
           value={email}
@@ -44,7 +47,7 @@ export default function LogInScreen() {
         <TextInput
           style={styles.input}
           placeholderTextColor="#A1A1A1"
-          placeholder="Password"
+          placeholder={t("password")}
           secureTextEntry
           value={password}
           onChangeText={setPassword} />
@@ -54,15 +57,19 @@ export default function LogInScreen() {
         style={styles.button}
         onPress={() => handleSignUp()}
       >
-        <Text style={styles.buttonText}>Log In</Text>
+        <Text style={styles.buttonText}>{t("log_in")}</Text>
       </TouchableOpacity>
 
+      {/* <View style={{ marginVertical: 20 }}>
+        <GoogleLogin />
+      </View> */}
+
       <View style={styles.goToSignUpButton}>
-        <Text style={[styles.buttonText, { color: '#8C8C8C' }]}> Don’t have an account?</Text>
+        <Text style={[styles.buttonText, { color: '#8C8C8C' }]}> {t("dont_have_account")}</Text>
         <TouchableOpacity
           onPress={() => navigation.navigate('SignIn')}
         >
-          <Text style={[styles.buttonText, { color: '#ED5A5A' }]}> Sign Up</Text>
+          <Text style={[styles.buttonText, { color: '#ED5A5A' }]}> {t("sign_up")}</Text>
         </TouchableOpacity>
       </View>
 

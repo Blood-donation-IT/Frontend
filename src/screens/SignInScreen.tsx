@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 export default function SignUpScreen() {
+  const { t } = useTranslation();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [year, setYear] = useState('');
@@ -14,18 +16,18 @@ export default function SignUpScreen() {
 
   const handleSignUp = () => {
     if (!name || !email || !year || !password || !confirmPassword ) {
-      Alert.alert("Помилка", "Заповни всі поля");
+      Alert.alert(t("error"), t("fill_all_fields"));
       return;
     }
 
     if (password != confirmPassword) {
-      Alert.alert("Помилка", "Паролі не співпадають");
+      Alert.alert(t("error"), t("passwords_do_not_match"));
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      Alert.alert("Невірний email", "Введи правильну адресу електронної пошти");
+      Alert.alert(t("error"), t("invalid_email"));
       return;
     }
 
@@ -43,14 +45,14 @@ export default function SignUpScreen() {
         <TextInput
           style={styles.input}
           placeholderTextColor="#A1A1A1"
-          placeholder="Your name"
+          placeholder={t("your_name")}
           value={name}
           onChangeText={setName} />
 
         <TextInput
           style={styles.input}
           placeholderTextColor="#A1A1A1"
-          placeholder="Email"
+          placeholder={t("email")}
           keyboardType="email-address"
           autoCapitalize="none"
           value={email}
@@ -59,14 +61,14 @@ export default function SignUpScreen() {
         <TextInput
           style={styles.input}
           placeholderTextColor="#A1A1A1"
-          placeholder="Your Year"
+          placeholder={t("your_year")}
           value={year}
           onChangeText={setYear} />
 
         <TextInput
           style={styles.input}
           placeholderTextColor="#A1A1A1"
-          placeholder="Password"
+          placeholder={t("password")}
           secureTextEntry
           value={password}
           onChangeText={setPassword} />
@@ -74,7 +76,7 @@ export default function SignUpScreen() {
         <TextInput
           style={styles.input}
           placeholderTextColor="#A1A1A1"
-          placeholder="Confirm Password"
+          placeholder={t("confirm_password")}
           secureTextEntry
           value={confirmPassword}
           onChangeText={setConfirmPassword} />
@@ -87,15 +89,15 @@ export default function SignUpScreen() {
           style={styles.button}
           onPress={() => handleSignUp()}
         >
-          <Text style={styles.buttonText}>Sign In</Text>
+          <Text style={styles.buttonText}>{t("sign_up")}</Text>
         </TouchableOpacity>
 
         <View style={styles.goToLogInButton}>
-          <Text style={[styles.buttonText, { color: '#8C8C8C' }]}> Already have an account?</Text>
+          <Text style={[styles.buttonText, { color: '#8C8C8C' }]}> {t("already_have_account")}</Text>
           <TouchableOpacity
             onPress={() => navigation.navigate('LogIn')}
           >
-            <Text style={[styles.buttonText, { color: '#ED5A5A' }]}> Log in</Text>
+            <Text style={[styles.buttonText, { color: '#ED5A5A' }]}> {t("log_in")}</Text>
           </TouchableOpacity>
         </View>
 

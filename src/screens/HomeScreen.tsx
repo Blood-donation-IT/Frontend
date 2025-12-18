@@ -1,8 +1,20 @@
 import React from 'react';
 import { View, StyleSheet, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { Calendar } from 'react-native-calendars';
+import { todayString } from 'react-native-calendars/src/expandableCalendar/commons';
 
 export default function HomeScreen({navigation}) {
+
+  const getTodayString = () => {
+    const date = new Date();
+    const year = date.getFullYear();
+    // Місяці нумеруються з 0, тому додаємо 1. padStart забезпечує '08' замість '8'.
+    const month = String(date.getMonth() + 1).padStart(2, '0'); 
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const TODAY_STRING = getTodayString();
 
   const bloodData = [
     { type: "0+", status: "low" },
@@ -32,7 +44,7 @@ export default function HomeScreen({navigation}) {
     "2024-08-22": { selected: true, selectedColor: "#E53935" },
     "2024-08-23": { selected: true, selectedColor: "#E53935" },
     "2024-08-24": { selected: true, selectedColor: "#E53935" },
-    "2024-08-29": { selected: true, selectedColor: "#E53935" },
+    [TODAY_STRING]: { selected: true, selectedColor: "#E53935" },
   };
 
   const handleDayPress = (day) => {
@@ -57,7 +69,7 @@ export default function HomeScreen({navigation}) {
 
       <View style={styles.calendarWrapper}>
         <Calendar
-          current={"2024-08-01"}
+          current={TODAY_STRING}
           monthFormat={"MMMM"}
           enableSwipeMonths={true}
           hideExtraDays={true}
@@ -149,7 +161,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontStyle: "normal",
     fontSize: 18,
-    lineHeight: 18,
+    lineHeight: 20,
     letterSpacing: 0,
     marginBottom: 10,
     color: "#000",

@@ -1,7 +1,12 @@
 import React from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from "react-native";
+import { useTranslation } from "react-i18next";
+
 
 const ProfileScreen = ({navigation}) => {
+
+  const { t } = useTranslation();
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <TouchableOpacity 
@@ -14,29 +19,32 @@ const ProfileScreen = ({navigation}) => {
       <View style={styles.avatarContainer}>
         <View style={styles.avatar} />
         <Text style={styles.name}>Somebody</Text>
-        <TouchableOpacity style={styles.editButton}>
-          <Text style={styles.editButtonText}>Edit Profile</Text>
+        <TouchableOpacity 
+          style={styles.editButton}
+          onPress={() => navigation.navigate("EditProfile")}
+        >
+          <Text style={styles.editButtonText}>{t("edit_profile")}</Text>
         </TouchableOpacity>
-        <Text style={styles.lastDonation}>Last Donation: September 11, 2001</Text>
+        <Text style={styles.lastDonation}>{t("last_donation")}: September 11, 2001</Text>
       </View>
 
       <View style={styles.statsRow}>
         <View style={styles.statBox}>
-          <Text style={styles.statLabel}>Donated</Text>
+          <Text style={styles.statLabel}>{t("donated")}</Text>
           <Text style={styles.statValue}>01</Text>
         </View>
         <View style={styles.statBox}>
-          <Text style={styles.statLabel}>Blood Type</Text>
+          <Text style={styles.statLabel}>{t("blood_type")}</Text>
           <Text style={styles.statValue}>A-</Text>
         </View>
         <View style={styles.statBox}>
-          <Text style={styles.statLabel}>Life Saved</Text>
+          <Text style={styles.statLabel}>{t("life_saved")}</Text>
           <Text style={styles.statValue}>02</Text>
         </View>
       </View>
 
       <View style={styles.statusCard}>
-        <Text style={styles.statusLabel}>Donor Status</Text>
+        <Text style={styles.statusLabel}>{t("donor_status")}</Text>
         <Text style={styles.statusValue}>Honorary Donor of Ukraine</Text>
       </View>
     </ScrollView>
@@ -112,6 +120,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   statLabel: {
+    textAlign: "center",
     fontSize: 12,
     color: "#E66A6A",
     marginBottom: 4,
