@@ -41,12 +41,12 @@ export default function LogInScreen() {
             styles.input,
             {
               backgroundColor: colors.backgroundCard,
-              borderColor: colors.border,
+              borderColor: colors.primary,
               color: colors.text,
             },
           ]}
           placeholder={t("email")}
-          placeholderTextColor={colors.textSecondary}
+          placeholderTextColor={colors.primary}
           keyboardType="email-address"
           autoCapitalize="none"
           value={email}
@@ -58,18 +58,22 @@ export default function LogInScreen() {
             styles.input,
             {
               backgroundColor: colors.backgroundCard,
-              borderColor: colors.border,
+              borderColor: colors.primary,
               color: colors.text,
             },
           ]}
           placeholder={t("password")}
-          placeholderTextColor={colors.textSecondary}
+          placeholderTextColor={colors.primary}
           secureTextEntry
           value={password}
           onChangeText={setPassword}
         />
-      </View>
-
+       <TouchableOpacity onPress={() => navigation.navigate("ForgetScreen")}>
+          <Text style={{ color: colors.primary, fontWeight: "bold", marginBottom: 16, alignSelf: "flex-end" }}>
+         Forgot Password?
+          </Text>
+        </TouchableOpacity>
+        </View>
       <TouchableOpacity
         style={[styles.button, { backgroundColor: colors.primary }]}
         onPress={handleLogIn}
@@ -84,7 +88,7 @@ export default function LogInScreen() {
       </View>
 
       <View style={styles.goToSignUpButton}>
-        <Text style={{ color: colors.textSecondary }}>
+        <Text style={{ color: colors.text }}>
           {t("dont_have_account")}
         </Text>
         <TouchableOpacity onPress={() => navigation.navigate("SignIn")}>
