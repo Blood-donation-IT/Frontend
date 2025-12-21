@@ -25,10 +25,10 @@ export default function AppNavigator() {
   return (
     <ThemeProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="ForgetScreen">
+        <Stack.Navigator initialRouteName="SplashScreen">
           <Stack.Screen 
-            name="ForgetScreen" 
-            component={ForgetScreen} 
+            name="SplashScreen" 
+            component={SplashScreen} 
             options={{ headerShown: false }} 
           />
           <Stack.Screen 

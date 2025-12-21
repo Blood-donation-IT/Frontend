@@ -145,7 +145,7 @@ export default function SignUpScreen() {
         </TouchableOpacity>
 
         <View style={styles.goToLogInButton}>
-          <Text style={{ color: colors.textSecondary }}>
+          <Text style={{ color: colors.text}}>
             {t("already_have_account")}
           </Text>
           <TouchableOpacity onPress={() => navigation.navigate("LogIn")}>
