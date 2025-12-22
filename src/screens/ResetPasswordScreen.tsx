@@ -110,25 +110,120 @@ export default function ResetPasswordScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flexGrow: 1, justifyContent: "center", paddingHorizontal: 24, paddingBottom: 40 },
-  backButton: { position: "absolute", top: 50, left: 24, zIndex: 10 },
-  backIcon: { width: 48, height: 48, resizeMode: "contain" },
-  logoContainer: { alignItems: "center", marginBottom: 24 },
-  logo: { width: 120, height: 120, resizeMode: "contain" },
-  title: { fontSize: 24, fontWeight: "bold", marginBottom: 8, alignSelf: "center" },
-  subtitle: { fontSize: 14, textAlign: "center", marginBottom: 24 },
-  otpContainer: { flexDirection: "row", justifyContent: "space-between", marginBottom: 8 },
-  otpInput: { width: 50, height: 50, borderWidth: 1, borderRadius: 12, textAlign: "center", fontSize: 18 },
-  otpText: { fontSize: 12, textAlign: "center", marginBottom: 24 },
-  button: { height: 44, borderRadius: 22, alignItems: "center", justifyContent: "center", width: "100%", maxWidth: 250, alignSelf: "center", marginBottom: 24 },
-  buttonText: { fontWeight: "600", fontSize: 16, color: "#fff" },
-  footerText: { fontSize: 14, textAlign: "center", marginBottom: 16 },
-  progressContainer: { flexDirection: "row", justifyContent: "center", marginTop: 16, gap: 8 },
-  progressLine: { width: 40, height: 4, borderRadius: 2 },
-  alertOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.4)", justifyContent: "center", alignItems: "center" },
-  alertBox: { width: "85%", borderRadius: 16, padding: 20, borderWidth: 2 },
-  alertTitle: { fontSize: 18, fontWeight: "600", textAlign: "center", marginBottom: 8 },
-  alertMessage: { fontSize: 14, textAlign: "center", marginBottom: 20 },
-  alertButton: { height: 44, borderRadius: 12, justifyContent: "center", alignItems: "center" },
-  alertButtonText: { color: "#fff", fontSize: 16, fontWeight: "600" },
+  container: { 
+    flexGrow: 1, 
+    justifyContent: "center", 
+    paddingHorizontal: 24, 
+    paddingBottom: 40 
+  },
+  backButton: { 
+    position: "absolute", 
+    top: 50, 
+    left: 24, 
+    zIndex: 10 
+  },
+  backIcon: { 
+    width: 48, 
+    height: 48, 
+    resizeMode: "contain" 
+  },
+  logoContainer: { 
+    alignItems: "center", 
+    marginBottom: 24 
+  },
+  logo: { 
+    width: 120, 
+    height: 120, 
+    resizeMode: "contain" 
+  },
+  title: { 
+    fontSize: 24, 
+    fontWeight: "bold", 
+    marginBottom: 8, 
+    alignSelf: "center" 
+  },
+  subtitle: { 
+    fontSize: 14, 
+    textAlign: "center", 
+    marginBottom: 24 
+  },
+  otpContainer: { 
+    flexDirection: "row", 
+    justifyContent: "space-between", 
+    marginBottom: 8 
+  },
+  otpInput: { 
+    width: 50, 
+    height: 50, 
+    borderWidth: 1, 
+    borderRadius: 12,
+    textAlign: "center", 
+    fontSize: 18 
+  },
+  otpText: { 
+    fontSize: 12, 
+    textAlign: "center", 
+    marginBottom: 24 
+  },
+  button: { 
+    height: 44, 
+    borderRadius: 22, 
+    alignItems: "center", 
+    justifyContent: "center",
+   width: "100%", 
+   maxWidth: 250, 
+   alignSelf: "center", 
+   marginBottom: 24 
+  },
+  buttonText: { 
+    fontWeight: "600", 
+    fontSize: 16, 
+    color: "#fff" 
+  },
+  footerText: { fontSize: 14, 
+    textAlign: "center", 
+    marginBottom: 16 
+  },
+  progressContainer: { 
+    flexDirection: "row", 
+    justifyContent: "center", 
+    marginTop: 16, 
+    gap: 8 
+  },
+  progressLine: { width: 40, 
+    height: 4, 
+    borderRadius: 2 
+  },
+  alertOverlay: { flex: 1, 
+    backgroundColor: "rgba(0,0,0,0.4)", 
+    justifyContent: "center", 
+    alignItems: "center" 
+  },
+  alertBox: { width: "85%", 
+    borderRadius: 16, 
+    padding: 20, 
+    borderWidth: 2 
+  },
+  alertTitle: { 
+    fontSize: 18, 
+    fontWeight: "600", 
+    textAlign: "center", 
+    marginBottom: 8 
+  },
+  alertMessage: { 
+    fontSize: 14,
+    textAlign: "center", 
+    marginBottom: 20 
+  },
+  alertButton: { 
+    height: 44, 
+    borderRadius: 12, 
+    justifyContent: "center", 
+    alignItems: "center" 
+  },
+  alertButtonText: {  
+    color: "#fff", 
+    fontSize: 16, 
+    fontWeight: "600" 
+  },
 });

@@ -31,16 +31,21 @@ export default function AppNavigator() {
             component={SplashScreen} 
             options={{ headerShown: false }} 
           />
+           <Stack.Screen 
+              name="ForgetScreen" 
+              component={ForgetScreen} 
+              options={{ headerShown: false }} 
+          />
           <Stack.Screen 
-          name="ResetPasswordScreen" 
-          component={ResetPasswordScreen} 
-          options={{ headerShown: false }} 
+            name="ResetPasswordScreen" 
+            component={ResetPasswordScreen} 
+            options={{ headerShown: false }} 
           />
 
           <Stack.Screen 
-          name="CreateNewPasswordScreen" 
-          component={CreateNewPasswordScreen} 
-          options={{ headerShown: false }} 
+            name="CreateNewPasswordScreen" 
+            component={CreateNewPasswordScreen} 
+            options={{ headerShown: false }} 
           />
 
           <Stack.Screen

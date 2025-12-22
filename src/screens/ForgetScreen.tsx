@@ -94,27 +94,11 @@ const handleResetPassword = () => {
         </TouchableOpacity>
 
        <View style={styles.bottomTabs}>
-  <View style={styles.tabButton}>
-    <Image
-      source={SliderIcon}
-      style={[
-        styles.tabIcon,
-        { tintColor: isFocused ? colors.primary : colors.text },
-      ]}
-    />
-  </View>
-  <View style={styles.tabButton}>
-    <Image
-      source={SliderIcon}
-      style={[styles.tabIcon, { tintColor: colors.text }]}
-    />
-  </View>
-  <View style={styles.tabButton}>
-    <Image
-      source={SliderIcon}
-      style={[styles.tabIcon, { tintColor: colors.text }]}
-    />
-  </View>
+   <View style={styles.progressContainer}>
+          <View style={[styles.progressLine, { backgroundColor: colors.primary }]} />
+          <View style={[styles.progressLine, { backgroundColor: colors.text }]} />
+          <View style={[styles.progressLine, { backgroundColor: colors.text }]} />
+        </View>
 </View>
       </ScrollView>
 
@@ -279,5 +263,16 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "600",
+  },
+  progressContainer: { 
+    flexDirection: "row", 
+    justifyContent: "center", 
+    marginTop: 16, 
+    gap: 8 
+  },
+   progressLine: { 
+    width: 40, 
+    height: 4, 
+    borderRadius: 2 
   },
 });

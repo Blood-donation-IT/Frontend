@@ -86,22 +86,97 @@ export default function CreateNewPasswordScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flexGrow: 1, justifyContent: "flex-start", paddingHorizontal: 24, paddingTop: 40, paddingBottom: 40 },
-  backButton: { marginBottom: 24 },
-  backIcon: { width: 48, height: 48, resizeMode: "contain" },
-  logoContainer: { alignItems: "center", marginBottom: 24 },
-  logo: { width: 120, height: 120, resizeMode: "contain" },
-  bottomTabs: { flexDirection: "row", justifyContent: "space-around", marginBottom: 24 },
-  tabButton: { alignItems: "center", justifyContent: "center" },
-  tabIcon: { width: 40, height: 40, resizeMode: "contain" },
-  title: { fontSize: 24, fontWeight: "bold", marginBottom: 8, alignSelf: "center" },
-  subtitle: { fontSize: 14, textAlign: "center", marginBottom: 32 },
-  inputContainer: { marginBottom: 24 },
-  input: { height: 50, borderWidth: 1, borderRadius: 22, paddingHorizontal: 16, marginBottom: 12 },
-  switchContainer: { flexDirection: "row", alignItems: "center", marginBottom: 24, gap: 12 },
-  switchText: { fontSize: 14 },
-  button: { height: 44, borderRadius: 22, alignItems: "center", justifyContent: "center", width: "100%", maxWidth: 250, alignSelf: "center", marginBottom: 24 },
-  buttonText: { fontWeight: "600", fontSize: 16, color: "#fff" },
-  progressContainer: { flexDirection: "row", justifyContent: "center", marginTop: 16, gap: 8 },
-  progressLine: { width: 40, height: 4, borderRadius: 2 },
+  container: { 
+    flexGrow: 1, 
+    justifyContent: "flex-start", 
+    paddingHorizontal: 24, 
+    paddingTop: 40, 
+    paddingBottom: 40 
+  },
+  backButton: { 
+    marginBottom: 24 
+  },
+  backIcon: { 
+    width: 48,
+    height: 48, 
+    resizeMode: "contain" 
+  },
+  logoContainer: { 
+    alignItems: "center",
+    marginBottom: 24 
+  },
+  logo: { 
+    width: 120, 
+    height: 120, 
+    resizeMode: "contain" 
+  },
+  bottomTabs: { 
+    flexDirection: "row",
+    justifyContent: "space-around", 
+    marginBottom: 24 
+  },
+  tabButton: { 
+    alignItems: "center", 
+    justifyContent: "center" 
+  },
+  tabIcon: { 
+    width: 40, 
+    height: 40, 
+    resizeMode: "contain" 
+  },
+  title: { 
+    fontSize: 24, 
+    fontWeight: "bold", 
+    marginBottom: 8, 
+    alignSelf: "center" 
+  },
+  subtitle: { 
+    fontSize: 14, 
+    textAlign: "center", 
+    marginBottom: 32
+  },
+  inputContainer: { 
+    marginBottom: 24 
+  },
+  input: { 
+    height: 50, 
+    borderWidth: 1, 
+    borderRadius: 22, 
+    paddingHorizontal: 16, 
+    marginBottom: 12 
+  },
+  switchContainer: { 
+    flexDirection: "row", 
+    alignItems: "center", 
+    marginBottom: 24, 
+    gap: 12 
+  },
+  switchText: { 
+    fontSize: 14 
+  },
+  button: { 
+    height: 44, 
+    borderRadius: 22, 
+    alignItems: "center", 
+    justifyContent: "center", 
+    width: "100%", maxWidth: 250, 
+    alignSelf: "center", 
+    marginBottom: 24 
+  },
+  buttonText: { 
+    fontWeight: "600", 
+    fontSize: 16, 
+    color: "#fff" 
+  },
+  progressContainer: { 
+    flexDirection: "row", 
+    justifyContent: "center", 
+    marginTop: 16, 
+    gap: 8 
+  },
+  progressLine: { 
+    width: 40, 
+    height: 4, 
+    borderRadius: 2 
+  },
 });

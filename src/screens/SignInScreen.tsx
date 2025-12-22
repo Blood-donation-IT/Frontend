@@ -64,7 +64,7 @@ export default function SignUpScreen() {
             },
           ]}
           placeholder={t("your_name")}
-          placeholderTextColor={colors.textSecondary}
+          placeholderTextColor={colors.text}
           value={name}
           onChangeText={setName}
         />
@@ -79,7 +79,7 @@ export default function SignUpScreen() {
             },
           ]}
           placeholder={t("email")}
-          placeholderTextColor={colors.textSecondary}
+          placeholderTextColor={colors.text}
           keyboardType="email-address"
           autoCapitalize="none"
           value={email}
@@ -96,7 +96,7 @@ export default function SignUpScreen() {
             },
           ]}
           placeholder={t("your_year")}
-          placeholderTextColor={colors.textSecondary}
+          placeholderTextColor={colors.text}
           value={year}
           onChangeText={setYear}
         />
@@ -111,7 +111,7 @@ export default function SignUpScreen() {
             },
           ]}
           placeholder={t("password")}
-          placeholderTextColor={colors.textSecondary}
+          placeholderTextColor={colors.text}
           secureTextEntry
           value={password}
           onChangeText={setPassword}
@@ -127,7 +127,7 @@ export default function SignUpScreen() {
             },
           ]}
           placeholder={t("confirm_password")}
-          placeholderTextColor={colors.textSecondary}
+          placeholderTextColor={colors.text}
           secureTextEntry
           value={confirmPassword}
           onChangeText={setConfirmPassword}
