@@ -10,6 +10,8 @@ import SignInScreen from '../screens/SignInScreen';
 import LogInScreen from '../screens/LogInScreen';
 import Registration from '../screens/Registration';
 import BottomTabNavigator from './BottomTabNavigator';
+import NotificationScreen from '../screens/NotificationScreen';
+
 import SettingsScreen from '../screens/SettingsScreen';
 import EditProfileScreen from '../screens/EditProfileScreen';
 import BookScreen from '../screens/BookScreen';
@@ -66,6 +68,11 @@ export default function AppNavigator() {
             name="BookScreen" 
             component={BookScreen} 
             options={{ headerShown: false }} 
+          />
+          <Stack.Screen 
+            name="NotificationScreen" 
+            component={NotificationScreen}
+            options={{ headerShown: false }}
           />
           <Stack.Screen name="EditProfile" component={EditProfileScreen} />
         </Stack.Navigator>

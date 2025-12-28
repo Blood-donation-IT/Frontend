@@ -1,4 +1,6 @@
-{
+import 'dotenv/config';
+
+export default {
   "expo": {
     "name": "MyApp",
     "slug": "MyApp",
@@ -22,7 +24,12 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.dmytro228.MyApp"
+      "package": "com.dmytro228.MyApp",
+      "config": {
+        "googleMaps": {
+          "apiKey": process.env.GOOGLE_API_KEY
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"

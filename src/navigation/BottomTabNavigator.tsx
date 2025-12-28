@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { View, TouchableOpacity, Image, StyleSheet ,Text } from "react-native";
 import HomeScreen from "../screens/HomeScreen";
@@ -99,7 +99,6 @@ const styles = StyleSheet.create({
   tabBar: {
     flexDirection: "row",
     backgroundColor: "#2B2B2B",
-    // marginHorizontal: 20,
     marginBottom: 20,
     borderRadius: 33,
     paddingVertical: 15,

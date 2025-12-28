@@ -44,7 +44,9 @@ export default function HomeScreen({ navigation }) {
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor: colors.backgroundMain }]}>
       
-      <TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => navigation.navigate("NotificationScreen")}
+      >
         <Image
           source={require('../images/notification.png')}
           style={[styles.notificationImg, { tintColor: colors.text }]}
@@ -190,5 +192,10 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     fontFamily: "Inter",
     textAlign: 'center',
+  },
+  textOverlay: {
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

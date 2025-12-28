@@ -1,11 +1,15 @@
-import React from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import { StyleSheet, View, Text, Dimensions, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "../Theme/ThemeContext";
 
-const GetBookScreen = () => {
+const GetBookScreen = ({ activateCallback }: { activateCallback?: () => void }) => {
   const navigation = useNavigation();
   const { colors } = useTheme();
+
+  const [donations, setDonations] = useState(0);
+  const maxDonations = 5;
+  const isActive = donations >= maxDonations;
 
   return (
     <View style={[styles.container, { backgroundColor: colors.backgroundMain }]}>
@@ -24,8 +28,14 @@ const GetBookScreen = () => {
 
       <View style={styles.bottomSection}>
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: colors.primary }]}
-          onPress={() => navigation.navigate("BookScreen")}
+          style={[styles.button, { backgroundColor: isActive ? colors.primary : "#d3d3d3ff" }]}
+          onPress={() => {
+            if (!isActive) {
+              setDonations(d => Math.min(d + 1, maxDonations));
+              return;
+            }
+            navigation.navigate("BookScreen");
+          }}
         >
           <Text style={[styles.buttonText, { color: colors.textCard || "#fff" }]}>
             Get Donor Book
