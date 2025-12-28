@@ -60,11 +60,11 @@ export default function SignUpScreen() {
             {
               backgroundColor: colors.backgroundCard,
               color: colors.text,
-              borderColor: colors.border,
+              borderColor: colors.primary,
             },
           ]}
           placeholder={t("your_name")}
-          placeholderTextColor={colors.text}
+          placeholderTextColor={colors.primary}
           value={name}
           onChangeText={setName}
         />
@@ -75,11 +75,11 @@ export default function SignUpScreen() {
             {
               backgroundColor: colors.backgroundCard,
               color: colors.text,
-              borderColor: colors.border,
+              borderColor: colors.primary,
             },
           ]}
           placeholder={t("email")}
-          placeholderTextColor={colors.text}
+          placeholderTextColor={colors.primary}
           keyboardType="email-address"
           autoCapitalize="none"
           value={email}
@@ -92,11 +92,11 @@ export default function SignUpScreen() {
             {
               backgroundColor: colors.backgroundCard,
               color: colors.text,
-              borderColor: colors.border,
+              borderColor: colors.primary,
             },
           ]}
           placeholder={t("your_year")}
-          placeholderTextColor={colors.text}
+          placeholderTextColor={colors.primary}
           value={year}
           onChangeText={setYear}
         />
@@ -107,11 +107,11 @@ export default function SignUpScreen() {
             {
               backgroundColor: colors.backgroundCard,
               color: colors.text,
-              borderColor: colors.border,
+              borderColor: colors.primary,
             },
           ]}
           placeholder={t("password")}
-          placeholderTextColor={colors.text}
+          placeholderTextColor={colors.primary}
           secureTextEntry
           value={password}
           onChangeText={setPassword}
@@ -123,11 +123,11 @@ export default function SignUpScreen() {
             {
               backgroundColor: colors.backgroundCard,
               color: colors.text,
-              borderColor: colors.border,
+              borderColor: colors.primary,
             },
           ]}
           placeholder={t("confirm_password")}
-          placeholderTextColor={colors.text}
+          placeholderTextColor={colors.primary}
           secureTextEntry
           value={confirmPassword}
           onChangeText={setConfirmPassword}
