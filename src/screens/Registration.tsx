@@ -15,6 +15,8 @@ import MapView, { Marker } from "react-native-maps";
 import { useTranslation } from "react-i18next";
 import { scheduleDateNotification } from "../services/localNotificationService";
 import * as Notifications from 'expo-notifications';
+import { useTheme } from "../Theme/ThemeContext";
+
 
 export default function RegistrationScreen({ route }) {
   const { t } = useTranslation();
@@ -39,6 +41,8 @@ export default function RegistrationScreen({ route }) {
     { id: 2, title: t("opera_theater"), coords: { latitude: 49.8456, longitude: 24.0269 } },
     { id: 3, title: t("university"), coords: { latitude: 49.8392, longitude: 24.0235 } },
   ];
+
+  const { colors } = useTheme();
 
   useEffect(() => {
     setSuggestions(points);
@@ -92,17 +96,20 @@ export default function RegistrationScreen({ route }) {
   return (
     <>
       <KeyboardAwareScrollView
-        contentContainerStyle={styles.container}
+        contentContainerStyle={[
+          styles.container,
+          { backgroundColor: colors.backgroundMain },
+        ]}
         extraScrollHeight={20}
         enableOnAndroid={true}
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.dateBox}>
-          <Text style={styles.dateText}>{day}</Text>
+          <Text style={[styles.dateText, { color: colors.primary }]}>{day}</Text>
         </View>
         <Text style={styles.changeText}>{t("change")}</Text>
 
-        <Text style={styles.sectionTitle}>{t("your_blood_type")}</Text>
+        <Text style={[styles.sectionTitle, { color: colors.primary }]}>{t("your_blood_type")}</Text>
         <View style={styles.optionsRow}>
           {bloodTypes.map((type) => (
             <TouchableOpacity
@@ -118,10 +125,9 @@ export default function RegistrationScreen({ route }) {
               }}
             >
               <Text
-                style={[
-                  styles.optionText,
-                  bloodType === type && styles.optionTextSelected,
-                ]}
+                style={{
+                  color: bloodType === type ? "#fff" : colors.text,
+                }}
               >
                 {type}
               </Text>
@@ -146,10 +152,7 @@ export default function RegistrationScreen({ route }) {
               }}
             >
               <Text
-                style={[
-                  styles.optionText,
-                  time === timen && styles.optionTextSelected,
-                ]}
+                style={{ color: time === timen ? "#fff" : colors.text }}
               >
                 {timen}
               </Text>
@@ -159,10 +162,13 @@ export default function RegistrationScreen({ route }) {
         {errors.time && <Text style={styles.errorText}>{errors.time}</Text>}
 
         <TouchableOpacity
-          style={[styles.input, styles.inputWithIcon, errors.location ? styles.inputError : null]}
+          style={[
+            styles.input,
+            { backgroundColor: colors.backgroundCard },
+          ]}
           onPress={() => setModalVisible(true)}
         >
-          <Text style={{ color: location ? "#000" : "#E66A6A80" }}>
+          <Text style={{ color: location ? colors.text : "#E66A6A80" }}>
             {location || t("location")}
           </Text>
           <Ionicons name="location-outline" size={20} color="#E53935" style={styles.icon} />
@@ -170,7 +176,7 @@ export default function RegistrationScreen({ route }) {
         {errors.location && <Text style={styles.errorText}>{errors.location}</Text>}
 
         <TextInput
-          style={[styles.input, errors.name ? styles.inputError : null]}
+          style={[styles.input, { backgroundColor: colors.backgroundCard, color: colors.text }]}
           placeholder={t("your_name")}
           placeholderTextColor="#E66A6A80"
           value={name}
@@ -182,7 +188,7 @@ export default function RegistrationScreen({ route }) {
         {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
 
         <TextInput
-          style={[styles.input, errors.age ? styles.inputError : null]}
+          style={[styles.input, { backgroundColor: colors.backgroundCard, color: colors.text }]}
           placeholder={t("your_age")}
           keyboardType="numeric"
           placeholderTextColor="#E66A6A80"
@@ -194,7 +200,7 @@ export default function RegistrationScreen({ route }) {
         />
         {errors.age && <Text style={styles.errorText}>{errors.age}</Text>}
 
-        <TouchableOpacity style={styles.button} onPress={handleRegister}>
+        <TouchableOpacity style={[styles.button, { backgroundColor: colors.primary }]} onPress={handleRegister}>
           <Text style={styles.buttonText}>{t("register")}</Text>
         </TouchableOpacity>
       </KeyboardAwareScrollView>
@@ -202,12 +208,15 @@ export default function RegistrationScreen({ route }) {
       <Modal animationType="fade" transparent visible={isModalVisible}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
           <View style={styles.overlay}>
-            <View style={styles.modalBox}>
+            <View style={[
+                styles.modalBox,
+                { backgroundColor: colors.backgroundMain },
+              ]}>
               <Text style={styles.modalTitle}>{t("select_location")}</Text>
               <TextInput
-                style={styles.modalInput}
+                style={[styles.modalInput, { color: colors.text }]}
                 placeholder={t("enter_location_name")}
-                placeholderTextColor="#E66A6A80"
+                placeholderTextColor={colors.text}
                 value={location}
                 onFocus={() => setSuggestions(points)}
                 onChangeText={(text) => {
@@ -257,7 +266,7 @@ export default function RegistrationScreen({ route }) {
                   ))}
                 </MapView>
               </View>
-              <Text style={styles.selectedText}>
+              <Text style={[styles.selectedText, {color: colors.text}]}>
                 {location ? `${t("selected")}: ${location}` : t("tap_marker")}
               </Text>
               <TouchableOpacity
@@ -375,12 +384,10 @@ const styles = StyleSheet.create({
     position: "absolute",
     right:12,
     top:"50%",
-    // transform: [{ translateY: - }],
   },
   inputWithIcon: {
     paddingRight: 40,
   },
-  // container: { padding: 20, flexGrow: 1, backgroundColor: "#fff" },
   overlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
@@ -405,7 +412,6 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     padding: 12,
     backgroundColor: "#F5EDEB66",
-    // marginBottom: 14,
   },
   mapContainer: {
     height: 180,
@@ -438,7 +444,6 @@ const styles = StyleSheet.create({
     maxHeight: 150,
     backgroundColor: "#fff",
     borderRadius: 10,
-    // marginTop: 4,
     borderWidth: 1,
     borderColor: "#E66A6A80",
     marginBottom:12,

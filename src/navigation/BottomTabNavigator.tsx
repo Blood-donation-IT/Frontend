@@ -78,7 +78,6 @@ function CustomTabBar({ state, descriptors, navigation }) {
 
 
 export default function MainTabs() {
-  
   return (
     <Tab.Navigator
       screenOptions={{ headerShown: false }}

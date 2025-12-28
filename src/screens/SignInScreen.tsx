@@ -1,26 +1,35 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { useTranslation } from 'react-i18next';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Alert,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
+import { useTheme } from "../Theme/ThemeContext";
 
 export default function SignUpScreen() {
   const { t } = useTranslation();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [year, setYear] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const { colors } = useTheme();
+  const navigation = useNavigation<any>();
 
-  const navigation = useNavigation();
-  
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [year, setYear] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSignUp = () => {
-    if (!name || !email || !year || !password || !confirmPassword ) {
+    if (!name || !email || !year || !password || !confirmPassword) {
       Alert.alert(t("error"), t("fill_all_fields"));
       return;
     }
 
-    if (password != confirmPassword) {
+    if (password !== confirmPassword) {
       Alert.alert(t("error"), t("passwords_do_not_match"));
       return;
     }
@@ -34,136 +43,162 @@ export default function SignUpScreen() {
     navigation.navigate("LogIn");
   };
 
-
   return (
-    <>
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView
+      contentContainerStyle={[
+        styles.container,
+        { backgroundColor: colors.backgroundMain },
+      ]}
+      keyboardShouldPersistTaps="handled"
+    >
+      <Text style={[styles.title, { color: colors.text }]}>OneDrop</Text>
 
-      <Text style={styles.title}>OneDrop</Text>
-
-      <View style={styles.BoxOfInputs}>
+      <View style={styles.boxOfInputs}>
         <TextInput
-          style={styles.input}
-          placeholderTextColor="#A1A1A1"
+          style={[
+            styles.input,
+            {
+              backgroundColor: colors.backgroundCard,
+              color: colors.text,
+              borderColor: colors.border,
+            },
+          ]}
           placeholder={t("your_name")}
+          placeholderTextColor={colors.text}
           value={name}
-          onChangeText={setName} />
+          onChangeText={setName}
+        />
 
         <TextInput
-          style={styles.input}
-          placeholderTextColor="#A1A1A1"
+          style={[
+            styles.input,
+            {
+              backgroundColor: colors.backgroundCard,
+              color: colors.text,
+              borderColor: colors.border,
+            },
+          ]}
           placeholder={t("email")}
+          placeholderTextColor={colors.text}
           keyboardType="email-address"
           autoCapitalize="none"
           value={email}
-          onChangeText={setEmail} />
-          
-        <TextInput
-          style={styles.input}
-          placeholderTextColor="#A1A1A1"
-          placeholder={t("your_year")}
-          value={year}
-          onChangeText={setYear} />
+          onChangeText={setEmail}
+        />
 
         <TextInput
-          style={styles.input}
-          placeholderTextColor="#A1A1A1"
+          style={[
+            styles.input,
+            {
+              backgroundColor: colors.backgroundCard,
+              color: colors.text,
+              borderColor: colors.border,
+            },
+          ]}
+          placeholder={t("your_year")}
+          placeholderTextColor={colors.text}
+          value={year}
+          onChangeText={setYear}
+        />
+
+        <TextInput
+          style={[
+            styles.input,
+            {
+              backgroundColor: colors.backgroundCard,
+              color: colors.text,
+              borderColor: colors.border,
+            },
+          ]}
           placeholder={t("password")}
+          placeholderTextColor={colors.text}
           secureTextEntry
           value={password}
-          onChangeText={setPassword} />
+          onChangeText={setPassword}
+        />
 
         <TextInput
-          style={styles.input}
-          placeholderTextColor="#A1A1A1"
+          style={[
+            styles.input,
+            {
+              backgroundColor: colors.backgroundCard,
+              color: colors.text,
+              borderColor: colors.border,
+            },
+          ]}
           placeholder={t("confirm_password")}
+          placeholderTextColor={colors.text}
           secureTextEntry
           value={confirmPassword}
-          onChangeText={setConfirmPassword} />
+          onChangeText={setConfirmPassword}
+        />
       </View>
 
       <View>
-
-
         <TouchableOpacity
-          style={styles.button}
-          onPress={() => handleSignUp()}
+          style={[styles.button, { backgroundColor: colors.primary }]}
+          onPress={handleSignUp}
         >
-          <Text style={styles.buttonText}>{t("sign_up")}</Text>
+          <Text style={[styles.buttonText, { color: "#fff" }]}>
+            {t("sign_up")}
+          </Text>
         </TouchableOpacity>
 
         <View style={styles.goToLogInButton}>
-          <Text style={[styles.buttonText, { color: '#8C8C8C' }]}> {t("already_have_account")}</Text>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('LogIn')}
-          >
-            <Text style={[styles.buttonText, { color: '#ED5A5A' }]}> {t("log_in")}</Text>
+          <Text style={{ color: colors.text}}>
+            {t("already_have_account")}
+          </Text>
+          <TouchableOpacity onPress={() => navigation.navigate("LogIn")}>
+            <Text style={{ color: colors.primary, fontWeight: "600" }}>
+              {" "}
+              {t("log_in")}
+            </Text>
           </TouchableOpacity>
         </View>
-
-
       </View>
-
     </ScrollView>
-
-    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    justifyContent: 'center',
-    gap:"10%",
+    justifyContent: "center",
     paddingHorizontal: 24,
-    backgroundColor: '#fff',
   },
   title: {
-    fontFamily:"inter",
     fontSize: 20,
-    fontWeight: '600',
-    alignSelf: 'center',
-    color: '#000000',
-    
+    fontWeight: "600",
+    alignSelf: "center",
+    marginBottom: 40,
+  },
+  boxOfInputs: {
+    marginBottom: 40,
   },
   input: {
     height: 44,
-    borderColor: '#A1A1A1',
     borderWidth: 1,
     borderRadius: 20,
     paddingHorizontal: 16,
     marginBottom: 12,
-    backgroundColor:"#F5EDEB",
   },
-
-
-  BoxOfInputs: {
-    marginBottom:"-7%"
-  },
-  
   button: {
-    alignItems: "center",
-    justifyContent: "center",
     height: 44,
     borderRadius: 16,
-    backgroundColor: '#ED5A5A',
-    alignSelf: 'center',
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center",
     width: 160,
-    marginBottom:"20%",
+    marginBottom: 24,
   },
   buttonText: {
-    color: '#FAFAFA',
-    fontWeight: '600',
+    fontWeight: "600",
     fontSize: 16,
   },
-
   goToLogInButton: {
-    flexDirection:"row",
-    alignSelf: 'center',
-    paddingHorizontal: 16,
-    borderRadius:20,
-    padding:5,
-    marginBottom:"4%",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 4,
   },
-
 });

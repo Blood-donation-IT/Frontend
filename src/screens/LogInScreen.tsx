@@ -1,63 +1,86 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { useTranslation } from 'react-i18next';
-import GoogleLogin from './googleLogin';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
+import { useTheme } from "../Theme/ThemeContext";
+import GoogleLogin from "./googleLogin";
 
 export default function LogInScreen() {
   const { t } = useTranslation();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const navigation = useNavigation<any>();
 
-  const navigation = useNavigation();
-  
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleSignUp = () => {
-    // if (!email || !password) {
-    //   Alert.alert("Помилка", "Заповни всі поля");
-    //   return;
-    // }
-
-    // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    // if (!emailRegex.test(email)) {
-    //   Alert.alert("Невірний email", "Введи правильну адресу електронної пошти");
-    //   return;
-    // }
-
+  const handleLogIn = () => {
     navigation.navigate("Home");
   };
 
+  const { colors } = useTheme();
 
   return (
-    <>
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView
+      contentContainerStyle={[
+        styles.container,
+        { backgroundColor: colors.backgroundMain },
+      ]}
+      keyboardShouldPersistTaps="handled"
+    >
+      <Text style={[styles.title, { color: colors.text }]}>OneDrop</Text>
 
-      <Text style={styles.title}>OneDrop</Text>
-      
-      <View style={styles.BoxOfInputs}>
+      <View style={styles.boxOfInputs}>
         <TextInput
-          style={styles.input}
-          placeholderTextColor="#A1A1A1"
+          style={[
+            styles.input,
+            {
+              backgroundColor: colors.backgroundCard,
+              borderColor: colors.primary,
+              color: colors.text,
+            },
+          ]}
           placeholder={t("email")}
+          placeholderTextColor={colors.primary}
           keyboardType="email-address"
           autoCapitalize="none"
           value={email}
-          onChangeText={setEmail} />
+          onChangeText={setEmail}
+        />
 
         <TextInput
-          style={styles.input}
-          placeholderTextColor="#A1A1A1"
+          style={[
+            styles.input,
+            {
+              backgroundColor: colors.backgroundCard,
+              borderColor: colors.primary,
+              color: colors.text,
+            },
+          ]}
           placeholder={t("password")}
+          placeholderTextColor={colors.primary}
           secureTextEntry
           value={password}
-          onChangeText={setPassword} />
-      </View>
-
+          onChangeText={setPassword}
+        />
+       <TouchableOpacity onPress={() => navigation.navigate("ForgetScreen")}>
+          <Text style={{ color: colors.primary, fontWeight: "bold", marginBottom: 16, alignSelf: "flex-end" }}>
+         Forgot Password?
+          </Text>
+        </TouchableOpacity>
+        </View>
       <TouchableOpacity
-        style={styles.button}
-        onPress={() => handleSignUp()}
+        style={[styles.button, { backgroundColor: colors.primary }]}
+        onPress={handleLogIn}
       >
-        <Text style={styles.buttonText}>{t("log_in")}</Text>
+        <Text style={[styles.buttonText, { color: "#fff" }]}>
+          {t("log_in")}
+        </Text>
       </TouchableOpacity>
 
       <View style={{ marginVertical: 20 }}>
@@ -65,73 +88,59 @@ export default function LogInScreen() {
       </View>
 
       <View style={styles.goToSignUpButton}>
-        <Text style={[styles.buttonText, { color: '#8C8C8C' }]}> {t("dont_have_account")}</Text>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('SignIn')}
-        >
-          <Text style={[styles.buttonText, { color: '#ED5A5A' }]}> {t("sign_up")}</Text>
+        <Text style={{ color: colors.text }}>
+          {t("dont_have_account")}
+        </Text>
+        <TouchableOpacity onPress={() => navigation.navigate("SignIn")}>
+          <Text style={{ color: colors.primary, fontWeight: "600" }}>
+            {" "}
+            {t("sign_up")}
+          </Text>
         </TouchableOpacity>
       </View>
-
     </ScrollView>
-    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    justifyContent: 'center',
-    gap:"10%",
+    justifyContent: "center",
     paddingHorizontal: 24,
-    backgroundColor: '#fff',
   },
   title: {
-    fontFamily:"inter",
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 32,
-    alignSelf: 'center',
-    color: '#000000',
-    
+    alignSelf: "center",
+  },
+  boxOfInputs: {
+    marginBottom: 40,
   },
   input: {
     height: 44,
-    borderColor: '#A1A1A1',
     borderWidth: 1,
     borderRadius: 22,
     paddingHorizontal: 16,
     marginBottom: 12,
-    backgroundColor:"#F5EDEB",
   },
   button: {
-    alignItems: "center",
-    justifyContent: "center",
     height: 44,
     borderRadius: 16,
-    backgroundColor: '#ED5A5A',
-    alignSelf: 'center',
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center",
     width: 160,
-    marginBottom:"20%",
+    marginBottom: 24,
   },
-
   buttonText: {
-    color: '#FAFAFA',
-    fontWeight: '600',
+    fontWeight: "600",
     fontSize: 16,
   },
-
-  BoxOfInputs: {
-    marginBottom:"-6%",
-  },
-
   goToSignUpButton: {
-    flexDirection:"row",
-    alignSelf: 'center',
-    paddingHorizontal: 16,
-    borderRadius:20,
-    padding:5,
-    marginBottom:"4%",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 4,
   },
-
 });
