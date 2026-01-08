@@ -9,7 +9,7 @@ import Registration from '../screens/Registration';
 import BottomTabNavigator from './BottomTabNavigator';
 import SettingsScreen from '../screens/SettingsScreen';
 import EditProfileScreen from '../screens/EditProfileScreen';
-
+import TestScreen from "../screens/TestScreen"; 
 import BookScreen from '../screens/BookScreen';
 const Stack = createNativeStackNavigator();
 
@@ -19,7 +19,8 @@ export default function AppNavigator() {
       <Stack.Navigator initialRouteName="SignIn">
         <Stack.Screen name="SignIn" component={SignInScreen} />
         <Stack.Screen name="LogIn" component={LogInScreen} />
-        <Stack.Screen 
+        <Stack.Screen name="Test" component={TestScreen} />
+        <Stack.Screen
           name="Home" 
           component={BottomTabNavigator} 
           options={{ headerShown: false }}

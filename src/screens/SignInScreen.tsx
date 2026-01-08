@@ -31,7 +31,7 @@ export default function SignUpScreen() {
       return;
     }
 
-    navigation.navigate("LogIn");
+    navigation.navigate("Test");
   };
 
 
