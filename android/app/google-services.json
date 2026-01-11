@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "919528186068",
+    "project_id": "auth-d603f",
+    "storage_bucket": "auth-d603f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:919528186068:android:3906327361a2f16dd09b41",
+        "android_client_info": {
+          "package_name": "com.dmytro228.MyApp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "919528186068-icoifqelur53cvc29kpqu4g8uibsa7jg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dmytro228.MyApp",
+            "certificate_hash": "1bb4d6370adeffe54f6133466256e1e21b7a0150"
+          }
+        },
+        {
+          "client_id": "919528186068-sd07taasa4d6ahuc7or2qtck1mulbrd3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dmytro228.MyApp",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "919528186068-dehjb980ti0jkdoie856nqqlnu75fqse.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjGUDzdu6BBVxU-Ka5Ga5mv33Bm9X0G04"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "919528186068-dehjb980ti0jkdoie856nqqlnu75fqse.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

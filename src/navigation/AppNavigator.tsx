@@ -14,6 +14,7 @@ import NotificationScreen from '../screens/NotificationScreen';
 
 import SettingsScreen from '../screens/SettingsScreen';
 import EditProfileScreen from '../screens/EditProfileScreen';
+import TestScreen from "../screens/TestScreen"; 
 import BookScreen from '../screens/BookScreen';
 import ForgetScreen from '../screens/ForgetScreen';
 import { RootStackParamList } from './types';
@@ -55,6 +56,7 @@ export default function AppNavigator() {
             component={IntroScreen} 
             options={{ headerShown: false }}
           />
+          <Stack.Screen name="Test" component={TestScreen} />
           <Stack.Screen name="SignIn" component={SignInScreen} />
           <Stack.Screen name="LogIn" component={LogInScreen} />
           <Stack.Screen name="Registration" component={Registration} />
@@ -78,5 +80,25 @@ export default function AppNavigator() {
         </Stack.Navigator>
       </NavigationContainer>
     </ThemeProvider>
+    // <NavigationContainer>
+    //   <Stack.Navigator initialRouteName="SignIn">
+    //     <Stack.Screen name="SignIn" component={SignInScreen} />
+    //     <Stack.Screen name="LogIn" component={LogInScreen} />
+    //     <Stack.Screen name="Test" component={TestScreen} />
+    //     <Stack.Screen
+    //       name="Home" 
+    //       component={BottomTabNavigator} 
+    //       options={{ headerShown: false }}
+    //     />
+    //     <Stack.Screen name="Registration" component={Registration} />
+    //     <Stack.Screen name="Settings" component={SettingsScreen} />
+    //     <Stack.Screen 
+    //       name="BookScreen" 
+    //       component={BookScreen} 
+    //       options={{ headerShown: false }}
+    //     />
+    //     <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+    //   </Stack.Navigator>
+    // </NavigationContainer>
   );
 }

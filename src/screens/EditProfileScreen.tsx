@@ -5,6 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 export default function EditProfileScreen() {
   const [name, setName] = useState("Blue Jack");
   const [email, setEmail] = useState("gmail@com");
+  const [phoneNumber, setPhoneNumber] = useState("+380 00 000 00 00");
 
   return (
     <View style={styles.container}>
@@ -35,6 +36,14 @@ export default function EditProfileScreen() {
                 style={styles.input}
                 value={email}
                 onChangeText={setEmail}
+                />
+            </View>
+            <View style={styles.inputWrapper}>
+                <Ionicons name="call-outline" size={20} color="#E66A6A" />
+                <TextInput
+                style={styles.input}
+                value={phoneNumber}
+                onChangeText={setPhoneNumber}
                 />
             </View>
         </View>
