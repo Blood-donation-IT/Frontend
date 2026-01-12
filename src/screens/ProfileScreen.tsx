@@ -1,51 +1,60 @@
 import React from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from "react-native";
 import { useTranslation } from "react-i18next";
+import { useTheme } from "../Theme/ThemeContext";
 
-
-const ProfileScreen = ({navigation}) => {
-
+const ProfileScreen = ({ navigation }) => {
   const { t } = useTranslation();
+  const { colors } = useTheme();
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={[styles.container, { backgroundColor: colors.backgroundMain }]}>
       <TouchableOpacity 
         style={styles.menuBtn}
         onPress={() => navigation.navigate("Settings")}
       >
-        <Image source={require("../images/menu.png")} style={styles.menuImg} />
+        <Image 
+          source={require("../images/menu.png")} 
+          style={[styles.menuImg, { tintColor: colors.text }]} 
+        />
       </TouchableOpacity>
 
       <View style={styles.avatarContainer}>
-        <View style={styles.avatar} />
-        <Text style={styles.name}>Somebody</Text>
+        {/* Аватар тепер має колір картки та рамку */}
+        <View style={[styles.avatar, { backgroundColor: colors.backgroundCard, borderColor: colors.text + '20', borderWidth: 1 }]} />
+        
+        <Text style={[styles.name, { color: colors.text }]}>Somebody</Text>
+        
         <TouchableOpacity 
-          style={styles.editButton}
+          style={[styles.editButton, { backgroundColor: colors.primary, borderColor: colors.primary + '40' }]}
           onPress={() => navigation.navigate("EditProfile")}
         >
           <Text style={styles.editButtonText}>{t("edit_profile")}</Text>
         </TouchableOpacity>
-        <Text style={styles.lastDonation}>{t("last_donation")}: September 11, 2001</Text>
+        
+        <Text style={[styles.lastDonation, { color: colors.text, opacity: 0.6 }]}>
+          {t("last_donation")}: September 11, 2001
+        </Text>
       </View>
 
       <View style={styles.statsRow}>
-        <View style={styles.statBox}>
-          <Text style={styles.statLabel}>{t("donated")}</Text>
-          <Text style={styles.statValue}>01</Text>
+        <View style={[styles.statBox, { backgroundColor: colors.backgroundCard, borderColor: colors.primary + '33' }]}>
+          <Text style={[styles.statLabel, { color: colors.primary }]}>{t("donated")}</Text>
+          <Text style={[styles.statValue, { color: colors.text }]}>01</Text>
         </View>
-        <View style={styles.statBox}>
-          <Text style={styles.statLabel}>{t("blood_type")}</Text>
-          <Text style={styles.statValue}>A-</Text>
+        <View style={[styles.statBox, { backgroundColor: colors.backgroundCard, borderColor: colors.primary + '33' }]}>
+          <Text style={[styles.statLabel, { color: colors.primary }]}>{t("blood_type")}</Text>
+          <Text style={[styles.statValue, { color: colors.text }]}>A-</Text>
         </View>
-        <View style={styles.statBox}>
-          <Text style={styles.statLabel}>{t("life_saved")}</Text>
-          <Text style={styles.statValue}>02</Text>
+        <View style={[styles.statBox, { backgroundColor: colors.backgroundCard, borderColor: colors.primary + '33' }]}>
+          <Text style={[styles.statLabel, { color: colors.primary }]}>{t("life_saved")}</Text>
+          <Text style={[styles.statValue, { color: colors.text }]}>02</Text>
         </View>
       </View>
 
-      <View style={styles.statusCard}>
-        <Text style={styles.statusLabel}>{t("donor_status")}</Text>
-        <Text style={styles.statusValue}>Honorary Donor of Ukraine</Text>
+      <View style={[styles.statusCard, { backgroundColor: colors.backgroundCard, borderColor: colors.primary + '50' }]}>
+        <Text style={[styles.statusLabel, { color: colors.primary }]}>{t("donor_status")}</Text>
+        <Text style={[styles.statusValue, { color: colors.text }]}>Honorary Donor of Ukraine</Text>
       </View>
     </ScrollView>
   );
@@ -56,11 +65,11 @@ const styles = StyleSheet.create({
     minHeight: "100%",
     paddingHorizontal: "5%",
     paddingVertical: 40,
-    backgroundColor: "#fff",
     gap: 20,
+    // backgroundColor видалено звідси, бо тепер він динамічний
   },
   menuBtn: {
-    marginTop:20,
+    marginTop: 20,
     alignSelf: "flex-end",
   },
   menuImg: {
@@ -77,31 +86,27 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: "#ccc",
     marginBottom: 12,
+    // колір background перенесено в inline styles
   },
   name: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#000",
     marginBottom: 12,
   },
   editButton: {
-    backgroundColor: "#E66A6A",
-    borderColor:"#F5EDEB66",
-    borderWidth:2,
+    borderWidth: 2,
     borderRadius: 15,
     paddingVertical: 10,
     paddingHorizontal: 24,
     marginBottom: 12,
   },
   editButtonText: {
-    color: "#fff",
+    color: "#fff", // Текст на кнопці зазвичай залишається білим
     fontWeight: "600",
     fontSize: 14,
   },
   lastDonation: {
-    color: "#636363",
     fontSize: 13,
   },
   statsRow: {
@@ -111,9 +116,7 @@ const styles = StyleSheet.create({
   },
   statBox: {
     flex: 1,
-    backgroundColor: "#F5EDEB80",
     borderWidth: 3,
-    borderColor: "#E66A6A33",
     borderRadius: 20,
     paddingVertical: 10,
     marginHorizontal: 8,
@@ -122,29 +125,23 @@ const styles = StyleSheet.create({
   statLabel: {
     textAlign: "center",
     fontSize: 12,
-    color: "#E66A6A",
     marginBottom: 4,
   },
   statValue: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#000",
   },
   statusCard: {
     borderWidth: 1,
-    borderColor: "#E66A6A50",
     borderRadius: 16,
     padding: 12,
-    backgroundColor: "#FFF7F7",
   },
   statusLabel: {
     fontSize: 12,
-    color: "#E66A6A",
     marginBottom: 4,
   },
   statusValue: {
     fontSize: 14,
-    color: "#000",
   },
 });
 

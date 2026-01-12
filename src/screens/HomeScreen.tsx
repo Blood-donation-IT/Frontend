@@ -131,21 +131,47 @@ export default function HomeScreen({ navigation }) {
 
         <View style={[styles.chartContainer, { backgroundColor: colors.backgroundCard, borderColor: colors.text + '1A'}]}>
           
-          <View style={[styles.dashedLine, { borderColor: colors.text }]} />
-          <View style={styles.barsContainer}>
-            {chartData.map((height, index) => (
-              <View key={index} style={styles.barWrapper}>
-                <View
-                  style={[
-                    styles.bar,
-                    {
-                      height: `${height}%`,
-                      backgroundColor: colors.primary
-                    }
-                  ]}
-                />
-              </View>
-            ))}
+          {/* СІТКА І СТОВПЧИКИ (Flex layout) 
+              Ми використовуємо дві View одна за одною.
+              Друга View (стовпчики) має негативний marginTop, щоб "наїхати" на першу.
+          */}
+          <View style={styles.graphBody}>
+            
+            {/* ШАР 1: Сітка (Background Grid) - БЕЗ position: absolute */}
+            <View style={styles.gridLayer}>
+                 {/* Рядок 70 */}
+                 <View style={styles.gridRow}>
+                    <Text style={[styles.gridLabel, { color: colors.text }]}>70</Text>
+                    <View style={[styles.dashedLine, { borderColor: colors.text }]} />
+                 </View>
+                 
+                 {/* Проміжок між 70 і 30, контролюється Flex */}
+                 <View style={{ height: 40 }} /> 
+
+                 {/* Рядок 30 */}
+                 <View style={styles.gridRow}>
+                    <Text style={[styles.gridLabel, { color: colors.text }]}>30</Text>
+                    <View style={[styles.dashedLine, { borderColor: colors.text }]} />
+                 </View>
+            </View>
+
+            {/* ШАР 2: Стовпчики (Bars) */}
+            <View style={styles.barsLayer}>
+              {chartData.map((height, index) => (
+                <View key={index} style={styles.barWrapper}>
+                  <View
+                    style={[
+                      styles.bar,
+                      {
+                        height: `${height}%`,
+                        backgroundColor: colors.primary
+                      }
+                    ]}
+                  />
+                </View>
+              ))}
+            </View>
+
           </View>
 
           <View style={[styles.bottomAxisLine, { backgroundColor: colors.text }]} />
@@ -288,22 +314,49 @@ const styles = StyleSheet.create({
     height: 200, 
     justifyContent: 'flex-end',
   },
-  dashedLine: {
-    width: '100%',
-    borderWidth: 1,
-    borderStyle: 'dashed',
-    opacity: 0.2,
-    marginTop: 40,
-    marginBottom: -60, 
-    zIndex: 0, 
+  
+  // --- Стилі для Flex-Based накладання ---
+  graphBody: {
+    height: 100, // Фіксуємо висоту робочої зони графіку
+    marginBottom: 5,
   },
-  barsContainer: {
+  gridLayer: {
+    height: '100%',
+    flexDirection: 'column',
+    justifyContent: 'flex-start', // Елементи йдуть зверху вниз
+    zIndex: 0, // Знизу
+    paddingTop: 10, // Відступ зверху для цифри 70
+  },
+  barsLayer: {
+    height: '100%',
+    marginTop: -100, // !!! Ключовий момент: підтягуємо стовпчики вгору на висоту контейнера
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
-    height: 100, 
-    zIndex: 1, 
-    marginBottom: 5,
+    marginLeft: 25,
+    zIndex: 1, // Зверху
+  },
+  // ---------------------------------------
+
+  gridRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 5,
+  },
+  gridLabel: {
+    fontSize: 10,
+    fontFamily: 'Inter',
+    width: 20,
+    marginRight: 5,
+    opacity: 0.6,
+  },
+  dashedLine: {
+    flex: 1,
+    height: 1,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    opacity: 0.2,
+    borderRadius: 1,
   },
   barWrapper: {
     width: '3%',
@@ -320,10 +373,12 @@ const styles = StyleSheet.create({
     height: 1,
     opacity: 0.1,
     marginBottom: 8, 
+    marginLeft: 10, 
   },
   labelsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    paddingLeft: 25, 
   },
   chartLabelText: {
     fontSize: 10,

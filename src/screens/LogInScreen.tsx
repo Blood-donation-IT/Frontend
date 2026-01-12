@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Image,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
@@ -15,7 +16,8 @@ import GoogleLogin from "./googleLogin";
 export default function LogInScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
-
+  const { colors, isDark } = useTheme(); 
+  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -23,7 +25,9 @@ export default function LogInScreen() {
     navigation.navigate("Home");
   };
 
-  const { colors } = useTheme();
+  const logoSource = isDark 
+    ? require('../images/logo-white.png') 
+    : require('../images/logo.png');
 
   return (
     <ScrollView
@@ -33,7 +37,10 @@ export default function LogInScreen() {
       ]}
       keyboardShouldPersistTaps="handled"
     >
-      <Text style={[styles.title, { color: colors.text }]}>OneDrop</Text>
+      <Image 
+        source={logoSource} 
+        style={styles.logo} 
+      />
 
       <View style={styles.boxOfInputs}>
         <TextInput
@@ -108,11 +115,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 24,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: "600",
-    marginBottom: 32,
-    alignSelf: "center",
+  logo: {
+    width: 120,   
+    height: 40,   
+    resizeMode: 'contain',
+    alignSelf: "center", 
+    marginBottom: 32,   
   },
   boxOfInputs: {
     marginBottom: 40,
