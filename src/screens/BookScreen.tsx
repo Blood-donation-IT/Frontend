@@ -1,12 +1,21 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { StyleSheet, View, Text, Dimensions, TouchableWithoutFeedback, Animated, TouchableOpacity } from "react-native";
 import Svg, { Defs, RadialGradient, Rect, Stop } from "react-native-svg";
+import QRCode from 'react-native-qrcode-svg';
 import { useTheme } from "../Theme/ThemeContext";
 
 const { width, height } = Dimensions.get("window");
 
 const BookScreen = () => {
   const { colors, isDark } = useTheme(); 
+
+  const baseUrl = "https://blood-donation.com/user/profile";
+  const [qrValue, setQrValue] = useState(baseUrl);
+
+  useEffect(() => {
+    const randomString = Math.random().toString(36).substring(7);
+    setQrValue(`${baseUrl}?r=${randomString}`);
+  }, []);
 
   const flipAnim = useRef(new Animated.Value(0)).current;
   const [flipped, setFlipped] = useState(false);
@@ -39,7 +48,9 @@ const BookScreen = () => {
     borderColor: isDark ? "transparent" : colors.primary,
   };
 
-  const textColor = isDark ? "#E0E0E0" : colors.text;
+  const cardTextColor = isDark ? "#E0E0E0" : colors.text;
+  const qrColor = "#000000"; 
+  const qrBackgroundColor = "#FFFFFF"; 
   const placeholderColor = "#D9D9D9";
 
   return (
@@ -90,8 +101,8 @@ const BookScreen = () => {
             <View style={styles.contentWrapper}>
               
               <View style={styles.rowTop}>
-                <Text style={[styles.headerTitle, { color: colors.text }]}>Donor Book</Text>
-                <Text style={[styles.headerSeries, { color: colors.text }]}>Series №0203</Text>
+                <Text style={[styles.headerTitle, { color: cardTextColor }]}>Donor Book</Text>
+                <Text style={[styles.headerSeries, { color: cardTextColor }]}>Series №0203</Text>
               </View>
 
               <View style={styles.rowMiddle}>
@@ -101,28 +112,28 @@ const BookScreen = () => {
                 
                 <View style={styles.detailsContainer}>
                   <View style={styles.infoBlock}>
-                    <Text style={[styles.infoLabel, { color: colors.text }]}>Date Of Issue:</Text>
-                    <Text style={[styles.infoValue, { color: colors.text, opacity: 0.8 }]}>24 June 2025</Text>
+                    <Text style={[styles.infoLabel, { color: cardTextColor }]}>Date Of Issue:</Text>
+                    <Text style={[styles.infoValue, { color: cardTextColor, opacity: 0.8 }]}>24 June 2025</Text>
                   </View>
                   <View style={styles.infoBlock}>
-                    <Text style={[styles.infoLabel, { color: colors.text }]}>Location:</Text>
-                    <Text style={[styles.infoValue, { color: colors.text, opacity: 0.8 }]}>NNI JHP Lviv Region</Text>
+                    <Text style={[styles.infoLabel, { color: cardTextColor }]}>Location:</Text>
+                    <Text style={[styles.infoValue, { color: cardTextColor, opacity: 0.8 }]}>NNI JHP Lviv Region</Text>
                   </View>
                   <View style={styles.infoBlock}>
-                    <Text style={[styles.infoLabel, { color: colors.text }]}>Type Blood:</Text>
-                    <Text style={[styles.infoValue, { color: colors.text, opacity: 0.8 }]}>A(II)Rh+</Text>
+                    <Text style={[styles.infoLabel, { color: cardTextColor }]}>Type Blood:</Text>
+                    <Text style={[styles.infoValue, { color: cardTextColor, opacity: 0.8 }]}>A(II)Rh+</Text>
                   </View>
                 </View>
               </View>
 
               <View style={styles.rowBottom}>
                 <View>
-                  <Text style={[styles.nameText, { color: colors.text }]}>Blue</Text>
-                  <Text style={[styles.nameText, { color: colors.text }]}>Jack</Text>
-                  <Text style={[styles.nameText, { color: colors.text }]}>Bober</Text>
+                  <Text style={[styles.nameText, { color: cardTextColor }]}>Blue</Text>
+                  <Text style={[styles.nameText, { color: cardTextColor }]}>Jack</Text>
+                  <Text style={[styles.nameText, { color: cardTextColor }]}>Bober</Text>
                 </View>
                 <TouchableOpacity>
-                  <Text style={[styles.dots, { color: colors.text }]}>...</Text>
+                  <Text style={[styles.dots, { color: cardTextColor }]}>...</Text>
                 </TouchableOpacity>
               </View>
 
@@ -141,25 +152,16 @@ const BookScreen = () => {
           >
             <View style={styles.qrContainer}>
               
-              <View style={[styles.qrCodeBox, { borderColor: colors.text, backgroundColor: cardStyle.backgroundColor }]}>
-                 
-                 <View style={styles.qrRow}>
-                    <View style={[styles.qrCorner, { borderColor: colors.text }]} />
-                    <View style={[styles.qrCorner, { borderColor: colors.text }]} />
-                 </View>
-
-                 <View style={styles.qrRowCenter}>
-                    <View style={[styles.qrCenter, { backgroundColor: colors.text }]} />
-                 </View>
-
-                 <View style={styles.qrRow}>
-                    <View style={[styles.qrCorner, { borderColor: colors.text }]} />
-                    <View style={[styles.qrCorner, { opacity: 0 }]} /> 
-                 </View>
-
+              <View style={[styles.qrCodeBox, { borderColor: qrColor, backgroundColor: qrBackgroundColor }]}>
+                 <QRCode
+                    value={qrValue} 
+                    size={150} 
+                    color={qrColor} 
+                    backgroundColor={qrBackgroundColor} 
+                 />
               </View>
 
-              <Text style={[styles.qrText, { color: colors.text }]}>Scan for details</Text>
+              <Text style={[styles.qrText, { color: cardTextColor }]}>Scan for details</Text>
             </View>
           </Animated.View>
 
@@ -276,29 +278,8 @@ const styles = StyleSheet.create({
     borderWidth: 5,
     borderRadius: 20,
     marginBottom: 20,
-    padding: 15, 
-    justifyContent: 'space-between', 
-  },
-  qrRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between', 
-    width: '100%',
-  },
-  qrRowCenter: {
-    flexDirection: 'row',
     justifyContent: 'center', 
     alignItems: 'center',
-    flex: 1, 
-  },
-  qrCorner: {
-    width: 50,
-    height: 50,
-    borderWidth: 10,
-  },
-  qrCenter: {
-    width: 40,
-    height: 40,
-    borderRadius: 4,
   },
   qrText: {
     fontSize: 16,
