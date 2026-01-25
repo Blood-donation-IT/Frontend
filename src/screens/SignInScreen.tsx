@@ -6,12 +6,15 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Image, 
+  Image,
+  Alert, 
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../Theme/ThemeContext";
 import GoogleLogin from "./googleLogin";
+import * as SecureStore from "expo-secure-store";
+import api from "../api/api";
 
 export default function SignInScreen() {
   const { t } = useTranslation();
@@ -23,8 +26,30 @@ export default function SignInScreen() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleSignUp = () => {
-    navigation.navigate("Home");
+  const handleSignUp = async () => {
+    if (!name || !email || !year || !password || !confirmPassword) {
+      Alert.alert(t("error"), t("fill_all_fields"));
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert(t("error"), t("passwords_do_not_match"));
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      Alert.alert(t("error"), t("invalid_email"));
+      return;
+    }
+
+    const response = await api.post("/api/v1/auth/register",{email,password,full_name:""})
+    console.log(response.data)
+    if (response.data.token) {
+      SecureStore.setItem('accessToken', response.data.token);
+      navigation.navigate("Test");
+    }
+
   };
 
   const logoSource = isDark 
@@ -54,7 +79,7 @@ export default function SignInScreen() {
               color: colors.text,
             },
           ]}
-          placeholder={t("name") || "Name"}
+          placeholder={t("your_name") || "Name"}
           placeholderTextColor={colors.primary}
           value={name}
           onChangeText={setName}
@@ -120,7 +145,7 @@ export default function SignInScreen() {
       </TouchableOpacity>
 
       <View style={{ marginVertical: 20 }}>
-        <GoogleLogin />
+        <GoogleLogin/>
       </View>
 
       <View style={styles.goToLoginButton}>

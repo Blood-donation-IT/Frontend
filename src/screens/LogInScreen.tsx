@@ -12,6 +12,8 @@ import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../Theme/ThemeContext";
 import GoogleLogin from "./googleLogin";
+import * as SecureStore from "expo-secure-store";
+import api from "../api/api";
 
 export default function LogInScreen() {
   const { t } = useTranslation();
@@ -21,8 +23,14 @@ export default function LogInScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogIn = () => {
-    navigation.navigate("Home");
+  const handleLogIn = async () => {
+    const response = await api.post("/api/v1/auth/login",{email,password})
+    console.log(response.data)
+    if (response.data.token) {
+      SecureStore.setItem('accessToken', response.data.token);
+      navigation.navigate("Home");
+    }
+    
   };
 
   const logoSource = isDark 
@@ -91,7 +99,7 @@ export default function LogInScreen() {
       </TouchableOpacity>
 
       <View style={{ marginVertical: 20 }}>
-        <GoogleLogin />
+        <GoogleLogin/>
       </View>
 
       <View style={styles.goToSignUpButton}>
