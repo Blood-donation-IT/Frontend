@@ -5,6 +5,7 @@ import i18n from "../i18n";
 import { useTranslation } from "react-i18next";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTheme } from "../Theme/ThemeContext";
+import { useNavigation } from "@react-navigation/native";
 
 const SettingsScreen = () => {
   const { t } = useTranslation();
@@ -23,6 +24,8 @@ const SettingsScreen = () => {
     { code: "en", label: "English", flag: "🇺🇸" },
     { code: "uk", label: "Українська", flag: "🇺🇦" },
   ];
+
+  const navigation = useNavigation();
 
   useEffect(() => {
     (async () => {
@@ -45,16 +48,20 @@ const SettingsScreen = () => {
   container: {
     padding: 20,
     flexGrow: 1,
+    paddingTop: 60,
     backgroundColor: colors.backgroundMain,
     color:colors.text
   },
 
   header: {
     color: colors.text,
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 30,
+    padding: 0,
+    paddingBottom: 20,
+    marginLeft: -40,
   },
   section: {
     marginBottom: 30,
@@ -89,12 +96,24 @@ const SettingsScreen = () => {
     fontSize: 16,
     marginRight: 10,
   },
+  headerTitle: {
+    flex: 1,
+    textAlign: "center",
+    fontSize: 20,
+    fontWeight: "600",
+    marginLeft: 10,
+  },
 });
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.header}>{t("settings")}</Text>
-
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="chevron-back" size={25} color="black" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Settings</Text>
+              
+            </View>
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t("language")}</Text>
         {languages.map((lang) => (

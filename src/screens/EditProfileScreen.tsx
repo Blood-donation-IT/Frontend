@@ -1,61 +1,89 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context"; // Додав для безпечних відступів
 
 export default function EditProfileScreen() {
   const [name, setName] = useState("Blue Jack");
   const [email, setEmail] = useState("gmail@com");
   const [phoneNumber, setPhoneNumber] = useState("+380 00 000 00 00");
+  const navigation = useNavigation();
 
   return (
-    <View style={styles.container}>
-        <View>
-            <Text style={styles.title}>Edit Profile</Text>
-
-            <View style={styles.avatarWrapper}>
-                <View style={styles.avatar} />
-                <TouchableOpacity style={styles.editIcon}>
-                <Ionicons name="pencil" size={16} color="#E66A6A" />
-                </TouchableOpacity>
-            </View>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#fafafa" }}> 
+      <>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Ionicons name="chevron-back" size={25} color="black" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Edit profile</Text>
         </View>
 
-        <View>
-            <View style={styles.inputWrapper}>
-                <Ionicons name="person-outline" size={20} color="#E66A6A" />
-                <TextInput
-                style={styles.input}
-                value={name}
-                onChangeText={setName}
-                />
+        <View style={styles.container}>
+            <View>
+                <View style={styles.avatarWrapper}>
+                    <View style={styles.avatar} />
+                    <TouchableOpacity style={styles.editIcon}>
+                    <Ionicons name="pencil" size={16} color="#E66A6A" />
+                    </TouchableOpacity>
+                </View>
             </View>
 
-            <View style={styles.inputWrapper}>
-                <Ionicons name="mail-outline" size={20} color="#E66A6A" />
-                <TextInput
-                style={styles.input}
-                value={email}
-                onChangeText={setEmail}
-                />
+            <View>
+                <View style={styles.inputWrapper}>
+                    <Ionicons name="person-outline" size={20} color="#E66A6A" />
+                    <TextInput
+                    style={styles.input}
+                    value={name}
+                    onChangeText={setName}
+                    />
+                </View>
+
+                <View style={styles.inputWrapper}>
+                    <Ionicons name="mail-outline" size={20} color="#E66A6A" />
+                    <TextInput
+                    style={styles.input}
+                    value={email}
+                    onChangeText={setEmail}
+                    />
+                </View>
+                <View style={styles.inputWrapper}>
+                    <Ionicons name="call-outline" size={20} color="#E66A6A" />
+                    <TextInput
+                    style={styles.input}
+                    value={phoneNumber}
+                    onChangeText={setPhoneNumber}
+                    />
+                </View>
             </View>
-            <View style={styles.inputWrapper}>
-                <Ionicons name="call-outline" size={20} color="#E66A6A" />
-                <TextInput
-                style={styles.input}
-                value={phoneNumber}
-                onChangeText={setPhoneNumber}
-                />
-            </View>
+
+            <TouchableOpacity style={styles.saveBtn}>
+                <Text style={styles.saveText}>Save</Text>
+            </TouchableOpacity>
         </View>
-
-        <TouchableOpacity style={styles.saveBtn}>
-            <Text style={styles.saveText}>Save</Text>
-        </TouchableOpacity>
-    </View>
+      </>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 30,
+    paddingTop: 5,
+    paddingBottom: 10,
+    marginLeft: -20,
+  },
+  headerTitle: {
+    flex: 1,
+    textAlign: "center",
+    fontSize: 20,
+    marginLeft: -10,
+    fontWeight: "600",
+  },
   container: {
     flex: 1,
     backgroundColor: "#fafafa",

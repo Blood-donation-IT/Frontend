@@ -11,7 +11,7 @@ const NotificationScreen = () => {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="chevron-back" size={24} color="black" />
+          <Ionicons name="chevron-back" size={25} color="black" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Notification</Text>
         
@@ -58,6 +58,7 @@ export default NotificationScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    // marginTop: 25,
     backgroundColor: "#fff",
     justifyContent: "center",
   },
@@ -65,14 +66,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingHorizontal: 30,
+    paddingTop: 60,
     paddingBottom: 10,
+    marginLeft: -20,
   },
   headerTitle: {
     flex: 1,
     textAlign: "center",
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "600",
   },
   scrollContainer: {

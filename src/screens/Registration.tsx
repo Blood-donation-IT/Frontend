@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 import { scheduleDateNotification } from "../services/localNotificationService";
 import * as Notifications from 'expo-notifications';
 import { useTheme } from "../Theme/ThemeContext";
+import { useNavigation } from "@react-navigation/native";
 
 
 export default function RegistrationScreen({ route }) {
@@ -34,7 +35,7 @@ export default function RegistrationScreen({ route }) {
   const [suggestions, setSuggestions] = useState([]);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const day = route.params["day"];
-  const bloodTypes = ["0+", "0-", "A+", "A-", "B+", "B-", "AB+", "AB-"];
+  // const bloodTypes = ["0+", "0-", "A+", "A-", "B+", "B-", "AB+", "AB-"];
   const times = ["8:00", "9:00", "10:30", "11:00", "11:30"];
   const points = [
     { id: 1, title: t("main_square"), coords: { latitude: 49.8419, longitude: 24.0315 } },
@@ -43,6 +44,7 @@ export default function RegistrationScreen({ route }) {
   ];
 
   const { colors } = useTheme();
+  const navigation = useNavigation();
 
   useEffect(() => {
     setSuggestions(points);
@@ -104,12 +106,15 @@ export default function RegistrationScreen({ route }) {
         enableOnAndroid={true}
         keyboardShouldPersistTaps="handled"
       >
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="chevron-back" size={25} color="black" />
+        </TouchableOpacity>
         <View style={styles.dateBox}>
           <Text style={[styles.dateText, { color: colors.primary }]}>{day}</Text>
         </View>
         <Text style={styles.changeText}>{t("change")}</Text>
 
-        <Text style={[styles.sectionTitle, { color: colors.primary }]}>{t("your_blood_type")}</Text>
+        {/* <Text style={[styles.sectionTitle, { color: colors.primary }]}>{t("your_blood_type")}</Text>
         <View style={styles.optionsRow}>
           {bloodTypes.map((type) => (
             <TouchableOpacity
@@ -133,7 +138,7 @@ export default function RegistrationScreen({ route }) {
               </Text>
             </TouchableOpacity>
           ))}
-        </View>
+        </View> */}
         {errors.bloodType && <Text style={styles.errorText}>{errors.bloodType}</Text>}
 
         <Text style={styles.sectionTitle}>{t("time")}</Text>
@@ -291,6 +296,7 @@ const styles = StyleSheet.create({
     padding: 20,
     flexGrow: 1,
     backgroundColor: "#fff",
+    paddingTop: 60,
   },
   dateBox: {
     borderWidth: 1,
@@ -298,6 +304,8 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     paddingVertical: 8,
     paddingHorizontal: 16,
+    marginTop: 20,
+    marginLeft: 10,
     alignSelf: "flex-start",
   },
   dateText: {
@@ -309,6 +317,7 @@ const styles = StyleSheet.create({
     color: "#E66A6A80",
     marginTop: 4,
     marginBottom: 16,
+    marginLeft: 10,
     fontSize: 12,
   },
   sectionTitle: {
