@@ -5,18 +5,17 @@ import i18n from "../i18n";
 import { useTranslation } from "react-i18next";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTheme } from "../Theme/ThemeContext";
+import CustomHeader from "../components/CustomHeader";
 
-const SettingsScreen = () => {
+const SettingsScreen = ({ navigation }) => {
   const { t } = useTranslation();
 
   const { isLight, colors, toggleTheme } = useTheme();
 
-  // const [isLight, setIsLight] = useState(true);
-
   const toggleSwitch = () => {
     toggleTheme();
   };
-  // const toggleSwitch = () => setIsLight(previousState => !previousState);
+
   const [language, setLanguage] = useState("en");
 
   const languages = [
@@ -49,18 +48,11 @@ const SettingsScreen = () => {
     color:colors.text
   },
 
-  header: {
-    color: colors.text,
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
-  },
   section: {
     marginBottom: 30,
   },
   sectionTitle: {
-    color: colors.text,//"#E66A6A",
+    color: colors.text,
     fontSize: 15,
     marginBottom: 10,
   },
@@ -85,15 +77,16 @@ const SettingsScreen = () => {
     marginBottom: 30,
   },
   deleteText: {
-    color: colors.text,//"#E66A6A",
+    color: colors.text,
     fontSize: 16,
     marginRight: 10,
   },
 });
 
-  return (
+  return (<>
+    <CustomHeader title={t("settings")} navigation={navigation} />
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.header}>{t("settings")}</Text>
+      
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t("language")}</Text>
@@ -127,13 +120,9 @@ const SettingsScreen = () => {
         <Text style={styles.deleteText}>{t("delete_account")}</Text>
         <Ionicons name="trash-outline" size={25} color="#E66A6A" />
       </TouchableOpacity>
-    </ScrollView>
+    </ScrollView></>
   );
   
 };
-
-
-
-
 
 export default SettingsScreen;

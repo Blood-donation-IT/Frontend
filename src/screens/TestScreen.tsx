@@ -1,11 +1,12 @@
-import React, { useRef, useState } from "react";
-import { StyleSheet, View, Text, Dimensions, TouchableOpacity, ScrollView } from "react-native";
+import React, { useState } from "react";
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-
-const { width, height } = Dimensions.get("window");
+import { useTheme } from "../Theme/ThemeContext";
 
 export default function TestScreen() {
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation();
+  
+  const { colors, isDark } = useTheme();
 
   const questions = [
     { id: 1, text: "Вам вже виповнилося 18 років?", type: "yesno" },
@@ -18,20 +19,39 @@ export default function TestScreen() {
     { id: 8, text: "Ви не маєте захворювань крові або порушень згортання?", type: "have" },
     { id: 9, text: "Ви не маєте онкологічних захворювань?", type: "have" },
     { id: 10, text: "Ви не маєте гепатиту B, C або жовтяниці в анамнезі?", type: "have" },
+    { id: 11, text: "Яка у вас група крові?", type: "blood" },
   ];
+
+  const bloodTypes = ["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"];
 
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const allAnswered = questions.every((q) => answers[q.id]);
   const [showWarning, setShowWarning] = useState(false);
 
-  const renderButton = (qid: number, value: string, label: string) => {
+  const renderButton = (qid, value, label) => {
     const active = answers[qid] === value;
+    
+    const buttonBorderColor = isDark ? colors.text : colors.primary;
+    const activeBackgroundColor = colors.primary;
+    const inactiveTextColor = colors.text;
+
     return (
       <TouchableOpacity
         onPress={() => setAnswers({ ...answers, [qid]: value })}
-        style={[styles.option, active && styles.optionActive]}
+        style={[
+          styles.option,
+          { 
+            borderColor: active ? activeBackgroundColor : buttonBorderColor,
+            backgroundColor: active ? activeBackgroundColor : 'transparent' 
+          }
+        ]}
       >
-        <Text style={[styles.optionText, active && styles.optionTextActive]}>
+        <Text 
+          style={[
+            styles.optionText, 
+            { color: active ? '#FFFFFF' : inactiveTextColor }
+          ]}
+        >
           {label}
         </Text>
       </TouchableOpacity>
@@ -39,9 +59,9 @@ export default function TestScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Short Test</Text>
-      <Text style={styles.subtitle}>It’s necessary for donation</Text>
+    <View style={[styles.container, { backgroundColor: colors.backgroundMain }]}>
+      <Text style={[styles.title, { color: colors.primary }]}>Short Test</Text>
+      <Text style={[styles.subtitle, { color: colors.text }]}>It’s necessary for donation</Text>
 
       <ScrollView
         style={styles.list}
@@ -49,35 +69,96 @@ export default function TestScreen() {
         contentContainerStyle={{ paddingBottom: 20 }}
       >
         {questions.map((q) => (
-          <View key={q.id} style={styles.card}>
-            <Text style={styles.questionText}>
+          <View 
+            key={q.id} 
+            style={[
+              styles.card, 
+              { 
+                backgroundColor: colors.backgroundCard,
+                borderColor: isDark ? colors.text : (colors.primary + '50') 
+              }
+            ]}
+          >
+            <Text style={[styles.questionText, { color: colors.primary }]}>
               {q.id}. {q.text}
             </Text>
 
             <View style={styles.optionsRow}>
-              {q.type === "yesno" ? (
-                <>
+              {q.type === "blood" ? (
+                <View>
+                  <View style={styles.bloodGrid}>
+                    {bloodTypes.map((bt) => {
+                      const active = answers[q.id] === bt;
+                      const borderColor = active ? colors.primary : (isDark ? colors.text : colors.primary + '50');
+                      
+                      return (
+                        <TouchableOpacity
+                          key={bt}
+                          onPress={() => setAnswers({ ...answers, [q.id]: bt })}
+                          style={[
+                            styles.bloodOption, 
+                            { 
+                              borderColor: borderColor,
+                              backgroundColor: active ? colors.primary : 'transparent' 
+                            }
+                          ]}
+                        >
+                          <Text style={[
+                            styles.optionText, 
+                            { color: active ? '#FFFFFF' : colors.text }
+                          ]}>
+                            {bt}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
+
+                  <TouchableOpacity
+                    onPress={() => setAnswers({ ...answers, [q.id]: "unknown" })}
+                    style={[
+                      styles.unknownOption,
+                      { 
+                        borderColor: answers[q.id] === "unknown" ? colors.primary : (isDark ? colors.text : colors.primary + '50'),
+                        backgroundColor: answers[q.id] === "unknown" ? colors.primary : 'transparent' 
+                      }
+                    ]}
+                  >
+                    <Text style={[
+                      styles.optionText,
+                      { color: answers[q.id] === "unknown" ? '#FFFFFF' : colors.text }
+                    ]}>
+                      Я не знаю свою групу крові
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              ) : q.type === "yesno" ? (
+                <View style={styles.optionsRow}>
                   {renderButton(q.id, "yes", "Так")}
                   {renderButton(q.id, "no", "Ні")}
-                </>
+                </View>
               ) : (
-                <>
+                <View style={styles.optionsRow}>
                   {renderButton(q.id, "have", "Маю")}
                   {renderButton(q.id, "no", "Не маю")}
-                </>
+                </View>
               )}
             </View>
           </View>
         ))}
+  
         {showWarning && !allAnswered && (
-          <Text style={styles.warningText}>
+          <Text style={[styles.warningText, { color: colors.primary }]}>
             Дайте відповідь на ВСІ запитання
           </Text>
         )}
+        
         <TouchableOpacity
           style={[
             styles.continueButton,
-            allAnswered && styles.continueButtonActive,
+            { 
+              backgroundColor: allAnswered ? colors.primary : (isDark ? '#555' : '#D1D1D1') 
+            },
           ]}
           onPress={() => {
             if (!allAnswered) {
@@ -97,34 +178,30 @@ export default function TestScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
     paddingHorizontal: 20,
     paddingTop: 40,
   },
   title: {
     fontSize: 24,
     fontWeight: "600",
-    color: "#E0706A",
     textAlign: "center",
   },
   subtitle: {
     fontSize: 14,
-    color: "#999",
     textAlign: "center",
     marginBottom: 20,
+    opacity: 0.6,
   },
   list: {
     flex: 1,
   },
   card: {
     borderWidth: 1,
-    borderColor: "#F1C6C3",
     borderRadius: 20,
     padding: 16,
     marginBottom: 14,
   },
   questionText: {
-    color: "#E0706A",
     fontSize: 15,
     fontWeight: "600",
     marginBottom: 12,
@@ -140,30 +217,22 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: "#F1C6C3",
     alignItems: "center",
   },
   optionActive: {
     backgroundColor: "#E0706A",
   },
-  optionText: {
-    color: "#333",
-  },
   optionTextActive: {
     color: "#fff",
   },
+  optionText: {
+    fontWeight: "500",
+  },
   continueButton: {
-    backgroundColor: "#D1D1D1",
     borderRadius: 30,
     paddingVertical: 14,
     alignItems: "center",
     marginBottom: 20,
-  },
-  continueButtonActive: {
-    backgroundColor: "#E0706A",
-  },
-  continueButtonDisabled: {
-    opacity: 0.5,
   },
   continueText: {
     color: "#fff",
@@ -172,8 +241,31 @@ const styles = StyleSheet.create({
   },
   warningText: {
     textAlign: "center",
-    color: "#E0706A",
     marginBottom: 8,
     fontSize: 13,
+  },
+  bloodGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+    justifyContent: "center",
+    marginTop: 10,
+  },
+  bloodOption: {
+    width: "22%",
+    paddingVertical: 12,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: "#F1C6C3",
+    alignItems: "center",
+  },
+  unknownOption: {
+    marginTop: 15,
+    width: "100%",
+    paddingVertical: 12,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: "#F1C6C3",
+    alignItems: "center",
   },
 });

@@ -56,16 +56,16 @@ export default function AppNavigator() {
             component={IntroScreen} 
             options={{ headerShown: false }}
           />
-          <Stack.Screen name="Test" component={TestScreen} />
-          <Stack.Screen name="SignIn" component={SignInScreen} />
-          <Stack.Screen name="LogIn" component={LogInScreen} />
-          <Stack.Screen name="Registration" component={Registration} />
+          <Stack.Screen name="Test" component={TestScreen} options={{ headerShown: false }}/>
+          <Stack.Screen name="SignIn" component={SignInScreen} options={{ headerShown: false }}/>
+          <Stack.Screen name="LogIn" component={LogInScreen} options={{ headerShown: false }}/>
+          <Stack.Screen name="Registration" component={Registration} options={{ headerShown: false }}/>
           <Stack.Screen 
             name="Home" 
             component={BottomTabNavigator} 
             options={{ headerShown: false }} 
           />
-          <Stack.Screen name="Settings" component={SettingsScreen} />
+          <Stack.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }}/>
           <Stack.Screen 
             name="BookScreen" 
             component={BookScreen} 
@@ -76,29 +76,9 @@ export default function AppNavigator() {
             component={NotificationScreen}
             options={{ headerShown: false }}
           />
-          <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+          <Stack.Screen name="EditProfile" component={EditProfileScreen} options={{ headerShown: false }}/>
         </Stack.Navigator>
       </NavigationContainer>
     </ThemeProvider>
-    // <NavigationContainer>
-    //   <Stack.Navigator initialRouteName="SignIn">
-    //     <Stack.Screen name="SignIn" component={SignInScreen} />
-    //     <Stack.Screen name="LogIn" component={LogInScreen} />
-    //     <Stack.Screen name="Test" component={TestScreen} />
-    //     <Stack.Screen
-    //       name="Home" 
-    //       component={BottomTabNavigator} 
-    //       options={{ headerShown: false }}
-    //     />
-    //     <Stack.Screen name="Registration" component={Registration} />
-    //     <Stack.Screen name="Settings" component={SettingsScreen} />
-    //     <Stack.Screen 
-    //       name="BookScreen" 
-    //       component={BookScreen} 
-    //       options={{ headerShown: false }}
-    //     />
-    //     <Stack.Screen name="EditProfile" component={EditProfileScreen} />
-    //   </Stack.Navigator>
-    // </NavigationContainer>
   );
 }

@@ -1,21 +1,18 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons";
+import CustomHeader from "../components/CustomHeader";
+import { useTheme } from "../Theme/ThemeContext";
 
 const NotificationScreen = () => {
   const navigation = useNavigation();
 
+  const { colors } = useTheme();
+
   return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="chevron-back" size={24} color="black" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Notification</Text>
-        
-      </View>
+    <View style={[styles.container,{backgroundColor:colors.backgroundMain}]}>
+
+      <CustomHeader title={"Notifications"} navigation={navigation} />
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {/* TODAY */}
@@ -30,7 +27,7 @@ const NotificationScreen = () => {
         </View>
 
         {/* YESTERDAY */}
-        <Text style={[styles.sectionTitle, { color: "#000" }]}>Yesterday</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Yesterday</Text>
         <View style={styles.card}>
           <View style={styles.cardContent}>
             <Text style={styles.cardText}>You have registered to donation on 10:00 in Monday</Text>
@@ -40,7 +37,7 @@ const NotificationScreen = () => {
         </View>
 
         {/* WEEK AGO */}
-        <Text style={[styles.sectionTitle, { color: "#000" }]}>Week ago</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Week ago</Text>
         <View style={styles.card}>
           <View style={styles.cardContent}>
             <Text style={styles.cardText}>Account Setup Successful</Text>
@@ -58,7 +55,7 @@ export default NotificationScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#FAFAFA",
     justifyContent: "center",
   },
   header: {

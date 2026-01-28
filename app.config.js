@@ -37,9 +37,11 @@ export default {
     },
     "plugins": [
       "expo-localization",
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-secure-store"
     ],
     "extra": {
+      webClientId: process.env.WEB_CLIENT_ID,
       "eas": {
         "projectId": "e2a65ec1-6d13-4dcc-b092-146d38800bcd"
       }

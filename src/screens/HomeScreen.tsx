@@ -204,8 +204,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   logo: {
-    width: 120,   
-    height: 40,    
+    width: 50,   
+    height: 50,    
     resizeMode: 'contain',
   },
   calendarWrapper: {

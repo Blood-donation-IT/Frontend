@@ -1,12 +1,21 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { StyleSheet, View, Text, Dimensions, TouchableWithoutFeedback, Animated, TouchableOpacity } from "react-native";
 import Svg, { Defs, RadialGradient, Rect, Stop } from "react-native-svg";
+import QRCode from 'react-native-qrcode-svg';
 import { useTheme } from "../Theme/ThemeContext";
 
 const { width, height } = Dimensions.get("window");
 
 const BookScreen = () => {
-  const { colors, isDark } = useTheme(); 
+  const { colors, isLight } = useTheme(); 
+
+  const baseUrl = "https://blood-donation.com/user/profile";
+  const [qrValue, setQrValue] = useState(baseUrl);
+
+  useEffect(() => {
+    const randomString = Math.random().toString(36).substring(7);
+    setQrValue(`${baseUrl}?r=${randomString}`);
+  }, []);
 
   const flipAnim = useRef(new Animated.Value(0)).current;
   const [flipped, setFlipped] = useState(false);
@@ -32,38 +41,40 @@ const BookScreen = () => {
 
   const bgBase = colors.backgroundMain;
   const spotPrimary = colors.primary; 
-  const spotSecondary = isDark ? colors.backgroundCard : "#FFFBDF"; 
+  const spotSecondary = isLight ? "#FFFBDF" : colors.backgroundCard; 
 
   const cardStyle = {
-    backgroundColor: isDark ? "rgba(58, 58, 58, 0.7)" : "rgba(255, 255, 255, 0.55)",
-    borderColor: isDark ? "transparent" : colors.primary,
+    backgroundColor: isLight ? "rgba(255, 255, 255, 0.55)" : "rgba(58, 58, 58, 0.7)" ,
+    borderColor: isLight ? colors.primary : "transparent",
   };
 
-const textColor = isDark ? colors.backgroundMain : colors.backgroundCard;
-const placeholderColor = "#D9D9D9";
+  const cardTextColor = isLight ? colors.text : "#E0E0E0";
+  const qrColor = "#000000"; 
+  const qrBackgroundColor = "#FFFFFF"; 
+  const placeholderColor = "#D9D9D9";
 
   return (
     <View style={[styles.container, { backgroundColor: bgBase }]}>
       <Svg height={height} width={width} style={StyleSheet.absoluteFill}>
         <Defs>
           <RadialGradient id="spot1" cx="85%" cy="15%" r="100%" fx="85%" fy="15%" gradientUnits="userSpaceOnUse">
-            <Stop offset="0%" stopColor={spotPrimary} stopOpacity={isDark ? 0.2 : 0.4} />
+            <Stop offset="0%" stopColor={spotPrimary} stopOpacity={isLight ? 0.4 : 0.2} />
             <Stop offset="100%" stopColor={spotPrimary} stopOpacity="0" />
           </RadialGradient>
           <RadialGradient id="spot2" cx="25%" cy="75%" r="100%" fx="20%" fy="75%" gradientUnits="userSpaceOnUse">
-            <Stop offset="0%" stopColor={spotPrimary} stopOpacity={isDark ? 0.15 : 0.3} />
+            <Stop offset="0%" stopColor={spotPrimary} stopOpacity={isLight ? 0.3 : 0.15} />
             <Stop offset="100%" stopColor={spotPrimary} stopOpacity="0" />
           </RadialGradient>
           <RadialGradient id="spot4" cx="80%" cy="85%" r="50%" fx="80%" fy="85%" gradientUnits="userSpaceOnUse">
-            <Stop offset="0%" stopColor={spotSecondary} stopOpacity={isDark ? 0.1 : 0.95} />
+            <Stop offset="0%" stopColor={spotSecondary} stopOpacity={isLight ? 0.95 : 0.1} />
             <Stop offset="100%" stopColor={spotSecondary} stopOpacity="0" />
           </RadialGradient>
           <RadialGradient id="spot5" cx="40%" cy="35%" r="30%" fx="40%" fy="35%" gradientUnits="userSpaceOnUse">
-            <Stop offset="0%" stopColor={spotSecondary} stopOpacity={isDark ? 0.05 : 0.9} />
+            <Stop offset="0%" stopColor={spotSecondary} stopOpacity={isLight ? 0.9 : 0.05} />
             <Stop offset="100%" stopColor={spotSecondary} stopOpacity="0" />
           </RadialGradient>
           <RadialGradient id="spot6" cx="60%" cy="40%" r="50%" fx="60%" fy="40%" gradientUnits="userSpaceOnUse">
-            <Stop offset="0%" stopColor={spotPrimary} stopOpacity={isDark ? 0.1 : 0.2} />
+            <Stop offset="0%" stopColor={spotPrimary} stopOpacity={isLight ? 0.2 : 0.1} />
             <Stop offset="100%" stopColor={spotPrimary} stopOpacity="0" />
           </RadialGradient>
         </Defs>
@@ -90,8 +101,8 @@ const placeholderColor = "#D9D9D9";
             <View style={styles.contentWrapper}>
               
               <View style={styles.rowTop}>
-                <Text style={[styles.headerTitle, { color: textColor }]}>Donor Book</Text>
-                <Text style={[styles.headerSeries, { color: textColor }]}>Series №0203</Text>
+                <Text style={[styles.headerTitle, { color: cardTextColor }]}>Donor Book</Text>
+                <Text style={[styles.headerSeries, { color: cardTextColor }]}>Series №0203</Text>
               </View>
 
               <View style={styles.rowMiddle}>
@@ -101,28 +112,28 @@ const placeholderColor = "#D9D9D9";
                 
                 <View style={styles.detailsContainer}>
                   <View style={styles.infoBlock}>
-                    <Text style={[styles.infoLabel, { color: textColor }]}>Date Of Issue:</Text>
-                    <Text style={[styles.infoValue, { color: textColor, opacity: 0.8 }]}>24 June 2025</Text>
+                    <Text style={[styles.infoLabel, { color: cardTextColor }]}>Date Of Issue:</Text>
+                    <Text style={[styles.infoValue, { color: cardTextColor, opacity: 0.8 }]}>24 June 2025</Text>
                   </View>
                   <View style={styles.infoBlock}>
-                    <Text style={[styles.infoLabel, { color: textColor }]}>Location:</Text>
-                    <Text style={[styles.infoValue, { color: textColor, opacity: 0.8 }]}>NNI JHP Lviv Region</Text>
+                    <Text style={[styles.infoLabel, { color: cardTextColor }]}>Location:</Text>
+                    <Text style={[styles.infoValue, { color: cardTextColor, opacity: 0.8 }]}>NNI JHP Lviv Region</Text>
                   </View>
                   <View style={styles.infoBlock}>
-                    <Text style={[styles.infoLabel, { color: textColor }]}>Type Blood:</Text>
-                    <Text style={[styles.infoValue, { color: textColor, opacity: 0.8 }]}>A(II)Rh+</Text>
+                    <Text style={[styles.infoLabel, { color: cardTextColor }]}>Type Blood:</Text>
+                    <Text style={[styles.infoValue, { color: cardTextColor, opacity: 0.8 }]}>A(II)Rh+</Text>
                   </View>
                 </View>
               </View>
 
               <View style={styles.rowBottom}>
                 <View>
-                  <Text style={[styles.nameText, { color: textColor }]}>Blue</Text>
-                  <Text style={[styles.nameText, { color: textColor }]}>Jack</Text>
-                  <Text style={[styles.nameText, { color: textColor }]}>Bober</Text>
+                  <Text style={[styles.nameText, { color: cardTextColor }]}>Blue</Text>
+                  <Text style={[styles.nameText, { color: cardTextColor }]}>Jack</Text>
+                  <Text style={[styles.nameText, { color: cardTextColor }]}>Bober</Text>
                 </View>
                 <TouchableOpacity>
-                  <Text style={[styles.dots, { color: textColor }]}>...</Text>
+                  <Text style={[styles.dots, { color: cardTextColor }]}>...</Text>
                 </TouchableOpacity>
               </View>
 
@@ -141,30 +152,16 @@ const placeholderColor = "#D9D9D9";
           >
             <View style={styles.qrContainer}>
               
-              {/* QR-код побудований на Flexbox (без абсолютів) */}
-              <View style={[styles.qrCodeBox, { borderColor: textColor, backgroundColor: cardStyle.backgroundColor }]}>
-                 
-                 {/* Верхній ряд: Лівий і Правий кути */}
-                 <View style={styles.qrRow}>
-                    <View style={[styles.qrCorner, { borderColor: textColor }]} />
-                    <View style={[styles.qrCorner, { borderColor: textColor }]} />
-                 </View>
-
-                 {/* Середній ряд: Центр */}
-                 <View style={styles.qrRowCenter}>
-                    <View style={[styles.qrCenter, { backgroundColor: textColor }]} />
-                 </View>
-
-                 {/* Нижній ряд: Лівий кут */}
-                 <View style={styles.qrRow}>
-                    <View style={[styles.qrCorner, { borderColor: textColor }]} />
-                    {/* Пустий View для балансу, щоб flex-space-between працював коректно, або просто залишити один елемент якщо flex-start */}
-                    <View style={[styles.qrCorner, { opacity: 0 }]} /> 
-                 </View>
-
+              <View style={[styles.qrCodeBox, { borderColor: qrColor, backgroundColor: qrBackgroundColor }]}>
+                 <QRCode
+                    value={qrValue} 
+                    size={150} 
+                    color={qrColor} 
+                    backgroundColor={qrBackgroundColor} 
+                 />
               </View>
-              
-              <Text style={[styles.qrText, { color: textColor }]}>Scan for details</Text>
+
+              <Text style={[styles.qrText, { color: cardTextColor }]}>Scan for details</Text>
             </View>
           </Animated.View>
 
@@ -204,8 +201,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
   },
-  
-  // --- Rows ---
   rowTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -224,8 +219,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     marginBottom: 10,
   },
-
-  // --- Text Styles ---
   headerTitle: {
     fontSize: 22,
     fontWeight: "700",
@@ -237,8 +230,6 @@ const styles = StyleSheet.create({
     marginTop: 6,
     opacity: 0.9,
   },
-  
-  // --- Middle Section Styles ---
   photoContainer: {
     width: "42%",
   },
@@ -266,8 +257,6 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     lineHeight: 20,
   },
-
-  // --- Footer Styles ---
   nameText: {
     fontSize: 22,
     fontWeight: "700",
@@ -279,8 +268,6 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     opacity: 0.8,
   },
-
-  // --- QR Code Styles (Flexbox) ---
   qrContainer: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -291,29 +278,8 @@ const styles = StyleSheet.create({
     borderWidth: 5,
     borderRadius: 20,
     marginBottom: 20,
-    padding: 15, // Внутрішній відступ для кутів
-    justifyContent: 'space-between', // Розподіляє ряди вертикально
-  },
-  qrRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between', // Розподіляє кути горизонтально
-    width: '100%',
-  },
-  qrRowCenter: {
-    flexDirection: 'row',
-    justifyContent: 'center', // Центрує квадрат
+    justifyContent: 'center', 
     alignItems: 'center',
-    flex: 1, // Займає доступний простір по вертикалі
-  },
-  qrCorner: {
-    width: 50,
-    height: 50,
-    borderWidth: 10,
-  },
-  qrCenter: {
-    width: 40,
-    height: 40,
-    borderRadius: 4,
   },
   qrText: {
     fontSize: 16,
@@ -323,91 +289,3 @@ const styles = StyleSheet.create({
 });
 
 export default BookScreen;
-
-// import React, { useRef, useState } from "react";
-// import { StyleSheet, View, Text, Dimensions, TouchableWithoutFeedback, Animated, TouchableOpacity } from "react-native";
-// import Svg, { Defs, RadialGradient, Rect, Stop } from "react-native-svg";
-
-// const { width, height } = Dimensions.get("window");
-
-// const BookScreen = () => {
-//   return (
-//     <View style={styles.container}>
-//       <View style={styles.topSection}>
-//         <Text style={styles.title}>Donor Book</Text>
-//         <Text style={styles.subtitle}>3 days left to receive the donor's book</Text>
-//         <Text style={styles.paragraph}>
-//           Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-//         </Text>
-//       </View>
-
-//       <View style={styles.bottomSection}>
-//         <Text style={styles.note}>
-//           To receive the donor's book, you need to make 5 donations
-//         </Text>
-//         <TouchableOpacity style={styles.button}>
-//           <Text style={styles.buttonText}>Get Donor Book</Text>
-//         </TouchableOpacity>
-//       </View>
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: "center",
-//     alignItems: "center",
-//     backgroundColor: "#fff",
-//   },
-//   topSection: {
-//     flex: 2,
-//     justifyContent: "center",
-//     alignItems: "center",
-//     paddingHorizontal: 25,
-//   },
-//   bottomSection: {
-//     flex: 1,
-//     justifyContent: "center",
-//     alignItems: "center",
-//     paddingHorizontal: 25,
-//   },
-//   title: {
-//     fontSize: 22,
-//     fontWeight: "700",
-//     marginBottom: 50,
-//     textAlign: "center",
-//   },
-//   subtitle: {
-//     fontSize: 18,
-//     fontWeight: "600",
-//     marginBottom: 50,
-//     textAlign: "center",
-//   },
-//   paragraph: {
-//     fontSize: 16,
-//     textAlign: "left",
-//     marginBottom: 50,
-//     lineHeight: 22,
-//   },
-//   note: {
-//     fontSize: 16,
-//     textAlign: "center",
-//     marginTop: 0,
-//   },
-//   button: {
-//     backgroundColor: "#D96E6E",
-//     paddingVertical: 15,
-//     paddingHorizontal: 40,
-//     borderRadius: 25,
-//     marginTop: 0,
-
-//   },
-//   buttonText: {
-//     color: "#fff",
-//     fontSize: 18,
-//     fontWeight: "600",
-//   },
-// });
-
-// export default BookScreen;
