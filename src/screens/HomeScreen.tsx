@@ -1,387 +1,514 @@
-import React from 'react';
-import { View, StyleSheet, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
-import { Calendar } from 'react-native-calendars';
+// HomeScreen.tsx
+import React, { useMemo, useState } from "react";
+import {
+  View,
+  StyleSheet,
+  Text,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+  FlatList,
+  ListRenderItem,
+} from "react-native";
+import { Calendar, DateData } from "react-native-calendars";
 import { useTheme } from "../Theme/ThemeContext";
 
-export default function HomeScreen({ navigation }) {
+type DonationItem = {
+  id: string;
+  date: string;
+  time: string;
+  vol: string;
+  nurse: string;
+  addr: string;
+};
+
+type ActionItem = {
+  id: string;
+  title: string;
+  icon: any;
+  onPress: () => void;
+};
+
+const pad2 = (n: number) => String(n).padStart(2, "0");
+
+const addMonths = (ymd: string, delta: number) => {
+  const [y, m] = ymd.split("-").map(Number);
+  const d = new Date(y, m - 1 + delta, 1);
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-01`;
+};
+
+const monthTitle = (ymd: string) => {
+  const d = new Date(ymd);
+  return d.toLocaleString("en-US", { month: "long", year: "numeric" });
+};
+
+export default function HomeScreen({ navigation }: any) {
   const { colors, theme, isDark: contextIsDark } = useTheme();
-  
-  const isDark = contextIsDark || theme === 'dark' || colors.text === '#FFFFFF' || colors.text === '#E0E0E0';
 
-  const logoSource = isDark 
-    ? require('../images/logo-white.png') 
-    : require('../images/logo.png');
+  const isDark =
+    contextIsDark ||
+    theme === "dark" ||
+    colors.text === "#FFFFFF" ||
+    colors.text === "#E0E0E0";
 
-  const bloodData = [
-    { type: "0+", status: "low" },
-    { type: "A+", status: "high" },
-    { type: "B+", status: "low" },
-    { type: "AB+", status: "high" },
-    { type: "0-", status: "low" },
-    { type: "A-", status: "low" },
-    { type: "B-", status: "high" },
-    { type: "AB-", status: "low" },
-  ];
+  const ui = useMemo(() => {
+    const light = {
+      pageBg: "#F7E9EA",
+      card: "#FFFFFF",
+      softCard: "#FFF7F7",
+      text: "#2B2B2B",
+      subText: "rgba(43,43,43,0.60)",
+      shadow: "rgba(0,0,0,0.12)",
+      brand: "#E55656",
+      brand2: "#FF7A7A",
+      calendarSurface: "#FFFFFF",
+      calendarDow: "rgba(43,43,43,0.55)",
+      pillBg: "rgba(255,255,255,0.95)",
+      dayText: "#2B2B2B",
+      disabledText: "rgba(0,0,0,0.25)",
+    };
 
-  const chartData = [5, 8, 15, 25, 40, 60, 80, 60, 50, 45, 60, 70, 50, 40, 30, 25, 20, 15, 15, 10, 5, 0, 5, 0];
-  const chartLabels = ["6", "9", "12", "15", "18", "21"];
+    const dark = {
+      pageBg: "#121214",
+      card: "#1B1B1F",
+      softCard: "#1F1A1A",
+      text: "#F4F4F5",
+      subText: "rgba(244,244,245,0.70)",
+      shadow: "rgba(0,0,0,0.45)",
+      brand: "#FF6B6B",
+      brand2: "#FF7A7A",
+      calendarSurface: "#1B1B1F",
+      calendarDow: "rgba(244,244,245,0.65)",
+      pillBg: "rgba(255,255,255,0.10)",
+      dayText: "#F4F4F5",
+      disabledText: "rgba(255,255,255,0.35)",
+    };
 
-  const redDates = {
-    "2024-08-05": { selected: true, selectedColor: "#E53935" },
-    "2024-08-06": { selected: true, selectedColor: "#E53935" },
-    "2024-08-07": { selected: true, selectedColor: "#E53935" },
-    "2024-08-08": { selected: true, selectedColor: "#E53935" },
-    "2024-08-09": { selected: true, selectedColor: "#E53935" },
-    "2024-08-10": { selected: true, selectedColor: "#E53935" },
-    "2024-08-11": { selected: true, selectedColor: "#E53935" },
-    "2024-08-14": { selected: true, selectedColor: "#E53935" },
-    "2024-08-19": { selected: true, selectedColor: "#E53935" },
-    "2024-08-20": { selected: true, selectedColor: "#E53935" },
-    "2024-08-21": { selected: true, selectedColor: "#E53935" },
-    "2024-08-22": { selected: true, selectedColor: "#E53935" },
-    "2024-08-23": { selected: true, selectedColor: "#E53935" },
-    "2024-08-24": { selected: true, selectedColor: "#E53935" },
-    "2024-08-29": { selected: true, selectedColor: "#E53935" },
+    return isDark ? dark : light;
+  }, [isDark]);
+
+  const [current, setCurrent] = useState<string>("2026-08-01");
+
+  const marked = useMemo(() => {
+    return {
+      "2026-08-10": { selected: true, selectedColor: ui.brand },
+      "2026-08-17": { selected: true, selectedColor: ui.brand },
+      "2026-08-20": { selected: true, selectedColor: ui.brand },
+      "2026-08-22": { selected: true, selectedColor: ui.brand },
+      "2026-08-26": { selected: true, selectedColor: ui.brand },
+      "2026-08-31": { selected: true, selectedColor: ui.brand },
+    } as Record<string, any>;
+  }, [ui.brand]);
+
+  const onDayPress = (day: DateData) => {
+    navigation.navigate("Registration", { day: day.dateString });
   };
 
-  const handleDayPress = (day) => {
-    if (redDates[day.dateString]) {
-      navigation.navigate("Registration", { day: day.dateString });
-    }
+  const logoSource = isDark ? require("../images/logo-white.png") : require("../images/logo.png");
+
+  const donations: DonationItem[] = [
+    { id: "1", date: "05.01.26", time: "9:15", vol: "450ml", nurse: "Ivan Melko", addr: "Universytetska\nst." },
+    { id: "2", date: "02.10.25", time: "12:35", vol: "150ml", nurse: "Ilon Mask", addr: "Universytetska\nst." },
+    { id: "3", date: "10.08.25", time: "11:15", vol: "300ml", nurse: "Sara Pot", addr: "Universytetska\nst." },
+    { id: "4", date: "20.06.25", time: "12:15", vol: "250ml", nurse: "Ron Wizli", addr: "Universytetska\nst." },
+  ];
+
+  const actions: ActionItem[] = [
+    {
+      id: "a1",
+      title: "Find Donors",
+      icon: require("../images/search.png"),
+      onPress: () => navigation.navigate("FindDonors"),
+    },
+    {
+      id: "a2",
+      title: "Hospitals Nearby",
+      icon: require("../images/location.png"),
+      onPress: () => navigation.navigate("HospitalsNearby"),
+    },
+  ];
+
+  const renderDonation: ListRenderItem<DonationItem> = ({ item, index }) => {
+    const active = index === 0;
+    const capColor = active ? "#EA6A6A" : "#F3AEAE";
+
+    return (
+      <View style={[styles.hCard, active && styles.hCardShadow]}>
+        <View style={[styles.hCapTop, { backgroundColor: capColor }]}>
+          <Text style={styles.hCapText}>{item.date}</Text>
+        </View>
+
+        <View style={styles.hMidWhite}>
+          <Text style={styles.hMain}>
+            {item.time} - {item.vol}
+          </Text>
+          <Text style={styles.hSub}>Nurse: {item.nurse}</Text>
+        </View>
+
+        <View style={[styles.hCapBottom, { backgroundColor: capColor }]}>
+          <Text style={styles.hBottomText}>{item.addr}</Text>
+        </View>
+      </View>
+    );
   };
 
   return (
-    <ScrollView contentContainerStyle={[styles.container, { backgroundColor: colors.backgroundMain }]}>
-      <View style={styles.headerRow}>
-        <Image 
-          source={logoSource} 
-          style={styles.logo} 
-        />
-        <TouchableOpacity
-          onPress={() => navigation.navigate("NotificationScreen")}
-        >
-          <Image
-            source={require('../images/notification.png')}
-            style={[styles.notificationImg, { tintColor: colors.text }]}
+    <View style={[styles.screen, { backgroundColor: ui.pageBg }]}>
+      <ScrollView
+        contentContainerStyle={[styles.container, { backgroundColor: ui.pageBg }]}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header */}
+        <View style={styles.headerRow}>
+          <Image source={logoSource} style={styles.logo} />
+          <TouchableOpacity
+            onPress={() => navigation.navigate("NotificationScreen")}
+            style={[styles.headerIconBtn, { backgroundColor: ui.card }]}
+            activeOpacity={0.85}
+          >
+            <Image
+              source={require("../images/notification.png")}
+              style={[styles.headerIcon, { tintColor: ui.text }]}
+            />
+          </TouchableOpacity>
+        </View>
+
+        <Text style={[styles.hello, { color: ui.text }]}>
+          Hello, <Text style={{ color: ui.brand, fontWeight: "800" }}>Anton</Text> 👋
+        </Text>
+
+        {/* Calendar */}
+        <View style={[styles.calendarCard, { backgroundColor: ui.card, shadowColor: ui.shadow }]}>
+          <View style={[styles.calendarHeader, { backgroundColor: ui.brand2 }]}>
+            <TouchableOpacity onPress={() => setCurrent((c) => addMonths(c, -1))} style={styles.arrowHit}>
+              <Text style={styles.arrowText}>‹</Text>
+            </TouchableOpacity>
+
+            <Text style={styles.calendarHeaderText}>{monthTitle(current)}</Text>
+
+            <TouchableOpacity onPress={() => setCurrent((c) => addMonths(c, 1))} style={styles.arrowHit}>
+              <Text style={styles.arrowText}>›</Text>
+            </TouchableOpacity>
+          </View>
+
+          <Calendar
+            key={`${isDark}-${ui.calendarSurface}`}
+            style={{ backgroundColor: ui.calendarSurface }}
+            firstDay={1}
+            hideArrows
+            renderHeader={() => null}
+            current={current}
+            enableSwipeMonths
+            hideExtraDays
+            markedDates={marked}
+            onDayPress={onDayPress}
+            theme={{
+              backgroundColor: ui.calendarSurface,
+              calendarBackground: ui.calendarSurface,
+              textSectionTitleColor: ui.calendarDow,
+              dayTextColor: ui.dayText,
+              todayTextColor: ui.brand,
+              selectedDayBackgroundColor: ui.brand,
+              selectedDayTextColor: "#FFFFFF",
+              textDisabledColor: ui.disabledText,
+              textDayFontSize: 14,
+            }}
+            dayComponent={({ date, state, marking }) => {
+              if (!date) return <View style={styles.dayPill} />;
+
+              const isDisabled = state === "disabled";
+              const selected = !!marking?.selected;
+
+              return (
+                <TouchableOpacity
+                  disabled={isDisabled}
+                  onPress={() => navigation.navigate("Registration", { day: date.dateString })}
+                  style={[
+                    styles.dayPill,
+                    {
+                      backgroundColor: selected ? ui.brand : ui.pillBg,
+                      opacity: isDisabled ? 0.35 : 1,
+                    },
+                  ]}
+                  activeOpacity={0.85}
+                >
+                  <Text style={[styles.dayText, { color: selected ? "#FFFFFF" : ui.dayText }]}>{date.day}</Text>
+                </TouchableOpacity>
+              );
+            }}
           />
-        </TouchableOpacity>
-      </View>
+        </View>
 
-      <View style={[styles.calendarWrapper, { backgroundColor: colors.backgroundCard, borderColor: colors.text }]}>
-        <Calendar
-          key={colors.backgroundCard}
-          current={"2024-08-01"}
-          monthFormat={"MMMM"}
-          enableSwipeMonths={true}
-          hideExtraDays={true}
-          markedDates={redDates}
-          onDayPress={handleDayPress}
-          theme={{
-            backgroundColor: colors.backgroundMain,
-            calendarBackground: colors.backgroundCard,
-            textSectionTitleColor: colors.text,
-            dayTextColor: colors.text,
-            textMonthFontWeight: "bold",
-            textDayFontSize: 16,
-            monthTextColor: colors.text,
-            selectedDayBackgroundColor: "#E53935",
-            selectedDayTextColor: "#E0E0E0",
-            todayTextColor: "#E53935",
-            arrowColor: colors.text,
-          }}
+        {/* History */}
+        <Text style={[styles.sectionTitle, { color: ui.text }]}>Your History of Donation</Text>
+        <FlatList
+          data={donations}
+          keyExtractor={(it) => it.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.historyList}
+          renderItem={renderDonation}
         />
-      </View>
 
-      <View>
-        <Text style={[styles.heading, { color: colors.text }]}>
-          Те що може зацікавити тебе 🤭👀
-        </Text>
-        <Text style={[styles.paragraph, { color: colors.text }]}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-          Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-        </Text>
-      </View>
-
-      <View style={styles.bloodContainer}>
-        <Text style={[styles.bloodTitle, { color: colors.text }]}>
-          Яка кров зараз найбільш потрібна? <Text style={{ color: "red" }}>🩸</Text>
-        </Text>
-        <View style={[styles.bloodGrid, { borderColor: colors.text + '1A' }]}>
-          {bloodData.map((item, index) => {
-            const icon = item.status === "low"
-              ? require("../images/drop_high.png")
-              : require("../images/drop_low.png");
-            return (
-              <View key={index} style={styles.bloodItem}>
-                <Image source={icon} style={styles.bloodIcon} />
-                <Text style={[styles.bloodLabel, { color: colors.text }]}>{item.type}</Text>
+        {/* Quick Actions */}
+        <Text style={[styles.sectionTitle, { color: ui.text }]}>Quick Actions</Text>
+        <View style={styles.actionsRow}>
+          {actions.map((a) => (
+            <TouchableOpacity
+              key={a.id}
+              onPress={a.onPress}
+              style={[styles.actionCard, { backgroundColor: ui.card, shadowColor: ui.shadow }]}
+              activeOpacity={0.9}
+            >
+              <View style={[styles.actionIconWrap, { backgroundColor: ui.softCard }]}>
+                <Image source={a.icon} style={styles.actionIcon} />
               </View>
-            );
-          })}
-        </View>
-      </View>
-
-      <View style={styles.chartSection}>
-        <View style={styles.chartHeaderRow}>
-          <Text style={[styles.chartTitle, { color: colors.text }]}>Rush of people</Text>
-          <View style={[styles.dayBadge, { backgroundColor: colors.primary }]}>
-            <Text style={styles.dayBadgeText}>&lt; thursday</Text>
-          </View>
+              <Text style={[styles.actionTitle, { color: ui.text }]}>{a.title}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
 
-        <View style={[styles.chartContainer, { backgroundColor: colors.backgroundCard, borderColor: colors.text + '1A'}]}>
-          
-          {/* СІТКА І СТОВПЧИКИ (Flex layout) 
-              Ми використовуємо дві View одна за одною.
-              Друга View (стовпчики) має негативний marginTop, щоб "наїхати" на першу.
-          */}
-          <View style={styles.graphBody}>
-            
-            {/* ШАР 1: Сітка (Background Grid) - БЕЗ position: absolute */}
-            <View style={styles.gridLayer}>
-                 {/* Рядок 70 */}
-                 <View style={styles.gridRow}>
-                    <Text style={[styles.gridLabel, { color: colors.text }]}>70</Text>
-                    <View style={[styles.dashedLine, { borderColor: colors.text }]} />
-                 </View>
-                 
-                 {/* Проміжок між 70 і 30, контролюється Flex */}
-                 <View style={{ height: 40 }} /> 
+        {/* Informatively */}
+        <Text style={[styles.sectionTitle, { color: ui.text, marginTop: 14 }]}>Informatively</Text>
 
-                 {/* Рядок 30 */}
-                 <View style={styles.gridRow}>
-                    <Text style={[styles.gridLabel, { color: colors.text }]}>30</Text>
-                    <View style={[styles.dashedLine, { borderColor: colors.text }]} />
-                 </View>
+        <View style={{ gap: 12, marginTop: 10 }}>
+          {/* CARD 1 */}
+          <View style={[styles.infoCard, { backgroundColor: ui.card, shadowColor: ui.shadow }]}>
+            <View style={styles.infoRow}>
+              <Image source={require("../images/info.png")} style={styles.infoDrop} />
+
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.infoTitle, { color: ui.text }]}>Група крові A (II)</Text>
+
+                <Text style={[styles.infoText, { color: ui.text }]}>
+                  1. Може приймати кров від:{"\n"}групи A (сумісний), групи O (сумісний)
+                </Text>
+
+                <Text style={[styles.infoText, { color: ui.text, marginTop: 6 }]}>
+                  2. Можна здавати кров на:{"\n"}групу A, групу AB
+                </Text>
+              </View>
             </View>
 
-            {/* ШАР 2: Стовпчики (Bars) */}
-            <View style={styles.barsLayer}>
-              {chartData.map((height, index) => (
-                <View key={index} style={styles.barWrapper}>
-                  <View
-                    style={[
-                      styles.bar,
-                      {
-                        height: `${height}%`,
-                        backgroundColor: colors.primary
-                      }
-                    ]}
-                  />
-                </View>
-              ))}
+            <Text style={[styles.infoProgress, { color: ui.brand }]}>50 of 100%</Text>
+          </View>
+
+          {/* CARD 2 */}
+          <View style={[styles.infoCard, { backgroundColor: ui.card, shadowColor: ui.shadow }]}>
+            <Text style={[styles.infoTitleCenter, { color: ui.brand }]}>Що можна їсти перед донацією</Text>
+            <Text style={[styles.infoSubtitle, { color: ui.subText }]}>Вуглеводи</Text>
+
+            <Image source={require("../images/info2.png")} style={styles.infoFood} />
+
+            <View style={styles.foodRow}>
+              <Text style={[styles.foodText, { color: ui.text }]}>
+                ПЕРЛОВА{"\n"}АМАРАНТ{"\n"}КУКУРУДЗЯНА
+              </Text>
+
+              <Text style={[styles.foodText, { color: ui.text }]}>
+                БУЛГУР{"\n"}МАННА{"\n"}ПШОНЯНА
+              </Text>
             </View>
 
-          </View>
-
-          <View style={[styles.bottomAxisLine, { backgroundColor: colors.text }]} />
-
-          <View style={styles.labelsContainer}>
-            {chartLabels.map((label, index) => (
-              <Text key={index} style={[styles.chartLabelText, { color: colors.text }]}>{label}</Text>
-            ))}
+            <Text style={[styles.foodBottom, { color: ui.text }]}>
+              БУДЬ-ЯКІ ВИДИ ПАСТИ (ОКРІМ ЯЄЧНОЇ ЛОКШИНИ)
+            </Text>
           </View>
         </View>
-      </View>
 
-    </ScrollView>
+        <View style={{ height: 12 }} />
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: { flex: 1 },
+
   container: {
-    minHeight: "100%",
-    paddingHorizontal: "5%",
-    paddingVertical: 48,
-    gap: 20,
-    marginBottom: 50,
+    paddingTop: 48,
+    paddingHorizontal: "6%",
+    paddingBottom: 180,
   },
+
   headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-    marginTop: 10,
-  },
-  logo: {
-    width: 50,   
-    height: 50,    
-    resizeMode: 'contain',
-  },
-  calendarWrapper: {
-    borderRadius: 16,
-    padding: 8,
-    borderWidth: 1,
-    marginBottom: 20,
-    marginTop: 5,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 3,
-  },
-  heading: {
-    fontFamily: "SF Pro Rounded",
-    fontWeight: "700",
-    fontSize: 18,
-    lineHeight: 20,
-    letterSpacing: 0,
-    marginBottom: 10,
-  },
-  paragraph: {
-    fontFamily: "Inter",
-    fontWeight: "500",
-    lineHeight: 20,
-    letterSpacing: 0,
-  },
-  notificationImg: {
-    width: 28,
-    height: 28,
-    resizeMode: "contain",
-  },
-  bloodContainer: {
-    marginTop: 16,
-    marginBottom: 10,
-  },
-  bloodTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    marginBottom: 12,
-    fontFamily: "SF Pro Rounded",
-  },
-  bloodGrid: {
-    borderRadius: 16,
-    padding: 8,
-    borderWidth: 1,
     flexDirection: "row",
-    flexWrap: "wrap",
     justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: 8,
   },
-  bloodItem: {
-    width: "22%",
-    justifyContent: 'center',
-    alignItems: 'center',
+  logo: { width: 36, height: 36, resizeMode: "contain" },
+  headerIconBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  headerIcon: { width: 20, height: 20, resizeMode: "contain" },
+
+  hello: { fontSize: 28, fontWeight: "900", marginBottom: 12 },
+
+  calendarCard: {
+    borderRadius: 20,
+    overflow: "hidden",
+    shadowOpacity: 0.18,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 6,
     marginBottom: 16,
   },
-  bloodIcon: {
-    width: 60,
-    height: 60,
-    resizeMode: "contain",
-    marginBottom: 4,
-  },
-  bloodLabel: {
-    fontSize: 14,
-    fontWeight: "500",
-    fontFamily: "Inter",
-    textAlign: 'center',
-  },
-  textOverlay: {
-    position: 'absolute',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  
-  chartSection: {
-    marginBottom: 80,
-  },
-  chartHeaderRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  chartTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    fontFamily: "SF Pro Rounded",
-  },
-  dayBadge: {
-    paddingVertical: 4,
+  calendarHeader: {
+    height: 46,
     paddingHorizontal: 12,
-    borderRadius: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
-  dayBadgeText: {
-    color: '#FFF',
-    fontWeight: '600',
-    fontSize: 12,
-  },
-  chartContainer: {
-    borderRadius: 20,
-    borderWidth: 3,
-    paddingVertical: 20,
-    paddingHorizontal: 15,
-    height: 200, 
-    justifyContent: 'flex-end',
-  },
-  
-  // --- Стилі для Flex-Based накладання ---
-  graphBody: {
-    height: 100, // Фіксуємо висоту робочої зони графіку
-    marginBottom: 5,
-  },
-  gridLayer: {
-    height: '100%',
-    flexDirection: 'column',
-    justifyContent: 'flex-start', // Елементи йдуть зверху вниз
-    zIndex: 0, // Знизу
-    paddingTop: 10, // Відступ зверху для цифри 70
-  },
-  barsLayer: {
-    height: '100%',
-    marginTop: -100, // !!! Ключовий момент: підтягуємо стовпчики вгору на висоту контейнера
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-    marginLeft: 25,
-    zIndex: 1, // Зверху
-  },
-  // ---------------------------------------
+  calendarHeaderText: { color: "#FFFFFF", fontWeight: "900", fontSize: 16 },
+  arrowHit: { width: 36, height: 36, borderRadius: 12, justifyContent: "center", alignItems: "center" },
+  arrowText: { color: "#FFFFFF", fontSize: 26, marginTop: -2 },
 
-  gridRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingLeft: 5,
+  dayPill: {
+    width: 38,
+    height: 30,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 6,
   },
-  gridLabel: {
-    fontSize: 10,
-    fontFamily: 'Inter',
-    width: 20,
-    marginRight: 5,
-    opacity: 0.6,
+  dayText: { fontSize: 13, fontWeight: "800" },
+
+  sectionTitle: { fontSize: 20, fontWeight: "900", marginTop: 8 },
+
+  historyList: { paddingVertical: 10, paddingLeft: 6 },
+
+  hCard: {
+    width: 170,
+    borderRadius: 26,
+    backgroundColor: "#FFFFFF",
+    overflow: "hidden",
+    marginRight: 16,
   },
-  dashedLine: {
+  hCardShadow: {
+    shadowColor: "#000",
+    shadowOpacity: 0.18,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 10,
+  },
+  hCapTop: {
+    height: 44,
+    justifyContent: "center",
+    paddingHorizontal: 18,
+    borderTopLeftRadius: 26,
+    borderTopRightRadius: 26,
+  },
+  hCapText: { color: "#fff", fontWeight: "800", fontSize: 16 },
+  hMidWhite: { backgroundColor: "#FFFFFF", paddingHorizontal: 18, paddingVertical: 14 },
+  hMain: { color: "#111", fontSize: 18, fontWeight: "900", marginBottom: 4 },
+  hSub: { color: "#111", fontSize: 13, fontStyle: "italic", fontWeight: "500" },
+  hCapBottom: {
+    height: 56,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 14,
+    borderBottomLeftRadius: 26,
+    borderBottomRightRadius: 26,
+  },
+  hBottomText: { color: "#fff", fontWeight: "800", fontSize: 15, textAlign: "center", lineHeight: 18 },
+
+  actionsRow: { flexDirection: "row", gap: 12, marginTop: 12 },
+  actionCard: {
     flex: 1,
-    height: 1,
-    borderWidth: 1,
-    borderStyle: 'dashed',
-    opacity: 0.2,
-    borderRadius: 1,
+    borderRadius: 20,
+    paddingVertical: 20,
+    paddingHorizontal: 14,
+    alignItems: "center",
+    shadowOpacity: 0.16,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 5,
   },
-  barWrapper: {
-    width: '3%',
-    height: '100%',
-    justifyContent: 'flex-end',
+
+  // ✅ ЗБІЛЬШЕНІ ІКОНКИ
+  actionIconWrap: {
+    width: 90,
+    height: 90,
+    borderRadius: 45,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 14,
   },
-  bar: {
-    width: '100%',
-    borderRadius: 4,
-    minHeight: 2,
+  actionIcon: {
+    width: 40,
+    height: 40,
+    resizeMode: "contain",
   },
-  bottomAxisLine: {
-    width: '100%',
-    height: 1,
-    opacity: 0.1,
-    marginBottom: 8, 
-    marginLeft: 10, 
+  actionTitle: { fontSize: 13, fontWeight: "900" },
+
+  // ✅ INFO cards
+  infoCard: {
+    borderRadius: 22,
+    padding: 16,
+    shadowOpacity: 0.14,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 4,
   },
-  labelsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingLeft: 25, 
+  infoRow: {
+    flexDirection: "row",
+    gap: 14,
+    alignItems: "center",
   },
-  chartLabelText: {
-    fontSize: 10,
-    fontFamily: "Inter",
+  infoDrop: {
+    width: 70,
+    height: 90,
+    resizeMode: "contain",
+  },
+  infoTitle: {
+    fontSize: 16,
+    fontWeight: "900",
+    marginBottom: 6,
+  },
+  infoText: {
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  infoProgress: {
+    marginTop: 10,
+    fontWeight: "800",
+  },
+
+  infoTitleCenter: {
+    textAlign: "center",
+    fontSize: 18,
+    fontWeight: "900",
+  },
+  infoSubtitle: {
+    textAlign: "center",
+    fontSize: 13,
+    marginBottom: 10,
+  },
+  infoFood: {
+    width: "100%",
+    height: 120,
+    resizeMode: "contain",
+    marginVertical: 10,
+  },
+  foodRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  foodText: {
+    fontSize: 13,
+    fontWeight: "700",
+    lineHeight: 20,
+  },
+  foodBottom: {
+    textAlign: "center",
+    marginTop: 10,
+    fontSize: 12,
+    fontWeight: "700",
   },
 });
