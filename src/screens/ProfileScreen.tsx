@@ -5,7 +5,9 @@ import { useTranslation } from "react-i18next";
 
 const ProfileScreen = ({navigation}) => {
 
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lastDonationDate = new Date('2020-09-11');
+  const formattedDate = new Intl.DateTimeFormat(i18n.language, { year: 'numeric', month: 'long', day: 'numeric' }).format(lastDonationDate);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -25,7 +27,7 @@ const ProfileScreen = ({navigation}) => {
         >
           <Text style={styles.editButtonText}>{t("edit_profile")}</Text>
         </TouchableOpacity>
-        <Text style={styles.lastDonation}>{t("last_donation")}: September 11, 2001</Text>
+        <Text style={styles.lastDonation}>{t("last_donation")}: {formattedDate}</Text>
       </View>
 
       <View style={styles.statsRow}>
@@ -45,7 +47,7 @@ const ProfileScreen = ({navigation}) => {
 
       <View style={styles.statusCard}>
         <Text style={styles.statusLabel}>{t("donor_status")}</Text>
-        <Text style={styles.statusValue}>Honorary Donor of Ukraine</Text>
+        <Text style={styles.statusValue}>{t("honorary_donor_of_ukraine")}</Text>
       </View>
     </ScrollView>
   );

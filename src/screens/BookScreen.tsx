@@ -1,12 +1,100 @@
-import React, { useRef, useState } from "react";
-import { StyleSheet, View, Text, Dimensions, TouchableWithoutFeedback, Animated, TouchableOpacity } from "react-native";
+import React, { useRef, useState, useEffect } from "react";
+import { StyleSheet, View, Text, Dimensions, TouchableWithoutFeedback, Animated, TouchableOpacity, ScrollView, Easing } from "react-native";
 import Svg, { Defs, RadialGradient, Rect, Stop } from "react-native-svg";
+import { useTranslation } from "react-i18next";
+import { format } from "date-fns";
+import { uk, enUS } from "date-fns/locale";
 
 const { width, height } = Dimensions.get("window");
+
+// ---TICKER ---
+const SmartTicker = ({ text, style, width: fixedWidth }) => {
+  const [textWidth, setTextWidth] = useState(0);
+  const scrollX = useRef(new Animated.Value(0)).current;
+  const spacer = 30; 
+
+  
+  const shouldAnimate = textWidth > fixedWidth;
+
+  useEffect(() => {
+    if (shouldAnimate) {
+      
+      const distance = textWidth + spacer;
+      const duration = distance * 50; 
+
+      Animated.loop(
+        Animated.timing(scrollX, {
+          toValue: -distance, 
+          duration: duration,
+          useNativeDriver: true,
+          easing: Easing.linear,
+        })
+      ).start();
+
+      return () => scrollX.setValue(0);
+    }
+  }, [textWidth, fixedWidth, shouldAnimate]);
+
+  return (
+    <View style={{ width: fixedWidth, overflow: 'hidden' }}>
+      <ScrollView 
+        horizontal 
+        scrollEnabled={false} 
+        showsHorizontalScrollIndicator={false}
+      >
+        <Animated.View style={{ 
+          flexDirection: 'row', 
+          transform: [{ translateX: scrollX }] // Рухаємо ряд
+        }}>
+          
+          <Text 
+            style={style} 
+            numberOfLines={1}
+            onLayout={(e) => setTextWidth(e.nativeEvent.layout.width)}
+          >
+            {text}
+          </Text>
+
+          
+          {shouldAnimate && (
+            <>
+              
+              <View style={{ width: spacer }} />
+              
+              <Text style={style} numberOfLines={1}>
+                {text}
+              </Text>
+              
+              <View style={{ width: 50 }} />
+            </>
+          )}
+        </Animated.View>
+      </ScrollView>
+    </View>
+  );
+};
+// ------------------------------------
 
 const BookScreen = () => {
   const flipAnim = useRef(new Animated.Value(0)).current;
   const [flipped, setFlipped] = useState(false);
+  const { t, i18n } = useTranslation();
+
+  const currentLocale = i18n.language === 'uk' ? uk : enUS;
+
+  const userData = {
+    firstName: "Jack",
+    lastName: "Blue",
+    middleName: "Bober",
+    bloodType: "A(II)Rh+",
+    centerName: "NNI JHP",
+    regionKey: "reg_lviv", 
+    issueDate: new Date(2025, 5, 24),
+    series: "0203",
+  };
+
+  const formattedDate = format(userData.issueDate, "d MMMM yyyy", { locale: currentLocale });
+  const locationText = `${userData.centerName} ${t(userData.regionKey)}`;
 
   const flipCard = () => {
     Animated.spring(flipAnim, {
@@ -29,8 +117,8 @@ const BookScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* SVG фон */}
       <Svg height={height} width={width} style={StyleSheet.absoluteFill}>
+        {/* SVG */}
         <Defs>
           <RadialGradient id="spot1" cx="85%" cy="15%" r="100%" fx="85%" fy="15%" gradientUnits="userSpaceOnUse">
             <Stop offset="0%" stopColor="#EFC5C5" stopOpacity="1" />
@@ -67,15 +155,16 @@ const BookScreen = () => {
 
       <TouchableWithoutFeedback onPress={flipCard}>
         <View style={styles.mainSection}>
-          {/* Передня сторона */}
           <Animated.View style={[StyleSheet.absoluteFill, { backfaceVisibility: 'hidden', transform: [{ rotateY: frontInterpolate }] }]}>
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center",  }}>
               <View style={styles.row}>
                 <View style={styles.box1}>
-                  <Text style={{ fontSize: 20, fontWeight: "600"}}>Donor Book</Text>
+                  <Text style={{ fontSize: 20, fontWeight: "600"}}>{t("donors_book")}</Text>
                 </View>
                 <View style={styles.box2}>
-                  <Text style={{ fontSize: 13, fontWeight: "600"}}>Series №0203</Text>
+                  <Text style={{ fontSize: 13, fontWeight: "600"}}>
+                     {t("series_number", { number: userData.series, defaultValue: `Series №${userData.series}` })}
+                  </Text>
                 </View>
               </View>
               <View style={styles.row}>
@@ -84,24 +173,32 @@ const BookScreen = () => {
                 </View>
                 <View style={styles.box4}>
                   <View style={styles.infoBlock}>
-                    <Text style={styles.infoLabel}>Date Of Issue:</Text>
-                    <Text style={styles.infoValue}>24 June 2025</Text>
+                    <Text style={styles.infoLabel}>{t("date_of_issue")}</Text>
+                    <Text style={styles.infoValue}>{formattedDate}</Text>
                   </View>
+                  
+                  {/* TICKER */}
                   <View style={styles.infoBlock}>
-                    <Text style={styles.infoLabel}>Location:</Text>
-                    <Text style={styles.infoValue}>NNI JHP Lviv Region</Text>
+                    <Text style={styles.infoLabel}>{t("location_dots")}</Text>
+                    <SmartTicker 
+                      key={locationText}
+                      text={locationText} 
+                      style={styles.infoValue} 
+                      width={145} 
+                    />
                   </View>
+
                   <View style={styles.infoBlock}>
-                    <Text style={styles.infoLabel}>Type Blood:</Text>
-                    <Text style={styles.infoValue}>A(II)Rh+</Text>
+                    <Text style={styles.infoLabel}>{t("type_of_blood")}</Text>
+                    <Text style={styles.infoValue}>{userData.bloodType}</Text>
                   </View>
                 </View>
               </View>
               <View style={styles.row}>
                 <View style={styles.box5}>
-                  <View><Text style={styles.nameText}>Blue</Text></View>
-                  <View><Text style={styles.nameText}>Jack</Text></View>
-                  <View><Text style={styles.nameText}>Bober</Text></View>
+                  <View><Text style={styles.nameText}>{userData.lastName}</Text></View>
+                  <View><Text style={styles.nameText}>{userData.firstName}</Text></View>
+                  <View><Text style={styles.nameText}>{userData.middleName}</Text></View>
                 </View>
                 <View style={styles.box6}>
                   <TouchableOpacity>
@@ -112,11 +209,9 @@ const BookScreen = () => {
             </View>
           </Animated.View>
 
-          {/* Задня сторона */}
           <Animated.View style={[StyleSheet.absoluteFill, { backfaceVisibility: 'hidden', transform: [{ rotateY: backInterpolate }] }]}>
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center",  }}>
               <Text style={{ fontSize: 18, fontWeight: "600" }}>тут має бути qr-код </Text>
-              
             </View>
           </Animated.View>
         </View>
@@ -124,6 +219,7 @@ const BookScreen = () => {
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -140,8 +236,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     justifyContent: "center",
     alignItems: "center",
-    // opacity: 0.5,
-    // paddingTop: 30,
   },
   row: {
     flexDirection: "row",
@@ -183,13 +277,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 110
   },
-  // infoRow: {
-  //   flexDirection: "row",
-  //   justifyContent: "space-between",
-  //   alignItems: "center",
-  //   width: "100%",
-  //   marginBottom: 10,
-  // },
   infoLabel: {
     fontSize: 17,
     fontWeight: "500",
@@ -215,7 +302,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "600",
     color: "#000",
-    
   },
 });
 

@@ -111,9 +111,8 @@ const SettingsScreen = () => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="chevron-back" size={25} color="black" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Settings</Text>
-              
-            </View>
+        <Text style={styles.headerTitle}>{t("settings")}</Text>
+      </View>
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t("language")}</Text>
         {languages.map((lang) => (

@@ -2,43 +2,70 @@ import React, { useState } from "react";
 import { StyleSheet, View, Text, Dimensions, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "../Theme/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const GetBookScreen = ({ activateCallback }: { activateCallback?: () => void }) => {
   const navigation = useNavigation();
   const { colors } = useTheme();
+  const { t } = useTranslation();
 
-  const [donations, setDonations] = useState(0);
+  // Стан донацій (0) та днів (3)
+  const [donations, setDonations] = useState(0); 
+  const daysLeft = 1; 
+  
   const maxDonations = 5;
-  const isActive = donations >= maxDonations;
+  
+  const remainingDonations = maxDonations - donations;
+  
+  const isReady = donations >= maxDonations;
 
   return (
     <View style={[styles.container, { backgroundColor: colors.backgroundMain }]}>
       <View style={styles.topSection}>
-        <Text style={[styles.title, { color: colors.text }]}>Donor Book</Text>
-        <Text style={[styles.subtitle, { color: colors.text }]}>
-          3 days left to receive the donor's book
-        </Text>
+        <Text style={[styles.title, { color: colors.text }]}>{t("donors_book")}</Text>
+        
+        
+        {isReady && (
+          <Text style={[styles.subtitle, { color: colors.text }]}>
+            {t("n_days_left", { count: daysLeft })}
+          </Text>
+        )}
+
         <Text style={[styles.paragraph, { color: colors.text }]}>
-          Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s. Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+          Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
         </Text>
+
+        
         <Text style={[styles.note, { color: colors.text }]}>
-          To receive the donor's book, you need to make 5 donations
+          {isReady 
+            ? t("donations_success") // Якщо 5/5
+            : t("to_get_your_donor_book", { count: remainingDonations }) 
+          }
         </Text>
       </View>
 
       <View style={styles.bottomSection}>
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: isActive ? colors.primary : "#d3d3d3ff" }]}
+          
+          style={[
+            styles.button, 
+            { backgroundColor: isReady ? colors.primary : "#d3d3d3ff" }
+          ]}
           onPress={() => {
-            if (!isActive) {
+            if (!isReady) {
+              // Логіка кліків: додаємо донацію
               setDonations(d => Math.min(d + 1, maxDonations));
               return;
             }
+            // Якщо готово — переходимо на екран книги
             navigation.navigate("BookScreen");
           }}
         >
           <Text style={[styles.buttonText, { color: colors.textCard || "#fff" }]}>
-            Get Donor Book
+            {isReady 
+              ? t("get_donors_book") 
+              : `${t("make_a_donation")} (${donations}/${maxDonations})`
+            }
           </Text>
         </TouchableOpacity>
       </View>
@@ -75,6 +102,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginBottom: 20,
     textAlign: "center",
+    color: "#E66A6A", 
   },
   paragraph: {
     fontSize: 16,
@@ -86,6 +114,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: "center",
     marginTop: 0,
+    fontWeight: "500"
   },
   button: {
     paddingVertical: 15,

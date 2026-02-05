@@ -19,9 +19,10 @@ import { useTheme } from "../Theme/ThemeContext";
 import { useNavigation } from "@react-navigation/native";
 
 
+
 export default function RegistrationScreen({ route }) {
   const { t } = useTranslation();
-  const [bloodType, setBloodType] = useState<string | null>(null);
+  // const [bloodType, setBloodType] = useState<string | null>(null);
   const [time, setTime] = useState<string | null>(null);
   const [location, setLocation] = useState("");
   const [name, setName] = useState("");
@@ -52,7 +53,7 @@ export default function RegistrationScreen({ route }) {
 
   const validate = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!bloodType) newErrors.bloodType = t("please_select_blood");
+    // if (!bloodType) newErrors.bloodType = t("please_select_blood");
     if (!time) newErrors.time = t("please_select_time");
     if (!location.trim()) newErrors.location = t("location_required");
     if (!name.trim()) newErrors.name = t("name_required");
@@ -139,7 +140,7 @@ export default function RegistrationScreen({ route }) {
             </TouchableOpacity>
           ))}
         </View> */}
-        {errors.bloodType && <Text style={styles.errorText}>{errors.bloodType}</Text>}
+        {/* {errors.bloodType && <Text style={styles.errorText}>{errors.bloodType}</Text>} */}
 
         <Text style={styles.sectionTitle}>{t("time")}</Text>
         <View style={styles.optionsRow}>

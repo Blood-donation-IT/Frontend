@@ -3,8 +3,10 @@ import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from "reac
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context"; // Додав для безпечних відступів
+import { useTranslation } from 'react-i18next';
 
 export default function EditProfileScreen() {
+  const { t } = useTranslation();
   const [name, setName] = useState("Blue Jack");
   const [email, setEmail] = useState("gmail@com");
   const [phoneNumber, setPhoneNumber] = useState("+380 00 000 00 00");
@@ -17,7 +19,7 @@ export default function EditProfileScreen() {
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Ionicons name="chevron-back" size={25} color="black" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Edit profile</Text>
+          <Text style={styles.headerTitle}>{t("edit_profile")}</Text>
         </View>
 
         <View style={styles.container}>
@@ -59,7 +61,7 @@ export default function EditProfileScreen() {
             </View>
 
             <TouchableOpacity style={styles.saveBtn}>
-                <Text style={styles.saveText}>Save</Text>
+                <Text style={styles.saveText}>{t("save_changes")}</Text>
             </TouchableOpacity>
         </View>
       </>

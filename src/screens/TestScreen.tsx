@@ -1,23 +1,25 @@
 import React, { useRef, useState } from "react";
 import { StyleSheet, View, Text, Dimensions, TouchableOpacity, ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 const { width, height } = Dimensions.get("window");
 
 export default function TestScreen() {
   const navigation = useNavigation<any>();
+  const { t } = useTranslation();
 
   const questions = [
-    { id: 1, text: "Вам вже виповнилося 18 років?", type: "yesno" },
-    { id: 2, text: "Ваш вік не перевищує 60–65 років?", type: "yesno" },
-    { id: 3, text: "Ваша вага 50+ кг?", type: "yesno" },
-    { id: 4, text: "Ви загалом вважаєте свій стан здоров’я добрим?", type: "yesno" },
-    { id: 5, text: "Ви не маєте хронічних захворювань у важкій формі?", type: "have" },
-    { id: 6, text: "Ви не маєте хвороб серця або серцевої недостатності?", type: "have" },
-    { id: 7, text: "Ви не маєте цукрового діабету (особливо інсулінозалежного)?", type: "have" },
-    { id: 8, text: "Ви не маєте захворювань крові або порушень згортання?", type: "have" },
-    { id: 9, text: "Ви не маєте онкологічних захворювань?", type: "have" },
-    { id: 10, text: "Ви не маєте гепатиту B, C або жовтяниці в анамнезі?", type: "have" },
+    { id: 1, textKey: "question_1", type: "yesno" },
+    { id: 2, textKey: "question_2", type: "yesno" },
+    { id: 3, textKey: "question_3", type: "yesno" },
+    { id: 4, textKey: "question_4", type: "yesno" },
+    { id: 5, textKey: "question_5", type: "have" },
+    { id: 6, textKey: "question_6", type: "have" },
+    { id: 7, textKey: "question_7", type: "have" },
+    { id: 8, textKey: "question_8", type: "have" },
+    { id: 9, textKey: "question_9", type: "have" },
+    { id: 10, textKey: "question_10", type: "have" },
   ];
 
   const [answers, setAnswers] = useState<Record<number, string>>({});
@@ -40,8 +42,8 @@ export default function TestScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Short Test</Text>
-      <Text style={styles.subtitle}>It’s necessary for donation</Text>
+      <Text style={styles.title}>{t("short_test")}</Text>
+      <Text style={styles.subtitle}>{t("necessary_for_donation")}</Text>
 
       <ScrollView
         style={styles.list}
@@ -51,27 +53,28 @@ export default function TestScreen() {
         {questions.map((q) => (
           <View key={q.id} style={styles.card}>
             <Text style={styles.questionText}>
-              {q.id}. {q.text}
+              {q.id}. {t(q.textKey)}
             </Text>
 
             <View style={styles.optionsRow}>
               {q.type === "yesno" ? (
                 <>
-                  {renderButton(q.id, "yes", "Так")}
-                  {renderButton(q.id, "no", "Ні")}
+                  {renderButton(q.id, "yes", t("yes"))}
+                  {renderButton(q.id, "no", t("no"))}
                 </>
               ) : (
                 <>
-                  {renderButton(q.id, "have", "Маю")}
-                  {renderButton(q.id, "no", "Не маю")}
+                  {renderButton(q.id, "have", t("have"))}
+                  {renderButton(q.id, "no", t("dont_have"))}
                 </>
               )}
             </View>
           </View>
-        ))}
+        ))} 
+        
         {showWarning && !allAnswered && (
           <Text style={styles.warningText}>
-            Дайте відповідь на ВСІ запитання
+            {t("answer_All_questions")}
           </Text>
         )}
         <TouchableOpacity
@@ -87,7 +90,7 @@ export default function TestScreen() {
             navigation.navigate("Home");
           }}
         >
-          <Text style={styles.continueText}>Continue</Text>
+          <Text style={styles.continueText}>{t("continue")}</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>

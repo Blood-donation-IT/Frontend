@@ -70,7 +70,7 @@ export default function LogInScreen() {
         />
        <TouchableOpacity onPress={() => navigation.navigate("ForgetScreen")}>
           <Text style={{ color: colors.primary, fontWeight: "bold", marginBottom: 16, alignSelf: "flex-end" }}>
-         Forgot Password?
+         {t("forgot_password")}
           </Text>
         </TouchableOpacity>
         </View>

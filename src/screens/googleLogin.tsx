@@ -19,6 +19,7 @@ import {
 
 import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
 import { useTheme } from "../Theme/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const WEB_CLIENT_ID =
   "919528186068-dehjb980ti0jkdoie856nqqlnu75fqse.apps.googleusercontent.com";
@@ -31,6 +32,8 @@ export default function GoogleLogin() {
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+
+  const { t } = useTranslation();
 
   function authStateChanged(user: any) {
     setUser(user);
@@ -103,15 +106,15 @@ export default function GoogleLogin() {
         ]}
       >
         <Text style={[styles.header, { color: colors.text }]}>
-          Вітаємо!
+          {t("welcome!")}
         </Text>
         <Text style={[styles.subHeader, { color: colors.textSecondary }]}>
-          Увійдіть, щоб продовжити
+          {t("sign_in_to_continue")}
         </Text>
 
         <View style={styles.btnContainer}>
           <Button
-            title={loading ? "Вхід..." : "Увійти через Google"}
+            title={loading ? t("signing_in") : t("sign_in_with_google")}
             onPress={onGoogleButtonPress}
             disabled={loading}
             color={colors.primary}
@@ -129,7 +132,7 @@ export default function GoogleLogin() {
       ]}
     >
       <Text style={[styles.header, { color: colors.text }]}>
-        Профіль
+        {t("profile")}
       </Text>
 
       <View

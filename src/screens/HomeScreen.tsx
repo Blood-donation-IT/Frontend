@@ -1,16 +1,66 @@
-import React from 'react';
+import React, { useMemo } from 'react'; // Додав useMemo
 import { View, StyleSheet, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
-import { Calendar } from 'react-native-calendars';
+import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { useTheme } from "../Theme/ThemeContext";
+import { useTranslation } from "react-i18next";
+import { format, addMonths, startOfYear, endOfYear, eachDayOfInterval, isSameDay } from 'date-fns'; 
+import { uk, enUS } from 'date-fns/locale';
+
+// --- НАЛАШТУВАННЯ ЛОКАЛІЗАЦІЇ КАЛЕНДАРЯ ---
+LocaleConfig.locales['uk'] = {
+  monthNames: [
+    'Січень', 'Лютий', 'Березень', 'Квітень', 'Травень', 'Червень',
+    'Липень', 'Серпень', 'Вересень', 'Жовтень', 'Листопад', 'Грудень'
+  ],
+  monthNamesShort: ['Січ', 'Лют', 'Бер', 'Кві', 'Тра', 'Чер', 'Лип', 'Сер', 'Вер', 'Жов', 'Лис', 'Гру'],
+  dayNames: ['Неділя', 'Понеділок', 'Вівторок', 'Середа', 'Четвер', 'П\'ятниця', 'Субота'],
+  dayNamesShort: ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+  today: "Сьогодні"
+};
+LocaleConfig.locales['en'] = LocaleConfig.locales[''];
 
 export default function HomeScreen({ navigation }) {
   const { colors, theme, isDark: contextIsDark } = useTheme();
-  
-  const isDark = contextIsDark || theme === 'dark' || colors.text === '#FFFFFF' || colors.text === '#E0E0E0';
+  const { t, i18n } = useTranslation();
 
+  const dateFnsLocale = i18n.language === 'uk' ? uk : enUS;
+  LocaleConfig.defaultLocale = i18n.language === 'uk' ? 'uk' : 'en';
+
+  const isDark = contextIsDark || theme === 'dark' || colors.text === '#FFFFFF' || colors.text === '#E0E0E0';
   const logoSource = isDark 
     ? require('../images/logo-white.png') 
     : require('../images/logo.png');
+
+  const todayName = format(new Date(), 'EEEE', { locale: dateFnsLocale });
+  const formattedDayBadge = `< ${todayName.toLowerCase()}`;
+
+  // --- ЛОГІКА АВТОМАТИЧНИХ ДАТ ---
+  // Ця функція створить червоні дати кожні 3 дні для поточного і наступного року
+  const redDates = useMemo(() => {
+    const dates = {};
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    
+    // Генеруємо для поточного року і наступного
+    for (let year = currentYear; year <= currentYear + 1; year++) {
+      for (let month = 0; month < 12; month++) {
+        // Отримуємо кількість днів у місяці
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        
+        // Цикл: кожні 3 дні (починаючи з 3-го числа: 3, 6, 9...)
+        for (let day = 3; day <= daysInMonth; day += 3) {
+          // Формуємо рядок YYYY-MM-DD
+          const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+          
+          dates[dateString] = { 
+            selected: true, 
+            selectedColor: "#E53935" 
+          };
+        }
+      }
+    }
+    return dates;
+  }, []); // useMemo зберігає результат, щоб не перераховувати щоразу
 
   const bloodData = [
     { type: "0+", status: "low" },
@@ -26,25 +76,8 @@ export default function HomeScreen({ navigation }) {
   const chartData = [5, 8, 15, 25, 40, 60, 80, 60, 50, 45, 60, 70, 50, 40, 30, 25, 20, 15, 15, 10, 5, 0, 5, 0];
   const chartLabels = ["6", "9", "12", "15", "18", "21"];
 
-  const redDates = {
-    "2024-08-05": { selected: true, selectedColor: "#E53935" },
-    "2024-08-06": { selected: true, selectedColor: "#E53935" },
-    "2024-08-07": { selected: true, selectedColor: "#E53935" },
-    "2024-08-08": { selected: true, selectedColor: "#E53935" },
-    "2024-08-09": { selected: true, selectedColor: "#E53935" },
-    "2024-08-10": { selected: true, selectedColor: "#E53935" },
-    "2024-08-11": { selected: true, selectedColor: "#E53935" },
-    "2024-08-14": { selected: true, selectedColor: "#E53935" },
-    "2024-08-19": { selected: true, selectedColor: "#E53935" },
-    "2024-08-20": { selected: true, selectedColor: "#E53935" },
-    "2024-08-21": { selected: true, selectedColor: "#E53935" },
-    "2024-08-22": { selected: true, selectedColor: "#E53935" },
-    "2024-08-23": { selected: true, selectedColor: "#E53935" },
-    "2024-08-24": { selected: true, selectedColor: "#E53935" },
-    "2024-08-29": { selected: true, selectedColor: "#E53935" },
-  };
-
   const handleDayPress = (day) => {
+    // Якщо натиснули на червону дату - переходимо
     if (redDates[day.dateString]) {
       navigation.navigate("Registration", { day: day.dateString });
     }
@@ -69,13 +102,18 @@ export default function HomeScreen({ navigation }) {
 
       <View style={[styles.calendarWrapper, { backgroundColor: colors.backgroundCard, borderColor: colors.text }]}>
         <Calendar
-          key={colors.backgroundCard}
-          current={"2024-08-01"}
+          key={`${colors.backgroundCard}-${i18n.language}`}
+          
+          current={format(new Date(), 'yyyy-MM-dd')}
           monthFormat={"MMMM"}
           enableSwipeMonths={true}
           hideExtraDays={true}
+
+          // автоматичні дати
           markedDates={redDates}
+          
           onDayPress={handleDayPress}
+          firstDay={1} 
           theme={{
             backgroundColor: colors.backgroundMain,
             calendarBackground: colors.backgroundCard,
@@ -94,17 +132,16 @@ export default function HomeScreen({ navigation }) {
 
       <View>
         <Text style={[styles.heading, { color: colors.text }]}>
-          Те що може зацікавити тебе 🤭👀
+          {t('something_that_might_interest_you')} 🤭👀
         </Text>
         <Text style={[styles.paragraph, { color: colors.text }]}>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-          Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
         </Text>
       </View>
 
       <View style={styles.bloodContainer}>
         <Text style={[styles.bloodTitle, { color: colors.text }]}>
-          Яка кров зараз найбільш потрібна? <Text style={{ color: "red" }}>🩸</Text>
+          {t('which_blood_types_are_needed_most')} <Text style={{ color: "red" }}>🩸</Text>
         </Text>
         <View style={[styles.bloodGrid, { borderColor: colors.text + '1A' }]}>
           {bloodData.map((item, index) => {
@@ -123,14 +160,13 @@ export default function HomeScreen({ navigation }) {
 
       <View style={styles.chartSection}>
         <View style={styles.chartHeaderRow}>
-          <Text style={[styles.chartTitle, { color: colors.text }]}>Rush of people</Text>
+          <Text style={[styles.chartTitle, { color: colors.text }]}>{t('rush_of_people')}</Text>
           <View style={[styles.dayBadge, { backgroundColor: colors.primary }]}>
-            <Text style={styles.dayBadgeText}>&lt; thursday</Text>
+            <Text style={styles.dayBadgeText}>{formattedDayBadge}</Text>
           </View>
         </View>
 
         <View style={[styles.chartContainer, { backgroundColor: colors.backgroundCard, borderColor: colors.text + '1A'}]}>
-          
           <View style={[styles.dashedLine, { borderColor: colors.text }]} />
           <View style={styles.barsContainer}>
             {chartData.map((height, index) => (
@@ -147,9 +183,7 @@ export default function HomeScreen({ navigation }) {
               </View>
             ))}
           </View>
-
           <View style={[styles.bottomAxisLine, { backgroundColor: colors.text }]} />
-
           <View style={styles.labelsContainer}>
             {chartLabels.map((label, index) => (
               <Text key={index} style={[styles.chartLabelText, { color: colors.text }]}>{label}</Text>
@@ -161,6 +195,7 @@ export default function HomeScreen({ navigation }) {
     </ScrollView>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
