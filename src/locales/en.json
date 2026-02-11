@@ -16,6 +16,7 @@
   "donor_status": "Donor Status",
   "home": "Home",
   "profile":"Profile",
+  "honorary_donor_of_ukraine": "Honorary Donor of Ukraine",
 
   "change": "Change",
   "your_blood_type": "Your Blood Type",
@@ -57,12 +58,115 @@
   "or_sign_in_with": "Or Sign In With",
   
   "blood_needed_title": "Which blood types are most needed now?",
-  "rush_of_people": "Rush of people",
   "thursday": "thursday",
 
   "my_donations": "My Donations",
   "no_donations_yet": "No donations yet",
 
-  "date_of_issue": "Date Of Issue"
+  "forgot_password": "Forgot password?",
 
+// ShortTestScreen
+  "question_1": "Are you already 18 years old?",
+  "question_2": "Is your age not over 60-65 years?",
+  "question_3": "Is your weight 50+ kg?",
+  "question_4": "Do you generally consider your health to be good?",
+  "question_5": "Do you not have chronic diseases in severe form?",
+  "question_6": "Do you not have heart diseases or heart failure?",
+  "question_7": "Do you not have diabetes (especially insulin-dependent)?",
+  "question_8": "Do you not have blood diseases or clotting disorders?",
+  "question_9": "Do you not have oncological diseases?",
+  "question_10": "Do you not have hepatitis B, C or jaundice in your medical history?",
+  "yes": "Yes",
+  "no": "No",
+  "have": "Have",
+  "dont_have": "Don't have",
+  "answer_All_questions": "Answer ALL questions",
+  "continue": "Continue",
+  "short_test": "Short Test",
+  "necessary_for_donation": "It’s necessary for donation",
+
+// ResetPasswordScreen
+  "reset_password": "Reset Password",
+  "enter_code_sent_to": "Enter the code sent to",
+  "enter_5_digit_code": "Enter 5-digit code",
+  "verify": "Verify",
+  "didnt_receive_code": "Didn't receive the code?",
+  "send_again": "Send Again",
+  "success": "Success",
+  "code has been sent again to your email.": "Code has been sent again to your email.",
+
+// NotificationScreen
+
+  "notifications": "Notifications",
+  "today": "Today",
+  "yesterday": "Yesterday",
+
+  "daysAgo_one": "{{count}} day ago",
+  "daysAgo_other": "{{count}} days ago",
+
+  "weeksAgo_one": "{{count}} week ago",
+  "weeksAgo_other": "{{count}} weeks ago",
+
+  "yearsAgo_one": "{{count}} year ago",
+  "yearsAgo_other": "{{count}} years ago",
+
+  "donation_reminder_title": "Don’t forget!",
+  "donation_reminder": "You have registered to donation on {{time}} in {{day}}.",
+  "account_setup_success": "Account Setup Successful",
+
+// IntroScreen
+  
+  "the_step": "The Step",
+  "that_gives_hope": "That Gives Hope",
+  "thank_you_for_joining_us": "Thank you for joining us",
+  "get_started": "Get Started",
+
+  // BookScreen
+  "series_number": "Series№{{number}}",
+  "date_of_issue": "Date of Issue:",
+  "location_dots": "Location:",
+  "type_of_blood": "Blood Type:",
+  "reg_lviv": "Lviv Region",
+  "Scan_for_details": "Scan for details",
+  
+  // GetBookScreen
+  "n_days_left_one": "{{count}} day left to receive the donor's book",
+  "n_days_left_other": "{{count}} days left to receive the donor's book",
+  "make_a_donation": "Make a Donation",
+
+  "to_get_your_donor_book_one": "To receive the donor's book, you need to make {{count}} more donation",
+  "to_get_your_donor_book_other": "To receive the donor's book, you need to make {{count}} more donations",
+  "get_donors_book": "Get Donor's Book",
+  "donations_success": "You have successfully made 5 donations!",
+
+  // ForgetScreen
+  "enter_the_email_associated_with_your_account": "Enter the email associated with your account and we’ll send an email with the code to reset your password.",
+  "send_code": "Send Code",
+  "ok": "OK",
+
+  // CreatepasswordScreen
+
+  "create_new_password": "Create New Password",
+  "enter_new_password": "Enter new password",
+  "confirm_new_password": "Confirm new password",
+  "new_password": "New Password",
+  "your_new_password_must_be_different": "Your new password must be different from the previous one.",
+  "remember_and_save_my_password": "Remember and save my password",
+
+  // EditProfileScreen
+
+  // "edit_profile": "Edit Profile",
+  "save_changes": "Save Changes",
+
+  // HomeScreen
+
+  "rush_of_people": "Rush of People",
+  "something_that_might_interest_you": "Something that might interest you",
+  "which_blood_types_are_needed_most": "Which blood types are needed most?",
+
+  // googleLogin
+  "welcome!": "Welcome!",
+  "sign_in_to_continue": "Sign in to continue",
+  "sign_in_with_google": "Sign in with Google",
+  "signing_in": "Signing in..."
 }

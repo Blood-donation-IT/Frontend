@@ -14,12 +14,14 @@ import { useTheme } from "../Theme/ThemeContext";
 import ArrowLeft from "../images/arrow-left.png";
 import Logo from "../images/logo.png";
 import CreateNewPasswordScreen from "./Createpassword";
+import { useTranslation } from "react-i18next";
 
 export default function ResetPasswordScreen() {
   const { colors } = useTheme();
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
   const email = route.params?.email || "user@gmail.com";
+  const { t } = useTranslation();
 
   const [otp, setOtp] = useState(["", "", "", "", ""]);
   const [alertVisible, setAlertVisible] = useState(false);
@@ -54,10 +56,10 @@ export default function ResetPasswordScreen() {
           <Image source={Logo} style={styles.logo} />
         </View>
 
-        <Text style={[styles.title, { color: colors.primary }]}>Reset Password</Text>
+        <Text style={[styles.title, { color: colors.primary }]}>{t("reset_password")}</Text>
 
         <Text style={[styles.subtitle, { color: colors.text }]}>
-          Enter the code sent to <Text style={{ color: colors.primary }}>{email}</Text>
+          {t("enter_code_sent_to")} <Text style={{ color: colors.primary }}>{email}</Text>
         </Text>
 
         <View style={styles.otpContainer}>
@@ -72,16 +74,16 @@ export default function ResetPasswordScreen() {
             />
           ))}
         </View>
-        <Text style={[styles.otpText, { color: colors.text }]}>Enter 5-digit code</Text>
+        <Text style={[styles.otpText, { color: colors.text }]}>{t("enter_5_digit_code")}</Text>
 
         <TouchableOpacity style={[styles.button, { backgroundColor: colors.primary }]} onPress={handleVerify}>
-          <Text style={styles.buttonText}>Verify</Text>
+          <Text style={styles.buttonText}>{t("verify")}</Text>
         </TouchableOpacity>
 
         <Text style={[styles.footerText, { color: colors.text }]}>
-          Didn't receive the code?{" "}
+          {t("didnt_receive_code")}{" "}
           <Text style={{ color: colors.primary, fontWeight: "bold" }} onPress={handleSendAgain}>
-            Send again
+            {t("send_again")}
           </Text>
         </Text>
 
@@ -95,9 +97,9 @@ export default function ResetPasswordScreen() {
       <Modal transparent visible={alertVisible} animationType="fade">
         <View style={styles.alertOverlay}>
           <View style={[styles.alertBox, { backgroundColor: colors.backgroundCard, borderColor: colors.primary }]}>
-            <Text style={[styles.alertTitle, { color: colors.text }]}>Success</Text>
+            <Text style={[styles.alertTitle, { color: colors.text }]}>{t("success")}</Text>
             <Text style={[styles.alertMessage, { color: colors.text }]}>
-              Code has been sent again to your email.
+              {t("code has been sent again to your email.")}
             </Text>
             <TouchableOpacity style={[styles.alertButton, { backgroundColor: colors.primary }]} onPress={() => setAlertVisible(false)}>
               <Text style={styles.alertButtonText}>OK</Text>

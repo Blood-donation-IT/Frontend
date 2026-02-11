@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Alert, SafeAreaView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../Theme/ThemeContext";
 import CustomHeader from "../components/CustomHeader";
@@ -65,6 +65,7 @@ export default function EditProfileScreen({navigation}) {
   const placeholderColor = "#d9d9d9";
 
   return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#fafafa" }}> 
      <View style={[styles.container, { backgroundColor: colors.backgroundMain }]}>
       <CustomHeader title={t("edit_profile")} navigation={navigation} />
         <View>
@@ -112,10 +113,27 @@ export default function EditProfileScreen({navigation}) {
           <Text style={styles.saveText}>{t("save")}</Text>
         </TouchableOpacity>
     </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 30,
+    paddingTop: 5,
+    paddingBottom: 10,
+    marginLeft: -20,
+  },
+  headerTitle: {
+    flex: 1,
+    textAlign: "center",
+    fontSize: 20,
+    marginLeft: -10,
+    fontWeight: "600",
+  },
   container: {
     flex: 1,
     padding: 20,

@@ -23,6 +23,7 @@ import { useTheme } from "../Theme/ThemeContext";
 import { t } from "i18next";
 import { useNavigation } from "@react-navigation/native";
 import { useAuthStore } from "../stores/useAuthStore";
+import { useTranslation } from "react-i18next";
 
 const WEB_CLIENT_ID = process.env.EXPO_PUBLIC_WEB_CLIENT_ID;
 
@@ -37,6 +38,7 @@ export default function GoogleLogin() {
   const [loading, setLoading] = useState(false);
 
   const syncWithFirebase = useAuthStore((state) => state.syncWithFirebase);
+  const { t } = useTranslation();
 
   function authStateChanged(user: any) {
     setUser(user);
@@ -56,7 +58,6 @@ export default function GoogleLogin() {
     setLoading(true);
     try {
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-
       const signInResult = await GoogleSignin.signIn();
       let idToken = signInResult.idToken || signInResult?.data?.idToken;
 
@@ -98,29 +99,27 @@ export default function GoogleLogin() {
     );
   }
 
-  if (true) {!user
-    return (
-      <View style={styles.container}>
-        <View style={styles.dividerContainer}>
-          <View style={styles.line} />
-          <Text style={styles.dividerText}>{t("or_sign_in_with")}</Text>
-          <View style={styles.line} />
-        </View>
-
-        <View style={styles.socialButtonsRow}>
-          <TouchableOpacity style={styles.socialButton} onPress={onGoogleButtonPress}>
-            <Image source={require("../images/google_icon.png")} style={styles.socialIcon} />
-            <Text style={styles.socialButtonText}>Google</Text>
-          </TouchableOpacity>
-
-          {/* <TouchableOpacity style={styles.socialButton}>
-            <Image source={require("../images/apple_icon.png")} style={styles.socialIcon} />
-            <Text style={styles.socialButtonText}>Apple</Text>
-          </TouchableOpacity> */}
-        </View>
+  return (
+    <View style={styles.container}>
+      <View style={styles.dividerContainer}>
+        <View style={styles.line} />
+        <Text style={styles.dividerText}>{t("or_sign_in_with")}</Text>
+        <View style={styles.line} />
       </View>
-    );
-  }
+
+      <View style={styles.socialButtonsRow}>
+        <TouchableOpacity style={styles.socialButton} onPress={onGoogleButtonPress}>
+          <Image source={require("../images/google_icon.png")} style={styles.socialIcon} />
+          <Text style={styles.socialButtonText}>Google</Text>
+        </TouchableOpacity>
+
+        {/* <TouchableOpacity style={styles.socialButton}>
+          <Image source={require("../images/apple_icon.png")} style={styles.socialIcon} />
+          <Text style={styles.socialButtonText}>Apple</Text>
+        </TouchableOpacity> */}
+      </View>
+    </View>
+  );
 
 }
 

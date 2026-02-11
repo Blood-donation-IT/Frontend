@@ -1,15 +1,101 @@
 import React, { useRef, useState, useEffect } from "react";
-import { StyleSheet, View, Text, Dimensions, TouchableWithoutFeedback, Animated, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, Dimensions, TouchableWithoutFeedback, Animated, TouchableOpacity, Easing, ScrollView } from "react-native";
 import Svg, { Defs, RadialGradient, Rect, Stop } from "react-native-svg";
 import QRCode from 'react-native-qrcode-svg';
 import { useTheme } from "../Theme/ThemeContext";
 import { useAuthStore } from "../stores/useAuthStore";
+import { useTranslation } from "react-i18next";
+import { format } from "date-fns";
+import { enUS, uk } from "date-fns/locale";
 
 const { width, height } = Dimensions.get("window");
 
+
+const SmartTicker = ({ text, style, width: fixedWidth }) => {
+    const [textWidth, setTextWidth] = useState(0);
+    const scrollX = useRef(new Animated.Value(0)).current;
+    const spacer = 30; 
+
+    
+    const shouldAnimate = textWidth > fixedWidth;
+
+    useEffect(() => {
+      if (shouldAnimate) {
+        
+        const distance = textWidth + spacer;
+        const duration = distance * 50; 
+
+        Animated.loop(
+          Animated.timing(scrollX, {
+            toValue: -distance, 
+            duration: duration,
+            useNativeDriver: true,
+            easing: Easing.linear,
+          })
+        ).start();
+
+        return () => scrollX.setValue(0);
+      }
+    }, [textWidth, fixedWidth, shouldAnimate]);
+
+    return (
+      <View style={{ width: fixedWidth, overflow: 'hidden' }}>
+        <ScrollView 
+          horizontal 
+          scrollEnabled={false} 
+          showsHorizontalScrollIndicator={false}
+        >
+          <Animated.View style={{ 
+            flexDirection: 'row', 
+            transform: [{ translateX: scrollX }] // Рухаємо ряд
+          }}>
+            
+            <Text 
+              style={style} 
+              numberOfLines={1}
+              onLayout={(e) => setTextWidth(e.nativeEvent.layout.width)}
+            >
+              {text}
+            </Text>
+
+            
+            {shouldAnimate && (
+              <>
+                
+                <View style={{ width: spacer }} />
+                
+                <Text style={style} numberOfLines={1}>
+                  {text}
+                </Text>
+                
+                <View style={{ width: 50 }} />
+              </>
+            )}
+          </Animated.View>
+        </ScrollView>
+      </View>
+    );
+  };
+  // ------------------------------------
+
 const BookScreen = () => {
-  const { colors, isLight } = useTheme(); 
+  const { colors, isLight } = useTheme();
+  const { t, i18n } = useTranslation();
   const user = useAuthStore((state) => state.user);
+
+  const currentLocale = i18n.language === 'uk' ? uk : enUS;
+
+  const userData = {
+    name: user?.name,
+    bloodType: user?.blood_type,
+    centerName: "NNI JHP",
+    regionKey: "reg_lviv", 
+    issueDate: new Date(2025, 5, 24),
+    series: "0203",
+  };
+
+  const formattedDate = format(userData.issueDate, "d MMMM yyyy", { locale: currentLocale });
+  const locationText = `${userData.centerName} ${t(userData.regionKey)}`;
 
   const baseUrl = "https://blood-donation.com/user/profile";
   const [qrValue, setQrValue] = useState(baseUrl);
@@ -103,8 +189,8 @@ const BookScreen = () => {
             <View style={styles.contentWrapper}>
               
               <View style={styles.rowTop}>
-                <Text style={[styles.headerTitle, { color: cardTextColor }]}>Donor Book</Text>
-                <Text style={[styles.headerSeries, { color: cardTextColor }]}>Series №0203</Text>
+                <Text style={[styles.headerTitle, { color: cardTextColor }]}>{t("donors_book")}</Text>
+                <Text style={[styles.headerSeries, { color: cardTextColor }]}>{t("series_number", { number: userData.series, defaultValue: `Series №${userData.series}` })}</Text>
               </View>
 
               <View style={styles.rowMiddle}>
@@ -114,28 +200,34 @@ const BookScreen = () => {
                 
                 <View style={styles.detailsContainer}>
                   <View style={styles.infoBlock}>
-                    <Text style={[styles.infoLabel, { color: cardTextColor }]}>Date Of Issue:</Text>
-                    <Text style={[styles.infoValue, { color: cardTextColor, opacity: 0.8 }]}>24 June 2025</Text>
+                    <Text style={[styles.infoLabel, { color: cardTextColor }]}>{t("date_of_issue")}</Text>
+                    <Text style={[styles.infoValue, { color: cardTextColor, opacity: 0.8 }]}>{formattedDate}</Text>
                   </View>
                   <View style={styles.infoBlock}>
-                    <Text style={[styles.infoLabel, { color: cardTextColor }]}>Location:</Text>
-                    <Text style={[styles.infoValue, { color: cardTextColor, opacity: 0.8 }]}>NNI JHP Lviv Region</Text>
+                    <Text style={[styles.infoLabel, { color: cardTextColor }]}>{t("location_dots")}</Text>
+                    <SmartTicker 
+                      key={locationText}
+                      text={locationText} 
+                      style={styles.infoValue} 
+                      width={145} 
+                    />
                   </View>
                   <View style={styles.infoBlock}>
-                    <Text style={[styles.infoLabel, { color: cardTextColor }]}>Type Blood:</Text>
-                    <Text style={[styles.infoValue, { color: cardTextColor, opacity: 0.8 }]}>{user?.blood_type}</Text>
+                    <Text style={[styles.infoLabel, { color: cardTextColor }]}>{t("type_of_blood")}</Text>
+                    <Text style={[styles.infoValue, { color: cardTextColor, opacity: 0.8 }]}>{userData.bloodType}</Text>
                   </View>
                 </View>
               </View>
 
               <View style={styles.rowBottom}>
                 <View>
-                  <Text style={[styles.nameText, { color: cardTextColor }]}>{user?.name}</Text>
+                  <Text style={[styles.nameText, { color: cardTextColor }]}>{userData.name}</Text>
                 <TouchableOpacity>
                   <Text style={[styles.dots, { color: cardTextColor }]}>...</Text>
                 </TouchableOpacity>
               </View>
 
+            </View>
             </View>
           </Animated.View>
 
@@ -160,7 +252,7 @@ const BookScreen = () => {
                  />
               </View>
 
-              <Text style={[styles.qrText, { color: cardTextColor }]}>Scan for details</Text>
+              <Text style={[styles.qrText, { color: cardTextColor }]}>{t("Scan_for_details")}</Text>
             </View>
           </Animated.View>
 

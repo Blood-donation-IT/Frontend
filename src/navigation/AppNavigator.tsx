@@ -28,7 +28,10 @@ export default function AppNavigator() {
   return (
     <ThemeProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="SplashScreen">
+        <Stack.Navigator 
+          initialRouteName="SplashScreen"
+          screenOptions={{ headerShown: false }}
+        >
           <Stack.Screen 
             name="SplashScreen" 
             component={SplashScreen} 

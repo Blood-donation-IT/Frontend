@@ -59,10 +59,21 @@ const SettingsScreen = ({ navigation }) => {
   container: {
     padding: 20,
     flexGrow: 1,
+    paddingTop: 60,
     backgroundColor: colors.backgroundMain,
     color:colors.text
   },
 
+  header: {
+    color: colors.text,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 30,
+    padding: 0,
+    paddingBottom: 20,
+    marginLeft: -40,
+  },
   section: {
     marginBottom: 30,
   },
@@ -93,6 +104,13 @@ const SettingsScreen = ({ navigation }) => {
     color: colors.text,
     fontSize: 16,
     marginRight: 10,
+  },
+  headerTitle: {
+    flex: 1,
+    textAlign: "center",
+    fontSize: 20,
+    fontWeight: "600",
+    marginLeft: 10,
   },
 });
 

@@ -15,6 +15,7 @@
   "donor_status": "Статус донора",
   "home": "Дім",
   "profile":"Профіль",
+  "honorary_donor_of_ukraine": "Почесний донор України",
 
   "change": "Змінити",
   "your_blood_type": "Ваша група крові",
@@ -51,18 +52,128 @@
   "fill_all_fields": "Будь ласка, заповніть усі поля",
   "passwords_do_not_match": "Паролі не співпадають",
   "invalid_email": "Невірна адреса електронної пошти",
-  "donors_book": "Книжка донора",
 
   "or_sign_in_with": "Або увійти через",
 
   "logout":"Вийти з акаунта",
 
   "blood_needed_title": "Яка кров зараз найбільш потрібна?",
-  "rush_of_people": "Наплив відвідувачів",
   "thursday": "четвер",
 
   "my_donations": "Мої донації",
   "no_donations_yet": "Донацій ще не було",
 
-  "date_of_issue": "Дата видачі"
+  "donors_book": "Книга донора",
+  "forgot_password": "Забули пароль?",
+
+  // ShortTestScreen
+   "question_1": "Вам вже виповнилося 18 років?",
+   "question_2": "Ваш вік не перевищує 60–65 років?",
+   "question_3": "Ваша вага 50+ кг?",
+   "question_4": "Ви загалом вважаєте свій стан здоров’я добрим?",
+   "question_5": "Ви не маєте хронічних захворювань у важкій формі?", 
+   "question_6": "Ви не маєте хвороб серця або серцевої недостатності)?",
+   "question_7": "Ви не маєте цукрового діабету(особливо інсулінозалежного)?",
+   "question_8": "Ви не маєте захворювань крові або порушень згортання?",
+   "question_9": "Ви не маєте онкологічних захворювань?",
+   "question_10": "Ви не маєте гепатиту B, C або жовтяниці в анамнезі?",
+   "yes": "Так",
+   "no": "Ні",
+   "have": "Маю",
+   "dont_have": "Не маю",
+   "answer_All_questions": "Дайте відповіді на ВСІ запитання",
+   "continue": "Продовжити",
+   "short_test": "Короткий тест",
+   "necessary_for_donation": "Це необхідно для того, щоб стати донором",
+
+  // ResetPasswordScreen
+   "reset_password": "Скинути пароль",
+   "enter_code_sent_to": "Введіть код, надісланий на",
+   "enter_5_digit_code": "Введіть 5-значний код",
+   "verify": "Підтвердити",
+   "didnt_receive_code": "Не отримали код?",
+   "send_again": "Надіслати знову",
+   "success": "Успіх",
+   "code has been sent again to your email.": "Код було надіслано знову на вашу електронну адресу.",
+
+  // NotificationScreen
+  
+  "notifications": "Сповіщення",
+  "today": "Сьогодні",
+  "yesterday": "Вчора",
+
+  "daysAgo_one": "{{count}} день тому",
+  "daysAgo_few": "{{count}} дні тому",
+  "daysAgo_many": "{{count}} днів тому",
+
+  "weeksAgo_one": "{{count}} тиждень тому",
+  "weeksAgo_few": "{{count}} тижні тому",
+  "weeksAgo_many": "{{count}} тижнів тому",
+
+  "yearsAgo_one": "{{count}} рік тому",
+  "yearsAgo_few": "{{count}} роки тому",
+  "yearsAgo_many": "{{count}} років тому",
+
+  "donation_reminder_title": "Не забудь!",
+  "donation_reminder": "Ти зареєстрований на донацію о {{time}} у {{day}}.",
+  "account_setup_success": "Обліковий запис успішно налаштований",
+
+  // IntroScreen
+  "the_step": "Той самий крок,",
+  "that_gives_hope": "Що дарує надію",
+  "thank_you_for_joining_us": "Дякуємо, що приєднуєтесь до нас",
+  "get_started": "Розпочати",
+
+  // BookScreen
+  "series_number": "Серія №{{number}}",
+  "date_of_issue": "Дата видачі:",
+  "location_dots": "Локація:",
+  "type_of_blood": "Група крові:",
+  "reg_lviv": "Львівська область",
+  "Scan_for_details": "Скануйте для деталей",
+
+  // GetBookScreen
+  "n_days_left_one": "Залишився {{count}} день, щоб отримати книгу донора",
+  "n_days_left_few": "Залишилось {{count}} дні, щоб отримати книгу донора",
+  "n_days_left_many": "Залишилось {{count}} днів, щоб отримати книгу донора",
+  "make_a_donation": "Зробити донацію",
+
+  "to_get_your_donor_book_one": "Щоб отримати книгу донора, необхідно зробити ще {{count}} донацію",
+  "to_get_your_donor_book_few": "Щоб отримати книгу донора, необхідно зробити ще {{count}} донації",
+  "to_get_your_donor_book_many": "Щоб отримати книгу донора, необхідно зробити ще {{count}} донацій",
+
+  "get_donors_book": "Отримати книгу донора",
+  "donations_success": "Ви успішно зробили 5 донацій!",
+
+// ForgetScreen
+ "enter_the_email_associated_with_your_account": "Введіть свій email, пов'язаний з вашим аккаунтом, і ми надішлемо вам лист з кодом для скидання пароля.",
+ "send_code": "Відправити код",
+  "ok": "Гаразд",
+
+  // CreatepasswordScreen
+
+  "create_new_password": "Створити новий пароль",
+  "enter_new_password": "Введіть новий пароль",
+  "confirm_new_password": "Підтвердіть новий пароль",
+  "new_password": "Новий пароль",
+  "your_new_password_must_be_different": "Ваш новий пароль повинен відрізнятися від попереднього.",
+  "remember_and_save_my_password": "Запам'ятати та зберегти мій пароль",
+
+  // EditProfileScreen
+
+  // "edit_profile": "Редагувати профіль",
+  "save_changes": "Зберегти зміни",
+
+  // HomeScreen
+
+  "rush_of_people": "Наплив людей",
+  "something_that_might_interest_you": "Те, що може вас зацікавити",
+  "which_blood_types_are_needed_most": "Яка кров зараз найбільш потрібна?",
+
+  // googleLogin
+  "welcome!": "Вітаємо!",
+  "sign_in_to_continue": "Увійдіть, щоб продовжити",
+  "sign_in_with_google": "Увійти за допомогою Google",
+  "signing_in": "Виконується вхід..."
+
 }

@@ -14,10 +14,12 @@ import { useTheme } from "../Theme/ThemeContext";
 import ArrowLeft from "../images/arrow-left.png";
 import Logo from "../images/logo.png";
 import SliderIcon from "../images/Slider_ForgetScreen.png";
+import { useTranslation } from "react-i18next";
 
 export default function CreateNewPasswordScreen() {
   const { colors } = useTheme();
   const navigation = useNavigation<any>();
+  const { t } = useTranslation();
 
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -38,15 +40,15 @@ export default function CreateNewPasswordScreen() {
         <Image source={Logo} style={styles.logo} />
       </View>
 
-      <Text style={[styles.title, { color: colors.primary }]}>Create New Password</Text>
+      <Text style={[styles.title, { color: colors.primary }]}>{t("create_new_password")}</Text>
       <Text style={[styles.subtitle, { color: colors.text }]}>
-        Your new password must be different from previous used password
+        {t("your_new_password_must_be_different")}
       </Text>
 
       <View style={styles.inputContainer}>
         <TextInput
           style={[styles.input, { backgroundColor: colors.backgroundCard, borderColor: colors.primary, color: colors.text }]}
-          placeholder="New Password"
+          placeholder={t("new_password")}
           placeholderTextColor={colors.text}
           secureTextEntry
           value={newPassword}
@@ -54,7 +56,7 @@ export default function CreateNewPasswordScreen() {
         />
         <TextInput
           style={[styles.input, { backgroundColor: colors.backgroundCard, borderColor: colors.primary, color: colors.text }]}
-          placeholder="Confirm Password"
+          placeholder={t("confirm_new_password")}
           placeholderTextColor={colors.text}
           secureTextEntry
           value={confirmPassword}
@@ -69,11 +71,11 @@ export default function CreateNewPasswordScreen() {
           trackColor={{ false: "#ccc", true: colors.primary }}
           thumbColor={rememberPassword ? colors.primary : "#fff"}
         />
-        <Text style={[styles.switchText, { color: colors.text }]}>Remember and save my password</Text>
+        <Text style={[styles.switchText, { color: colors.text }]}>{t("remember_and_save_my_password")}</Text>
       </View>
 
       <TouchableOpacity style={[styles.button, { backgroundColor: colors.primary }]} onPress={handleContinue}>
-        <Text style={styles.buttonText}>Continue</Text>
+        <Text style={styles.buttonText}>{t("continue")}</Text>
       </TouchableOpacity>
 
       <View style={styles.progressContainer}>

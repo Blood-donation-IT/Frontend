@@ -389,6 +389,7 @@ const styles = StyleSheet.create({
     padding: 20,
     flexGrow: 1,
     backgroundColor: "#fff",
+    paddingTop: 60,
   },
   dateBox: {
     display:"flex",
@@ -397,6 +398,8 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     paddingVertical: 8,
     paddingHorizontal: 16,
+    marginTop: 20,
+    marginLeft: 10,
     alignSelf: "flex-start",
     justifyContent:'center'
   },
@@ -409,6 +412,7 @@ const styles = StyleSheet.create({
     color: "#E66A6A80",
     marginTop: 4,
     marginBottom: 16,
+    marginLeft: 10,
     fontSize: 12,
     fontWeight: "500",
   },

@@ -4,10 +4,12 @@ import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "../Theme/ThemeContext";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAuthStore } from "../stores/useAuthStore";
+import { useTranslation } from "react-i18next";
 
 export default function TestScreen() {
   const navigation = useNavigation();
   const { colors, isDark } = useTheme();
+  const { t } = useTranslation();
 
   const questions = [
     // { id: 1, text: "Вам вже виповнилося 18 років?", type: "yesno" },
@@ -68,7 +70,7 @@ export default function TestScreen() {
     };
 
     try {
-      await updateUserAction(profileData);
+      // await updateUserAction(profileData);
       
       navigation.navigate("Home");
     } catch (error) {
@@ -102,8 +104,8 @@ export default function TestScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.backgroundMain }]}>
-      <Text style={[styles.title, { color: colors.primary }]}>Short Test</Text>
-      <Text style={[styles.subtitle, { color: colors.text }]}>It’s necessary for donation</Text>
+      <Text style={[styles.title, { color: colors.primary }]}>{t("short_test")}</Text>
+      <Text style={[styles.subtitle, { color: colors.text }]}>{t("necessary_for_donation")}</Text>
 
       <ScrollView
         style={styles.list}
@@ -145,7 +147,7 @@ export default function TestScreen() {
             ]}
           >
             <Text style={[styles.questionText, { color: colors.primary }]}>
-              {q.id}. {q.text}
+              {q.id}. {t(q.text)}
             </Text>
 
             <View style={styles.optionsRow}>
@@ -190,22 +192,22 @@ export default function TestScreen() {
                 </View>
               ) : q.type === "yesno" ? (
                 <>
-                  {renderButton(q.id, "yes", "Так")}
-                  {renderButton(q.id, "no", "Ні")}
+                  {renderButton(q.id, "yes", t("yes"))}
+                  {renderButton(q.id, "no", t("no"))}
                 </>
               ) : (
                 <>
-                  {renderButton(q.id, "have", "Маю")}
-                  {renderButton(q.id, "no", "Не маю")}
+                  {renderButton(q.id, "have", t("have"))}
+                  {renderButton(q.id, "no", t("dont_have"))}
                 </>
               )}
             </View>
           </View>
-        ))}
-
+        ))} 
+        
         {showWarning && !allAnswered && (
-          <Text style={[styles.warningText, { color: colors.primary }]}>
-            Дайте відповідь на ВСІ запитання та оберіть дату народження
+          <Text style={styles.warningText}>
+            {t("answer_All_questions")}
           </Text>
         )}
         
@@ -218,7 +220,7 @@ export default function TestScreen() {
             handleFinishTest
           }
         >
-          <Text style={styles.continueText}>Continue</Text>
+          <Text style={styles.continueText}>{t("continue")}</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>

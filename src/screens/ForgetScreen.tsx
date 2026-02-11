@@ -63,7 +63,7 @@ const handleResetPassword = () => {
 
         <Text style={[styles.subtitle, { color: colors.text }]}>
           {t(
-            "Enter the email associated with your account and we’ll send an email with the code to reset your password."
+            "enter_the_email_associated_with_your_account"
           )}
         </Text>
 
@@ -90,7 +90,7 @@ const handleResetPassword = () => {
           style={[styles.button, { backgroundColor: colors.primary }]}
           onPress={handleResetPassword}
         >
-          <Text style={styles.buttonText}>{t("Send Email")}</Text>
+          <Text style={styles.buttonText}>{t("send_code")}</Text>
         </TouchableOpacity>
 
        <View style={styles.bottomTabs}>
@@ -128,7 +128,7 @@ const handleResetPassword = () => {
               style={[styles.alertButton, { backgroundColor: colors.primary }]}
               onPress={() => setAlertVisible(false)}
             >
-              <Text style={styles.alertButtonText}>OK</Text>
+              <Text style={styles.alertButtonText}>{t("ok")}</Text>
             </TouchableOpacity>
           </View>
         </View>

@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react'; // Додав useMemo
 import { View, StyleSheet, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
-import { Calendar } from 'react-native-calendars';
+import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { useTheme } from "../Theme/ThemeContext";
 import { useTranslation } from 'react-i18next';
 import { t } from 'i18next';
+import { format, addMonths, startOfYear, endOfYear, eachDayOfInterval, isSameDay } from 'date-fns'; 
+import { uk, enUS } from 'date-fns/locale';
 
 export default function HomeScreen({ navigation }) {
   const { colors, theme, isDark: contextIsDark } = useTheme();
@@ -11,10 +13,36 @@ export default function HomeScreen({ navigation }) {
   const { i18n } = useTranslation();
   
   const isDark = contextIsDark || theme === 'dark' || colors.text === '#FFFFFF' || colors.text === '#E0E0E0';
+  const dateFnsLocale = i18n.language === 'uk' ? uk : enUS;
 
   const logoSource = isDark 
     ? require('../images/logo-white.png') 
     : require('../images/logo.png');
+
+  const todayName = format(new Date(), 'EEEE', { locale: dateFnsLocale });
+  const formattedDayBadge = `< ${todayName.toLowerCase()}`;
+
+  const redDates = useMemo(() => {
+    const dates = {};
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    
+    for (let year = currentYear; year <= currentYear + 1; year++) {
+      for (let month = 0; month < 12; month++) {
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        
+        for (let day = 3; day <= daysInMonth; day += 3) {
+          const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+          
+          dates[dateString] = { 
+            selected: true, 
+            selectedColor: "#E53935" 
+          };
+        }
+      }
+    }
+    return dates;
+  }, []);
 
   const bloodData = [
     { type: "0+", status: "low" },
@@ -30,20 +58,6 @@ export default function HomeScreen({ navigation }) {
   const chartData = [5, 8, 15, 25, 40, 60, 80, 60, 50, 45, 60, 70, 50, 40, 30, 25, 20, 15, 15, 10, 5, 0, 5, 0];
   const chartLabels = ["6", "9", "12", "15", "18", "21"];
 
-  const redDates = {
-    "2026-02-05": { selected: true, selectedColor: "#E53935" },
-    "2026-02-08": { selected: true, selectedColor: "#E53935" },
-    "2026-02-09": { selected: true, selectedColor: "#E53935" },
-    "2026-02-11": { selected: true, selectedColor: "#E53935" },
-    "2026-02-14": { selected: true, selectedColor: "#E53935" },
-    "2026-02-19": { selected: true, selectedColor: "#E53935" },
-    "2026-02-20": { selected: true, selectedColor: "#E53935" },
-    "2026-02-21": { selected: true, selectedColor: "#E53935" },
-    "2026-02-22": { selected: true, selectedColor: "#E53935" },
-    "2026-02-23": { selected: true, selectedColor: "#E53935" },
-    "2026-02-24": { selected: true, selectedColor: "#E53935" },
-    "2026-02-29": { selected: true, selectedColor: "#E53935" },
-  };
 
   const handleDayPress = (day) => {
     if (redDates[day.dateString]) {
@@ -70,14 +84,15 @@ export default function HomeScreen({ navigation }) {
 
       <View style={[styles.calendarWrapper, { backgroundColor: colors.backgroundCard, borderColor: colors.text }]}>
         <Calendar
-          key={`${i18n.language}-${colors.backgroundCard}`}
-          current={"2026-02-01"}
+          // key={`${i18n.language}-${colors.backgroundCard}`}
+          key={`${colors.backgroundCard}-${i18n.language}`}
+          current={format(new Date(), 'yyyy-MM-dd')}
           monthFormat={"MMMM"}
           enableSwipeMonths={true}
           hideExtraDays={true}
           markedDates={redDates}
-          firstDay={1}
           onDayPress={handleDayPress}
+          firstDay={1} 
           theme={{
             backgroundColor: colors.backgroundMain,
             calendarBackground: colors.backgroundCard,
@@ -94,19 +109,10 @@ export default function HomeScreen({ navigation }) {
         />
       </View>
 
-      {/* <View>
-        <Text style={[styles.heading, { color: colors.text }]}>
-          Те що може зацікавити тебе 🤭👀
-        </Text>
-        <Text style={[styles.paragraph, { color: colors.text }]}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-          Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-        </Text>
-      </View> */}
 
       <View style={styles.bloodContainer}>
         <Text style={[styles.bloodTitle, { color: colors.text }]}>
-          {t("blood_needed_title")} <Text style={{ color: "red" }}>🩸</Text>
+          {t('which_blood_types_are_needed_most')} <Text style={{ color: "red" }}>🩸</Text>
         </Text>
         <View style={[styles.bloodGrid, { borderColor: colors.text + '1A' }]}>
           {bloodData.map((item, index) => {
@@ -125,50 +131,30 @@ export default function HomeScreen({ navigation }) {
 
       <View style={styles.chartSection}>
         <View style={styles.chartHeaderRow}>
-          <Text style={[styles.chartTitle, { color: colors.text }]}>{t("rush_of_people")}</Text>
+          <Text style={[styles.chartTitle, { color: colors.text }]}>{t('rush_of_people')}</Text>
           <View style={[styles.dayBadge, { backgroundColor: colors.primary }]}>
-            <Text style={styles.dayBadgeText}>&lt; {t("thursday")}</Text>
+            <Text style={styles.dayBadgeText}>{formattedDayBadge}</Text>
           </View>
         </View>
 
         <View style={[styles.chartContainer, { backgroundColor: colors.backgroundCard, borderColor: colors.text + '1A'}]}>
-          
-          <View style={styles.graphBody}>
-            
-            <View style={styles.gridLayer}>
-                 <View style={styles.gridRow}>
-                    <Text style={[styles.gridLabel, { color: colors.text }]}>70</Text>
-                    <View style={[styles.dashedLine, { borderColor: colors.text }]} />
-                 </View>
-                 
-                 <View style={{ height: 40 }} /> 
-
-                 <View style={styles.gridRow}>
-                    <Text style={[styles.gridLabel, { color: colors.text }]}>30</Text>
-                    <View style={[styles.dashedLine, { borderColor: colors.text }]} />
-                 </View>
-            </View>
-
-            <View style={styles.barsLayer}>
-              {chartData.map((height, index) => (
-                <View key={index} style={styles.barWrapper}>
-                  <View
-                    style={[
-                      styles.bar,
-                      {
-                        height: `${height}%`,
-                        backgroundColor: colors.primary
-                      }
-                    ]}
-                  />
-                </View>
-              ))}
-            </View>
-
+          <View style={[styles.dashedLine, { borderColor: colors.text }]} />
+          <View style={styles.barsContainer}>
+            {chartData.map((height, index) => (
+              <View key={index} style={styles.barWrapper}>
+                <View
+                  style={[
+                    styles.bar,
+                    {
+                      height: `${height}%`,
+                      backgroundColor: colors.primary
+                    }
+                  ]}
+                />
+              </View>
+            ))}
           </View>
-
           <View style={[styles.bottomAxisLine, { backgroundColor: colors.text }]} />
-
           <View style={styles.labelsContainer}>
             {chartLabels.map((label, index) => (
               <Text key={index} style={[styles.chartLabelText, { color: colors.text }]}>{label}</Text>
@@ -257,6 +243,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
+  barsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    height: 100, 
+    zIndex: 1, 
+    marginBottom: 5,
+  },
   bloodIcon: {
     width: 60,
     height: 60,
@@ -341,12 +335,13 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   dashedLine: {
-    flex: 1,
-    height: 1,
+    width: '100%',
     borderWidth: 1,
     borderStyle: 'dashed',
     opacity: 0.2,
-    borderRadius: 1,
+    marginTop: 40,
+    marginBottom: -60, 
+    zIndex: 0, 
   },
   barWrapper: {
     width: '3%',

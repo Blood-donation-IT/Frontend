@@ -6,8 +6,6 @@ import { useTheme } from "../Theme/ThemeContext";
 import { useAuthStore } from '../stores/useAuthStore';
 
 const ProfileScreen = ({navigation}) => {
-
-  const { t } = useTranslation();
   const { colors } = useTheme();
 
   const { user, donations, fetchUserDonations } = useAuthStore();
@@ -31,6 +29,8 @@ const ProfileScreen = ({navigation}) => {
   //   fetchUserData();
   // }, [isFocused]);
 
+  const { t, i18n } = useTranslation();
+  const formattedDate = new Intl.DateTimeFormat(i18n.language, { year: 'numeric', month: 'long', day: 'numeric' }).format(user?.last_donation);
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor: colors.backgroundMain }]}>
@@ -56,7 +56,7 @@ const ProfileScreen = ({navigation}) => {
         </TouchableOpacity>
         
         <Text style={[styles.lastDonation, { color: colors.text, opacity: 0.6 }]}>
-          {t("last_donation")}: {user?.last_donation || "N/A"}
+          {t("last_donation")}: {formattedDate || "N/A"}
         </Text>
       </View>
 
@@ -77,7 +77,7 @@ const ProfileScreen = ({navigation}) => {
 
       <View style={[styles.statusCard, { backgroundColor: colors.backgroundCard, borderColor: colors.primary + '50' }]}>
         <Text style={[styles.statusLabel, { color: colors.primary }]}>{t("donor_status")}</Text>
-        <Text style={[styles.statusValue, { color: colors.text }]}>{user?.donor_status || 'Новачок'}</Text>
+        <Text style={[styles.statusValue, { color: colors.text }]}>{user?.donor_status || t("honorary_donor_of_ukraine")}</Text>
       </View>
 
       <View style={[styles.statusCard, { backgroundColor: colors.backgroundCard, borderColor: colors.primary + '50' }]}>
