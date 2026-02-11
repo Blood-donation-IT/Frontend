@@ -1,11 +1,36 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../Theme/ThemeContext";
 
-const ProfileScreen = ({ navigation }) => {
+import { useAuthStore } from '../stores/useAuthStore';
+
+const ProfileScreen = ({navigation}) => {
+
   const { t } = useTranslation();
   const { colors } = useTheme();
+
+  const { user, donations, fetchUserDonations } = useAuthStore();
+
+  useEffect(() => {
+    fetchUserDonations();
+  }, []);
+
+  // useEffect(() => {
+  //   const fetchUserData = async () => {
+  //     try {
+  //       // let res = await AsyncStorage.getItem("user")
+  //       // setUser(JSON.parse(res));
+  //       // const response = await api.get('/user/profile'); 
+  //       // setUser(response.data);
+  //     } catch (error) {
+  //       console.error("Помилка завантаження профілю:", error);
+  //     }
+  //   };
+
+  //   fetchUserData();
+  // }, [isFocused]);
+
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor: colors.backgroundMain }]}>
@@ -20,10 +45,8 @@ const ProfileScreen = ({ navigation }) => {
       </TouchableOpacity>
 
       <View style={styles.avatarContainer}>
-        {/* Аватар тепер має колір картки та рамку */}
-        <View style={[styles.avatar, { backgroundColor: colors.backgroundCard, borderColor: colors.text + '20', borderWidth: 1 }]} />
-        
-        <Text style={[styles.name, { color: colors.text }]}>Somebody</Text>
+        <Image source={{ uri: user?.avatar }} style={[styles.avatar, { backgroundColor: colors.backgroundCard, borderColor: colors.text + '20', borderWidth: 1 }]}/>
+        <Text style={[styles.name, { color: colors.text }]}>{user?.name}</Text>
         
         <TouchableOpacity 
           style={[styles.editButton, { backgroundColor: colors.primary, borderColor: colors.primary + '40' }]}
@@ -33,40 +56,109 @@ const ProfileScreen = ({ navigation }) => {
         </TouchableOpacity>
         
         <Text style={[styles.lastDonation, { color: colors.text, opacity: 0.6 }]}>
-          {t("last_donation")}: September 11, 2001
+          {t("last_donation")}: {user?.last_donation || "N/A"}
         </Text>
       </View>
 
       <View style={styles.statsRow}>
         <View style={[styles.statBox, { backgroundColor: colors.backgroundCard, borderColor: colors.primary + '33' }]}>
           <Text style={[styles.statLabel, { color: colors.primary }]}>{t("donated")}</Text>
-          <Text style={[styles.statValue, { color: colors.text }]}>01</Text>
+          <Text style={[styles.statValue, { color: colors.text }]}>{user?.donations_count}</Text>
         </View>
         <View style={[styles.statBox, { backgroundColor: colors.backgroundCard, borderColor: colors.primary + '33' }]}>
           <Text style={[styles.statLabel, { color: colors.primary }]}>{t("blood_type")}</Text>
-          <Text style={[styles.statValue, { color: colors.text }]}>A-</Text>
+          <Text style={[styles.statValue, { color: colors.text }]}>{user?.blood_type || "N/A"}</Text>
         </View>
         <View style={[styles.statBox, { backgroundColor: colors.backgroundCard, borderColor: colors.primary + '33' }]}>
           <Text style={[styles.statLabel, { color: colors.primary }]}>{t("life_saved")}</Text>
-          <Text style={[styles.statValue, { color: colors.text }]}>02</Text>
+          <Text style={[styles.statValue, { color: colors.text }]}>{user?.lives_saved_count}</Text>
         </View>
       </View>
 
       <View style={[styles.statusCard, { backgroundColor: colors.backgroundCard, borderColor: colors.primary + '50' }]}>
         <Text style={[styles.statusLabel, { color: colors.primary }]}>{t("donor_status")}</Text>
-        <Text style={[styles.statusValue, { color: colors.text }]}>Honorary Donor of Ukraine</Text>
+        <Text style={[styles.statusValue, { color: colors.text }]}>{user?.donor_status || 'Новачок'}</Text>
       </View>
+
+      <View style={[styles.statusCard, { backgroundColor: colors.backgroundCard, borderColor: colors.primary + '50' }]}>
+        <Text style={[styles.statusLabel, { color: colors.primary, paddingBottom:10 }]}>{t("my_donations")}</Text>
+        {donations.length > 0 ? (
+        donations.map((item, index) => (
+          <View 
+            key={item.id || index} 
+            style={[styles.donationItem, { backgroundColor: colors.backgroundCard, borderLeftColor: colors.primary }]}
+          >
+            <View>
+              <Text style={[styles.donationDate, { color: colors.text }]}>
+                {new Date(item.application_day).toLocaleDateString()}
+              </Text>
+              <Text style={[styles.donationStatus, { color: colors.text, opacity: 0.7 }]}>
+                {item.status}
+              </Text>
+            </View>
+            <Text style={[styles.donationType, { color: colors.primary }]}>
+              {item.blood_type}
+            </Text>
+          </View>
+        ))
+      ) : (
+        <Text style={[styles.emptyText, { color: colors.text, opacity: 0.5 }]}>
+          {t("no_donations_yet")}
+        </Text>
+      )}
+      </View>
+
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  donationsHeader: {
+    // marginTop: 25,
+    // marginBottom: 10,
+    paddingHorizontal: 20,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  donationItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginHorizontal: 20,
+    marginBottom: 10,
+    padding: 15,
+    borderRadius: 12,
+    borderLeftWidth: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  donationDate: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  donationStatus: {
+    fontSize: 14,
+    marginTop: 2,
+  },
+  donationType: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  emptyText: {
+    textAlign: 'center',
+    marginTop: 20,
+  },
+
   container: {
     minHeight: "100%",
     paddingHorizontal: "5%",
     paddingVertical: 40,
     gap: 20,
-    // backgroundColor видалено звідси, бо тепер він динамічний
   },
   menuBtn: {
     marginTop: 20,
@@ -87,7 +179,6 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 60,
     marginBottom: 12,
-    // колір background перенесено в inline styles
   },
   name: {
     fontSize: 18,
@@ -102,7 +193,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   editButtonText: {
-    color: "#fff", // Текст на кнопці зазвичай залишається білим
+    color: "#fff",
     fontWeight: "600",
     fontSize: 14,
   },
@@ -123,6 +214,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   statLabel: {
+    fontWeight:500,
     textAlign: "center",
     fontSize: 12,
     marginBottom: 4,
@@ -137,11 +229,14 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   statusLabel: {
+    fontWeight:500,
     fontSize: 12,
     marginBottom: 4,
   },
   statusValue: {
-    fontSize: 14,
+    fontWeight:500,
+    // paddingLeft:20,
+    fontSize: 16,
   },
 });
 

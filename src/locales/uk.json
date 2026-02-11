@@ -53,5 +53,16 @@
   "invalid_email": "Невірна адреса електронної пошти",
   "donors_book": "Книжка донора",
 
-  "or_sign_in_with": "Або увійти через"
+  "or_sign_in_with": "Або увійти через",
+
+  "logout":"Вийти з акаунта",
+
+  "blood_needed_title": "Яка кров зараз найбільш потрібна?",
+  "rush_of_people": "Наплив відвідувачів",
+  "thursday": "четвер",
+
+  "my_donations": "Мої донації",
+  "no_donations_yet": "Донацій ще не було",
+
+  "date_of_issue": "Дата видачі"
 }

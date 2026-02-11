@@ -15,132 +15,149 @@ import MapView, { Marker } from "react-native-maps";
 import { useTranslation } from "react-i18next";
 import { scheduleDateNotification } from "../services/localNotificationService";
 import { useTheme } from "../Theme/ThemeContext";
+import api from "../api/api";
+import { useAuthStore } from "../stores/useAuthStore";
+import CustomHeader from "../components/CustomHeader";
 
-export default function RegistrationScreen({ route }: any) {
+
+
+export default function RegistrationScreen({ navigation, route }) {
+
+  const { createDonationAction, user } = useAuthStore();
+
   const { t } = useTranslation();
-  const { colors } = useTheme();
-
-  const day: string = route.params.day;
-
-  const [bloodType, setBloodType] = useState<string | null>(null);
   const [time, setTime] = useState<string | null>(null);
   const [location, setLocation] = useState("");
-  const [name, setName] = useState("");
-  const [age, setAge] = useState("");
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertType, setAlertType] = useState<'success' | 'error'>('success');
   const [isModalVisible, setModalVisible] = useState(false);
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [suggestions, setSuggestions] = useState<any[]>([]);
-
+  const [selectedLocation, setSelectedLocation] = useState({
+    latitude: 49.8419,
+    longitude: 24.0315,
+  });
   const mapRef = useRef<MapView>(null);
-
+  const [suggestions, setSuggestions] = useState([]);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const day = route.params["day"];
+  const times = ["8:00", "9:00", "10:30", "11:00", "11:30"];
   const points = [
     { id: 1, title: t("main_square"), coords: { latitude: 49.8419, longitude: 24.0315 } },
     { id: 2, title: t("opera_theater"), coords: { latitude: 49.8456, longitude: 24.0269 } },
-    { id: 3, title: t("university"), coords: { latitude: 49.8392, longitude: 24.0235 } },
+    { id: 3, title: t("university"), coords: { latitude: 49.80439178581702 , longitude: 23.989689135563367 } },
+
   ];
 
-  const bloodTypes = ["0+", "0-", "A+", "A-", "B+", "B-", "AB+", "AB-"];
-  const times = ["8:00", "9:00", "10:30", "11:00", "11:30"];
+  const { colors } = useTheme();
 
   const registrationData = [
     20, 35, 30, 40, 33, 28, 48, 60, 40, 30, 20, 15, 23, 19, 20, 9, 6
   ];
-
   useEffect(() => {
     setSuggestions(points);
   }, []);
 
   const validate = () => {
-    const e: any = {};
-    if (!bloodType) e.bloodType = t("please_select_blood");
-    if (!time) e.time = t("please_select_time");
-    if (!location) e.location = t("location_required");
-    if (!name) e.name = t("name_required");
-    if (!age) e.age = t("age_required");
-    setErrors(e);
-    return Object.keys(e).length === 0;
+    const newErrors: { [key: string]: string } = {};
+    if (!time) newErrors.time = t("please_select_time");
+    if (!location.trim()) newErrors.location = t("location_required");
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  const buildDateFromDayAndTime = (day: string, time: string) => {
-    const [y, m, d] = day.split("-").map(Number);
-    const [h, min] = time.split(":").map(Number);
-    const date = new Date();
-    date.setFullYear(y, m - 1, d);
-    date.setHours(h, min, 0, 0);
-    return date;
-  };
 
   const handleRegister = async () => {
-    if (!validate()) return;
-    const triggerDate = buildDateFromDayAndTime(day, time!);
-    await scheduleDateNotification(
-      t("notification_title"),
-      `${t("notification_time")} ${triggerDate.toLocaleTimeString()}`,
-      triggerDate
-    );
+    if (validate()) {
+      try {
+        const triggerDate = buildDateFromDayAndTime(day, time);
+        
+        const applicationData = {
+          user_id: user?.id, 
+          blood_type: user?.blood_type, 
+          application_time: triggerDate.toISOString(), 
+          application_day: triggerDate.toISOString(),  
+          location_id: "1", // Це потім теж можна буде вибрати зі списку центрів
+          status: "pending"
+        };
+
+        await createDonationAction(applicationData);
+
+        await scheduleDateNotification(
+          "Запис на донацію",
+          `Чекаємо на вас о ${triggerDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
+          triggerDate
+        );
+
+        setAlertType('success');
+        setAlertVisible(true);
+      } catch (e) {
+        setAlertType('error');
+        setAlertVisible(true);
+      }
+    }
   };
 
-  const handleSelectPoint = (p: any) => {
-    setLocation(p.title);
+
+  function buildDateFromDayAndTime(day: string, time: string): Date {
+    const [year, month, dayOfMonth] = day.split('-').map(Number);
+    const [hours, minutes] = time.split(':').map(Number);
+
+    const date = new Date();
+    date.setFullYear(year, month - 1, dayOfMonth);
+    date.setHours(hours, minutes, 0, 0);
+
+    return date;
+  }
+
+
+
+  const handleSelectPoint = (point) => {
+    setSelectedLocation(point.coords);
+    setLocation(point.title);
     setSuggestions([]);
-    setModalVisible(false);
   };
 
   return (
     <>
+      <CustomHeader title={"Registration"} navigation={navigation} />
       <KeyboardAwareScrollView
         contentContainerStyle={[
           styles.container,
           { backgroundColor: colors.backgroundMain },
         ]}
+        extraScrollHeight={20}
+        enableOnAndroid={true}
+        keyboardShouldPersistTaps="handled"
       >
-        <Text style={[styles.dateText, { color: colors.text }]}>{day}</Text>
-
-        <Text style={[styles.sectionTitle, { color: colors.primary }]}>
-          {t("your_blood_type")}
-        </Text>
-
-        <View style={styles.optionsRow}>
-          {bloodTypes.map((type) => (
-            <TouchableOpacity
-              key={type}
-              style={[
-                styles.option,
-                bloodType === type && { backgroundColor: colors.primary },
-              ]}
-              onPress={() => setBloodType(type)}
-            >
-              <Text
-                style={{
-                  color: bloodType === type ? "#fff" : colors.text,
-                }}
-              >
-                {type}
-              </Text>
-            </TouchableOpacity>
-          ))}
+        <View style={styles.dateBox}>
+          <Text style={[styles.dateText, { color: colors.primary }]}>{day}</Text>
         </View>
+        
+        <Text style={styles.changeText}>{t("change")}</Text>
 
-        <Text style={[styles.sectionTitle, { color: colors.primary }]}>
-          {t("time")}
-        </Text>
-
+        <Text style={styles.sectionTitle}>{t("time")}</Text>
         <View style={styles.optionsRow}>
           {times.map((timen) => (
             <TouchableOpacity
               key={timen}
               style={[
                 styles.option,
-                time === timen && { backgroundColor: colors.primary },
+                time === timen && styles.optionSelected,
+                errors.time && !time ? styles.optionError : null,
               ]}
-              onPress={() => setTime(timen)}
+              onPress={() => {
+                setTime(timen);
+                setErrors({ ...errors, time: "" });
+              }}
             >
-              <Text style={{ color: time === timen ? "#fff" : colors.text }}>
+              <Text
+                style={{ color: time === timen ? "#fff" : colors.text }}
+              >
                 {timen}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
+        {errors.time && <Text style={styles.errorText}>{errors.time}</Text>}
 
         <TouchableOpacity
           style={[
@@ -149,131 +166,258 @@ export default function RegistrationScreen({ route }: any) {
           ]}
           onPress={() => setModalVisible(true)}
         >
-          <Text style={{ color: location ? colors.text : colors.primary }}>
+          <Text style={{ color: location ? colors.text : "#E66A6A80" }}>
             {location || t("location")}
           </Text>
-          <Ionicons name="location-outline" size={20} color={colors.primary} />
+          <Ionicons name="location-outline" size={20} color="#E53935" style={styles.icon} />
         </TouchableOpacity>
-
-        <TextInput
-          style={[styles.input, { backgroundColor: colors.backgroundCard, color: colors.text }]}
-          placeholder={t("your_name")}
-          placeholderTextColor={colors.text}
-          value={name}
-          onChangeText={setName}
-        />
-
-        <TextInput
-          style={[styles.input, { backgroundColor: colors.backgroundCard, color: colors.text }]}
-          placeholder={t("your_age")}
-          keyboardType="numeric"
-          placeholderTextColor={colors.text}
-          value={age}
-          onChangeText={setAge}
-        />
-
-        <TouchableOpacity
-          style={[styles.button, { backgroundColor: colors.primary }]}
-          onPress={handleRegister}
-        >
-          <Text style={{ color: "#fff", fontWeight: "600" }}>
-            {t("register")}
-          </Text>
+        {errors.location && <Text style={styles.errorText}>{errors.location}</Text>}
+        <TouchableOpacity style={[styles.button, { backgroundColor: colors.primary }]} onPress={handleRegister}>
+          <Text style={styles.buttonText}>{t("register")}</Text>
         </TouchableOpacity>
 
         <View style={styles.customChartWrapper}>
           <View style={styles.customChartHeader}>
-            <Text style={[styles.customChartTitle, {color: colors.text}]}>People registered for this day</Text>
-            <Text style={[styles.customChartDate, {color: colors.text}]}>{day}</Text>
+            <Text style={[styles.customChartTitle, { color: colors.text }]}>People registered for this day</Text>
+            <Text style={[styles.customChartDate, { color: colors.text }]}>{day}</Text>
           </View>
 
           <View style={[styles.graphContainer, { backgroundColor: colors.backgroundCard }]}>
-              
-              <View style={styles.gridContainer}>
-                  <View style={styles.gridRow}>
-                      <Text style={[styles.gridLabel, { color: colors.text }]}>70</Text>
-                      <View style={[styles.dashedLine, { borderColor: colors.text, opacity: 0.3 }]} />
-                  </View>
-                  <View style={[styles.gridRow, { marginTop: 25 }]}>
-                      <Text style={[styles.gridLabel, { color: colors.text }]}>35</Text>
-                      <View style={[styles.dashedLine, { borderColor: colors.text, opacity: 0.3 }]} />
-                  </View>
-              </View>
 
-              <View style={styles.barsContainer}>
-                  {registrationData.map((val, index) => (
-                      <View 
-                          key={index} 
-                          style={[
-                              styles.barStyle, 
-                              { 
-                                  height: val,
-                                  backgroundColor: colors.primary 
-                              }
-                          ]} 
-                      />
-                  ))}
+            <View style={styles.gridContainer}>
+              <View style={styles.gridRow}>
+                <Text style={[styles.gridLabel, { color: colors.text }]}>70</Text>
+                <View style={[styles.dashedLine, { borderColor: colors.text, opacity: 0.3 }]} />
               </View>
+              <View style={[styles.gridRow, { marginTop: 25 }]}>
+                <Text style={[styles.gridLabel, { color: colors.text }]}>35</Text>
+                <View style={[styles.dashedLine, { borderColor: colors.text, opacity: 0.3 }]} />
+              </View>
+            </View>
 
-              <View style={styles.axisContainer}>
-                   <View style={[styles.solidLine, { backgroundColor: colors.text, opacity: 0.5 }]} />
-                   <View style={styles.axisLabels}>
-                       {["9", "10", "11", "12", "13"].map((label) => (
-                         <Text key={label} style={[styles.axisText, { color: colors.text }]}>{label}</Text>
-                       ))}
-                   </View>
+            <View style={styles.barsContainer}>
+              {registrationData.map((val, index) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.barStyle,
+                    {
+                      height: val,
+                      backgroundColor: colors.primary
+                    }
+                  ]}
+                />
+              ))}
+            </View>
+
+            <View style={styles.axisContainer}>
+              <View style={[styles.solidLine, { backgroundColor: colors.text, opacity: 0.5 }]} />
+              <View style={styles.axisLabels}>
+                {["9", "10", "11", "12", "13"].map((label) => (
+                  <Text key={label} style={[styles.axisText, { color: colors.text }]}>{label}</Text>
+                ))}
               </View>
+            </View>
           </View>
         </View>
 
       </KeyboardAwareScrollView>
 
-      <Modal transparent animationType="fade" visible={isModalVisible}>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <Modal animationType="fade" transparent visible={isModalVisible}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
           <View style={styles.overlay}>
-            <View
-              style={[
-                styles.modalBox,
-                { backgroundColor: colors.backgroundMain },
-              ]}
-            >
-              <Text style={{ color: colors.text, marginBottom: 10 }}>
-                {t("select_location")}
-              </Text>
-
-              {points.map((p) => (
-                <TouchableOpacity
-                  key={p.id}
-                  style={styles.suggestionItem}
-                  onPress={() => handleSelectPoint(p)}
+            <View style={[
+              styles.modalBox,
+              { backgroundColor: colors.backgroundMain },
+            ]}>
+              <Text style={styles.modalTitle}>{t("select_location")}</Text>
+              <TextInput
+                style={[styles.modalInput, { color: colors.text }]}
+                placeholder={t("enter_location_name")}
+                placeholderTextColor={colors.text}
+                value={location}
+                onFocus={() => setSuggestions(points)}
+                onChangeText={(text) => {
+                  setLocation(text);
+                  const filtered = points.filter((p) =>
+                    p.title.toLowerCase().startsWith(text.toLowerCase())
+                  );
+                  setSuggestions(filtered);
+                }}
+              />
+              {suggestions.length > 0 && (
+                <View style={styles.suggestionsBox}>
+                  {suggestions.map((p) => (
+                    <TouchableOpacity
+                      key={p.id}
+                      onPress={() => handleSelectPoint(p)}
+                      style={styles.suggestionItem}
+                    >
+                      <Text>{p.title}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
+              <View style={styles.mapContainer}>
+                <MapView
+                  ref={mapRef}
+                  style={styles.map}
+                  scrollEnabled
+                  zoomEnabled={true}
+                  rotateEnabled={false}
+                  pitchEnabled={false}
+                  onMapReady={() => {
+                    mapRef.current?.fitToCoordinates(points.map((p) => p.coords), {
+                      edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
+                      animated: true,
+                    });
+                  }}
                 >
-                  <Text style={{ color: colors.text }}>{p.title}</Text>
-                </TouchableOpacity>
-              ))}
-
+                  {points.map((point) => (
+                    <Marker
+                      key={point.id}
+                      coordinate={point.coords}
+                      title={point.title}
+                      onPress={() => handleSelectPoint(point)}
+                      pinColor={point.title === location ? "#E66A6A" : "#E66A6A80"}
+                    />
+                  ))}
+                </MapView>
+              </View>
+              <Text style={[styles.selectedText, { color: colors.text }]}>
+                {location ? `${t("selected")}: ${location}` : t("tap_marker")}
+              </Text>
+              <TouchableOpacity
+                style={styles.saveButton}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.saveButtonText}>{t("save")}</Text>
+              </TouchableOpacity>
               <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <Text style={{ color: colors.primary, marginTop: 10 }}>
-                  {t("cancel")}
-                </Text>
+                <Text style={styles.cancelText}>{t("cancel")}</Text>
               </TouchableOpacity>
             </View>
           </View>
         </TouchableWithoutFeedback>
       </Modal>
+      <Modal
+  visible={alertVisible}
+  transparent
+  animationType="fade"
+  onRequestClose={() => setAlertVisible(false)}
+>
+  <View style={styles.modalOverlay}>
+    <View style={styles.modalContainer}>
+      <Text style={styles.modalTitle}>
+        {alertType === 'success' ? 'Вітаємо! 🎉' : 'Помилка ⚠️'}
+      </Text>
+      
+      <Text style={styles.modalMessage}>
+        {alertType === 'success' 
+          ? 'Запис успішно зроблений!' 
+          : 'Сталася помилка при створенні запису. Спробуйте ще раз.'}
+      </Text>
+
+      <TouchableOpacity 
+        style={[
+          styles.modalButton, 
+          { backgroundColor: alertType === 'success' ? '#E57373' : '#666' }
+        ]} 
+        onPress={() => {
+          setAlertVisible(false);
+          if (alertType === 'success') {
+            navigation.goBack();
+          }
+        }}
+      >
+        <Text style={styles.modalButtonText}>
+          {alertType === 'success' ? 'Перейти' : 'Закрити'}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+</Modal>
     </>
   );
 }
 
 const styles = StyleSheet.create({
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)', 
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    width: '85%',
+    backgroundColor: '#FFF5F5', 
+    borderRadius: 30,
+    padding: 30,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    color: '#000',
+  },
+  modalMessage: {
+    fontSize: 16,
+    textAlign: 'center',
+    color: '#555',
+    marginBottom: 25,
+    lineHeight: 22,
+  },
+  modalButton: {
+    width: '100%',
+    paddingVertical: 14,
+    borderRadius: 25,
+    alignItems: 'center',
+  },
+  modalButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+
   container: {
     padding: 20,
     flexGrow: 1,
-    paddingBottom: 50, 
+    backgroundColor: "#fff",
+  },
+  dateBox: {
+    display:"flex",
+    borderWidth: 1,
+    borderColor: "#E66A6A4D",
+    borderRadius: 15,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    alignSelf: "flex-start",
+    justifyContent:'center'
+  },
+  dateText: {
+    color: "#E66A6A80",
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  changeText: {
+    color: "#E66A6A80",
+    marginTop: 4,
+    marginBottom: 16,
+    fontSize: 12,
+    fontWeight: "500",
   },
   sectionTitle: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#E66A6A",
     marginTop: 20,
     marginBottom: 10,
-    fontWeight: "600",
   },
   optionsRow: {
     flexDirection: "row",
@@ -282,23 +426,68 @@ const styles = StyleSheet.create({
   },
   option: {
     borderWidth: 1,
+    borderColor: "#E66A6A1A",
     borderRadius: 15,
     paddingVertical: 8,
     paddingHorizontal: 16,
+    marginBottom: 8,
+  },
+  optionSelected: {
+    backgroundColor: "#E66A6A",
+    borderWidth: 2,
+    borderColor: "#F5EDEB66",
+  },
+  optionError: {
+    borderColor: "#FF0000",
+  },
+  optionText: {
+    color: "#000000",
+    fontWeight: "500",
+  },
+  optionTextSelected: {
+    color: "#FFFFFF",
   },
   input: {
-    marginTop: 12,
-    padding: 14,
+    borderWidth: 1,
+    borderColor: "#E66A6A80",
+    backgroundColor: "#F5EDEB66",
     borderRadius: 20,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginTop: 12,
+  },
+  inputError: {
+    borderColor: "#FF0000",
+  },
+  errorText: {
+    color: "#FF0000",
+    fontSize: 12,
+    marginTop: 4,
   },
   button: {
-    marginTop: 24,
-    paddingVertical: 14,
+    backgroundColor: "#E66A6A",
+    width: "55%",
     borderRadius: 18,
+    paddingVertical: 14,
+    marginTop: 100,
     alignItems: "center",
+    alignSelf: "center",
+  },
+  buttonText: {
+    color: "#FAFAFA",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+
+  icon: {
+    fontSize: 23,
+    color: "#E66A6A80",
+    position: "absolute",
+    right: 12,
+    top: "50%",
+  },
+  inputWithIcon: {
+    paddingRight: 40,
   },
   overlay: {
     flex: 1,
@@ -307,18 +496,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalBox: {
-    width: "90%",
+    backgroundColor: "#fff",
     borderRadius: 20,
     padding: 20,
+    width: "90%",
   },
-  suggestionItem: {
-    paddingVertical: 10,
-  },
-  dateText: {
-    fontSize: 16,
-    marginBottom: 10,
-  },
-  
+  // modalTitle: {
+  //   fontSize: 16,
+  //   fontWeight: "600",
+  //   color: "#E66A6A",
+  //   marginBottom: 10,
+  // },
+
   customChartWrapper: {
     marginTop: 40,
     marginBottom: 20,
@@ -400,10 +589,57 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 4,
-    paddingRight: 10, 
+    paddingRight: 10,
   },
   axisText: {
     fontSize: 10,
     fontWeight: '500',
+  },
+  modalInput: {
+    borderWidth: 1,
+    borderColor: "#E66A6A80",
+    borderRadius: 15,
+    padding: 12,
+    backgroundColor: "#F5EDEB66",
+  },
+  mapContainer: {
+    height: 180,
+    borderRadius: 15,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "#E66A6A80",
+    marginBottom: 16,
+    marginTop: 14,
+  },
+  map: { flex: 1 },
+  saveButton: {
+    backgroundColor: "#E66A6A",
+    borderRadius: 15,
+    paddingVertical: 12,
+    alignItems: "center",
+  },
+  saveButtonText: { color: "#fff", fontWeight: "600" },
+  cancelText: {
+    color: "#E66A6A",
+    marginTop: 10,
+    textAlign: "center",
+  },
+  selectedText: {
+    textAlign: "center",
+    color: "#444",
+    marginBottom: 10,
+  },
+  suggestionsBox: {
+    maxHeight: 150,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#E66A6A80",
+    marginBottom: 12,
+  },
+  suggestionItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E66A6A1A",
   },
 });

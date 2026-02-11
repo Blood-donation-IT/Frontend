@@ -2,9 +2,13 @@ import React from 'react';
 import { View, StyleSheet, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { useTheme } from "../Theme/ThemeContext";
+import { useTranslation } from 'react-i18next';
+import { t } from 'i18next';
 
 export default function HomeScreen({ navigation }) {
   const { colors, theme, isDark: contextIsDark } = useTheme();
+
+  const { i18n } = useTranslation();
   
   const isDark = contextIsDark || theme === 'dark' || colors.text === '#FFFFFF' || colors.text === '#E0E0E0';
 
@@ -27,21 +31,18 @@ export default function HomeScreen({ navigation }) {
   const chartLabels = ["6", "9", "12", "15", "18", "21"];
 
   const redDates = {
-    "2024-08-05": { selected: true, selectedColor: "#E53935" },
-    "2024-08-06": { selected: true, selectedColor: "#E53935" },
-    "2024-08-07": { selected: true, selectedColor: "#E53935" },
-    "2024-08-08": { selected: true, selectedColor: "#E53935" },
-    "2024-08-09": { selected: true, selectedColor: "#E53935" },
-    "2024-08-10": { selected: true, selectedColor: "#E53935" },
-    "2024-08-11": { selected: true, selectedColor: "#E53935" },
-    "2024-08-14": { selected: true, selectedColor: "#E53935" },
-    "2024-08-19": { selected: true, selectedColor: "#E53935" },
-    "2024-08-20": { selected: true, selectedColor: "#E53935" },
-    "2024-08-21": { selected: true, selectedColor: "#E53935" },
-    "2024-08-22": { selected: true, selectedColor: "#E53935" },
-    "2024-08-23": { selected: true, selectedColor: "#E53935" },
-    "2024-08-24": { selected: true, selectedColor: "#E53935" },
-    "2024-08-29": { selected: true, selectedColor: "#E53935" },
+    "2026-02-05": { selected: true, selectedColor: "#E53935" },
+    "2026-02-08": { selected: true, selectedColor: "#E53935" },
+    "2026-02-09": { selected: true, selectedColor: "#E53935" },
+    "2026-02-11": { selected: true, selectedColor: "#E53935" },
+    "2026-02-14": { selected: true, selectedColor: "#E53935" },
+    "2026-02-19": { selected: true, selectedColor: "#E53935" },
+    "2026-02-20": { selected: true, selectedColor: "#E53935" },
+    "2026-02-21": { selected: true, selectedColor: "#E53935" },
+    "2026-02-22": { selected: true, selectedColor: "#E53935" },
+    "2026-02-23": { selected: true, selectedColor: "#E53935" },
+    "2026-02-24": { selected: true, selectedColor: "#E53935" },
+    "2026-02-29": { selected: true, selectedColor: "#E53935" },
   };
 
   const handleDayPress = (day) => {
@@ -69,12 +70,13 @@ export default function HomeScreen({ navigation }) {
 
       <View style={[styles.calendarWrapper, { backgroundColor: colors.backgroundCard, borderColor: colors.text }]}>
         <Calendar
-          key={colors.backgroundCard}
-          current={"2024-08-01"}
+          key={`${i18n.language}-${colors.backgroundCard}`}
+          current={"2026-02-01"}
           monthFormat={"MMMM"}
           enableSwipeMonths={true}
           hideExtraDays={true}
           markedDates={redDates}
+          firstDay={1}
           onDayPress={handleDayPress}
           theme={{
             backgroundColor: colors.backgroundMain,
@@ -92,7 +94,7 @@ export default function HomeScreen({ navigation }) {
         />
       </View>
 
-      <View>
+      {/* <View>
         <Text style={[styles.heading, { color: colors.text }]}>
           Те що може зацікавити тебе 🤭👀
         </Text>
@@ -100,11 +102,11 @@ export default function HomeScreen({ navigation }) {
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
           Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
         </Text>
-      </View>
+      </View> */}
 
       <View style={styles.bloodContainer}>
         <Text style={[styles.bloodTitle, { color: colors.text }]}>
-          Яка кров зараз найбільш потрібна? <Text style={{ color: "red" }}>🩸</Text>
+          {t("blood_needed_title")} <Text style={{ color: "red" }}>🩸</Text>
         </Text>
         <View style={[styles.bloodGrid, { borderColor: colors.text + '1A' }]}>
           {bloodData.map((item, index) => {
@@ -123,39 +125,30 @@ export default function HomeScreen({ navigation }) {
 
       <View style={styles.chartSection}>
         <View style={styles.chartHeaderRow}>
-          <Text style={[styles.chartTitle, { color: colors.text }]}>Rush of people</Text>
+          <Text style={[styles.chartTitle, { color: colors.text }]}>{t("rush_of_people")}</Text>
           <View style={[styles.dayBadge, { backgroundColor: colors.primary }]}>
-            <Text style={styles.dayBadgeText}>&lt; thursday</Text>
+            <Text style={styles.dayBadgeText}>&lt; {t("thursday")}</Text>
           </View>
         </View>
 
         <View style={[styles.chartContainer, { backgroundColor: colors.backgroundCard, borderColor: colors.text + '1A'}]}>
           
-          {/* СІТКА І СТОВПЧИКИ (Flex layout) 
-              Ми використовуємо дві View одна за одною.
-              Друга View (стовпчики) має негативний marginTop, щоб "наїхати" на першу.
-          */}
           <View style={styles.graphBody}>
             
-            {/* ШАР 1: Сітка (Background Grid) - БЕЗ position: absolute */}
             <View style={styles.gridLayer}>
-                 {/* Рядок 70 */}
                  <View style={styles.gridRow}>
                     <Text style={[styles.gridLabel, { color: colors.text }]}>70</Text>
                     <View style={[styles.dashedLine, { borderColor: colors.text }]} />
                  </View>
                  
-                 {/* Проміжок між 70 і 30, контролюється Flex */}
                  <View style={{ height: 40 }} /> 
 
-                 {/* Рядок 30 */}
                  <View style={styles.gridRow}>
                     <Text style={[styles.gridLabel, { color: colors.text }]}>30</Text>
                     <View style={[styles.dashedLine, { borderColor: colors.text }]} />
                  </View>
             </View>
 
-            {/* ШАР 2: Стовпчики (Bars) */}
             <View style={styles.barsLayer}>
               {chartData.map((height, index) => (
                 <View key={index} style={styles.barWrapper}>
@@ -315,29 +308,26 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   
-  // --- Стилі для Flex-Based накладання ---
   graphBody: {
-    height: 100, // Фіксуємо висоту робочої зони графіку
+    height: 100,
     marginBottom: 5,
   },
   gridLayer: {
     height: '100%',
     flexDirection: 'column',
-    justifyContent: 'flex-start', // Елементи йдуть зверху вниз
-    zIndex: 0, // Знизу
-    paddingTop: 10, // Відступ зверху для цифри 70
+    justifyContent: 'flex-start',
+    zIndex: 0,
+    paddingTop: 10,
   },
   barsLayer: {
     height: '100%',
-    marginTop: -100, // !!! Ключовий момент: підтягуємо стовпчики вгору на висоту контейнера
+    marginTop: -100,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
     marginLeft: 25,
-    zIndex: 1, // Зверху
+    zIndex: 1, 
   },
-  // ---------------------------------------
-
   gridRow: {
     flexDirection: 'row',
     alignItems: 'center',

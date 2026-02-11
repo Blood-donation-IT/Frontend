@@ -13,6 +13,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../Theme/ThemeContext';
+import { useAuthStore } from '../stores/useAuthStore';
 
 type SplashScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -25,6 +26,8 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
   const waveTop = useRef(new Animated.Value(-width)).current;
   const waveMid = useRef(new Animated.Value(width)).current;
   const waveBot = useRef(new Animated.Value(-width)).current;
+
+  const { checkAuth } = useAuthStore();
 
   const { colors, isLight } = useTheme();
 
@@ -47,14 +50,31 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
       }),
     ]).start();
 
-    const timeout = setTimeout(() => {
-      navigation.replace('Intro');
-    }, 2500);
+    const bootstrap = async () => {
+      const startTime = Date.now();
+      
+      await checkAuth();
+      
+      const isAuth = useAuthStore.getState().isAuth;
+      
+      const endTime = Date.now();
+      const elapsed = endTime - startTime;
+      const minDuration = 2500;
+      const remainingTime = Math.max(0, minDuration - elapsed);
 
-    return () => clearTimeout(timeout);
+      setTimeout(() => {
+        if (isAuth) {
+          navigation.replace('Home'); 
+        } else {
+          navigation.replace('Intro');
+        }
+      }, remainingTime);
+    };
+
+    bootstrap();
   }, []);
 
-  const darkMode = !isLight; // визначаємо темну тему
+  const darkMode = !isLight; 
 
   return (
     <LinearGradient

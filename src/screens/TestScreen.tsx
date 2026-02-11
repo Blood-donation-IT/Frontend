@@ -1,36 +1,83 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Platform } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "../Theme/ThemeContext";
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { useAuthStore } from "../stores/useAuthStore";
 
 export default function TestScreen() {
   const navigation = useNavigation();
-  
   const { colors, isDark } = useTheme();
 
   const questions = [
-    { id: 1, text: "Вам вже виповнилося 18 років?", type: "yesno" },
-    { id: 2, text: "Ваш вік не перевищує 60–65 років?", type: "yesno" },
-    { id: 3, text: "Ваша вага 50+ кг?", type: "yesno" },
-    { id: 4, text: "Ви загалом вважаєте свій стан здоров’я добрим?", type: "yesno" },
-    { id: 5, text: "Ви не маєте хронічних захворювань у важкій формі?", type: "have" },
-    { id: 6, text: "Ви не маєте хвороб серця або серцевої недостатності?", type: "have" },
-    { id: 7, text: "Ви не маєте цукрового діабету (особливо інсулінозалежного)?", type: "have" },
-    { id: 8, text: "Ви не маєте захворювань крові або порушень згортання?", type: "have" },
-    { id: 9, text: "Ви не маєте онкологічних захворювань?", type: "have" },
-    { id: 10, text: "Ви не маєте гепатиту B, C або жовтяниці в анамнезі?", type: "have" },
-    { id: 11, text: "Яка у вас група крові?", type: "blood" },
+    // { id: 1, text: "Вам вже виповнилося 18 років?", type: "yesno" },
+    // { id: 2, text: "Ваш вік не перевищує 60–65 років?", type: "yesno" },
+    { id: 2, text: "Ваша вага 50+ кг?", type: "yesno" },
+    { id: 3, text: "Ви загалом вважаєте свій стан здоров’я добрим?", type: "yesno" },
+    { id: 4, text: "Ви не маєте хронічних захворювань у важкій формі?", type: "have" },
+    { id: 5, text: "Ви не маєте хвороб серця або серцевої недостатності?", type: "have" },
+    { id: 6, text: "Ви не маєте цукрового діабету (особливо інсулінозалежного)?", type: "have" },
+    { id: 7, text: "Ви не маєте захворювань крові або порушень згортання?", type: "have" },
+    { id: 8, text: "Ви не маєте онкологічних захворювань?", type: "have" },
+    { id: 9, text: "Ви не маєте гепатиту B, C або жовтяниці в анамнезі?", type: "have" },
+    { id: 10, text: "Яка у вас група крові?", type: "blood" },
   ];
 
   const bloodTypes = ["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"];
 
+  const [birthDate, setBirthDate] = useState<Date | null>(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [answers, setAnswers] = useState<Record<number, string>>({});
-  const allAnswered = questions.every((q) => answers[q.id]);
   const [showWarning, setShowWarning] = useState(false);
 
-  const renderButton = (qid, value, label) => {
-    const active = answers[qid] === value;
+  const allAnswered = questions.every((q) => answers[q.id]) && birthDate !== null;
+
+  const updateUserAction = useAuthStore((state) => state.updateUserAction);
+
+  const checkIsAdult = (date: Date) => {
+    const today = new Date();
+    let age = today.getFullYear() - date.getFullYear();
+    const m = today.getMonth() - date.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < date.getDate())) {
+      age--;
+    }
+    return age >= 18;
+  };
+
+  const onDateChange = (event: any, selectedDate?: Date) => {
+    setShowDatePicker(false);
+    if (selectedDate) {
+      setBirthDate(selectedDate);
+      const isAdult = checkIsAdult(selectedDate);
+      setAnswers(prev => ({ ...prev, 1: isAdult ? "yes" : "no" }));
+    }
+  };
+
+  const handleFinishTest = async () => {
+    if (!allAnswered) {
+      console.log("ff")
+      setShowWarning(true);
+      return;
+    }
+
+    const selectedBloodType = answers[10]; 
     
+    const profileData = {
+      birth_date: birthDate?.toISOString(),
+      blood_type: selectedBloodType,
+    };
+
+    try {
+      await updateUserAction(profileData);
+      
+      navigation.navigate("Home");
+    } catch (error) {
+      console.error("Помилка при збереженні профілю:", error);
+    }
+  };
+
+  const renderButton = (qid: number, value: string, label: string) => {
+    const active = answers[qid] === value;
     const buttonBorderColor = isDark ? colors.text : colors.primary;
     const activeBackgroundColor = colors.primary;
     const inactiveTextColor = colors.text;
@@ -46,12 +93,7 @@ export default function TestScreen() {
           }
         ]}
       >
-        <Text 
-          style={[
-            styles.optionText, 
-            { color: active ? '#FFFFFF' : inactiveTextColor }
-          ]}
-        >
+        <Text style={[styles.optionText, { color: active ? '#FFFFFF' : inactiveTextColor }]}>
           {label}
         </Text>
       </TouchableOpacity>
@@ -68,6 +110,29 @@ export default function TestScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 20 }}
       >
+        <View style={[styles.card, { backgroundColor: colors.backgroundCard, borderColor: isDark ? colors.text : (colors.primary + '50') }]}>
+          <Text style={[styles.questionText, { color: colors.primary }]}>1. Коли ви народилися?</Text>
+          <TouchableOpacity 
+            style={[styles.dateInput, { borderColor: colors.primary + '50' }]}
+            onPress={() => setShowDatePicker(true)}
+          >
+            <Text style={{ color: colors.text, fontSize: 16 }}>
+              {birthDate ? birthDate.toLocaleDateString() : "Оберіть дату"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {showDatePicker && (
+          <DateTimePicker
+            value={birthDate || new Date(2000, 0, 1)}
+            mode="date"
+            display="spinner"
+            maximumDate={new Date()}
+            locale="uk-UA"
+            onChange={onDateChange}
+          />
+        )}
+
         {questions.map((q) => (
           <View 
             key={q.id} 
@@ -85,12 +150,10 @@ export default function TestScreen() {
 
             <View style={styles.optionsRow}>
               {q.type === "blood" ? (
-                <View>
+                <View style={{ width: '100%', marginLeft: -20 }}>
                   <View style={styles.bloodGrid}>
                     {bloodTypes.map((bt) => {
                       const active = answers[q.id] === bt;
-                      const borderColor = active ? colors.primary : (isDark ? colors.text : colors.primary + '50');
-                      
                       return (
                         <TouchableOpacity
                           key={bt}
@@ -98,22 +161,18 @@ export default function TestScreen() {
                           style={[
                             styles.bloodOption, 
                             { 
-                              borderColor: borderColor,
+                              borderColor: active ? colors.primary : (isDark ? colors.text : colors.primary + '50'),
                               backgroundColor: active ? colors.primary : 'transparent' 
                             }
                           ]}
                         >
-                          <Text style={[
-                            styles.optionText, 
-                            { color: active ? '#FFFFFF' : colors.text }
-                          ]}>
+                          <Text style={[styles.optionText, { color: active ? '#FFFFFF' : colors.text }]}>
                             {bt}
                           </Text>
                         </TouchableOpacity>
                       );
                     })}
                   </View>
-
                   <TouchableOpacity
                     onPress={() => setAnswers({ ...answers, [q.id]: "unknown" })}
                     style={[
@@ -124,49 +183,40 @@ export default function TestScreen() {
                       }
                     ]}
                   >
-                    <Text style={[
-                      styles.optionText,
-                      { color: answers[q.id] === "unknown" ? '#FFFFFF' : colors.text }
-                    ]}>
+                    <Text style={[styles.optionText, { color: answers[q.id] === "unknown" ? '#FFFFFF' : colors.text }]}>
                       Я не знаю свою групу крові
                     </Text>
                   </TouchableOpacity>
                 </View>
               ) : q.type === "yesno" ? (
-                <View style={styles.optionsRow}>
+                <>
                   {renderButton(q.id, "yes", "Так")}
                   {renderButton(q.id, "no", "Ні")}
-                </View>
+                </>
               ) : (
-                <View style={styles.optionsRow}>
+                <>
                   {renderButton(q.id, "have", "Маю")}
                   {renderButton(q.id, "no", "Не маю")}
-                </View>
+                </>
               )}
             </View>
           </View>
         ))}
-  
+
         {showWarning && !allAnswered && (
           <Text style={[styles.warningText, { color: colors.primary }]}>
-            Дайте відповідь на ВСІ запитання
+            Дайте відповідь на ВСІ запитання та оберіть дату народження
           </Text>
         )}
         
         <TouchableOpacity
           style={[
             styles.continueButton,
-            { 
-              backgroundColor: allAnswered ? colors.primary : (isDark ? '#555' : '#D1D1D1') 
-            },
+            { backgroundColor: allAnswered ? colors.primary : (isDark ? '#555' : '#D1D1D1') },
           ]}
-          onPress={() => {
-            if (!allAnswered) {
-              setShowWarning(true);
-              return;
-            }
-            navigation.navigate("Home");
-          }}
+          onPress={
+            handleFinishTest
+          }
         >
           <Text style={styles.continueText}>Continue</Text>
         </TouchableOpacity>
@@ -219,19 +269,22 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: "center",
   },
-  optionActive: {
-    backgroundColor: "#E0706A",
-  },
-  optionTextActive: {
-    color: "#fff",
-  },
   optionText: {
     fontWeight: "500",
+  },
+  dateInput: {
+    borderWidth: 1,
+    borderRadius: 15,
+    padding: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 5,
   },
   continueButton: {
     borderRadius: 30,
     paddingVertical: 14,
     alignItems: "center",
+    marginTop: 10,
     marginBottom: 20,
   },
   continueText: {
@@ -250,22 +303,21 @@ const styles = StyleSheet.create({
     gap: 10,
     justifyContent: "center",
     marginTop: 10,
+    paddingHorizontal: 10
   },
   bloodOption: {
-    width: "22%",
+    width: "21%",
     paddingVertical: 12,
     borderRadius: 15,
     borderWidth: 1,
-    borderColor: "#F1C6C3",
     alignItems: "center",
   },
   unknownOption: {
     marginTop: 15,
-    width: "100%",
+    marginHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 15,
     borderWidth: 1,
-    borderColor: "#F1C6C3",
     alignItems: "center",
   },
 });

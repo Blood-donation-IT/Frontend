@@ -6,6 +6,7 @@
   "system": "System",
   "delete_account": "Delete account",
   "light_mode": "Light Mode",
+  "logout":"Log out",
 
   "edit_profile": "Edit Profile",
   "last_donation": "Last Donation",
@@ -53,6 +54,15 @@
   "invalid_email": "Invalid email address",
   "donors_book": "Donor's book",
 
-  "or_sign_in_with": "Or Sign In With"
+  "or_sign_in_with": "Or Sign In With",
+  
+  "blood_needed_title": "Which blood types are most needed now?",
+  "rush_of_people": "Rush of people",
+  "thursday": "thursday",
+
+  "my_donations": "My Donations",
+  "no_donations_yet": "No donations yet",
+
+  "date_of_issue": "Date Of Issue"
 
 }

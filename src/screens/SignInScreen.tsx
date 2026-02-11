@@ -7,7 +7,7 @@ import {
   StyleSheet,
   ScrollView,
   Image,
-  Alert, 
+  Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
@@ -15,6 +15,7 @@ import { useTheme } from "../Theme/ThemeContext";
 import GoogleLogin from "./googleLogin";
 import * as SecureStore from "expo-secure-store";
 import api from "../api/api";
+import { useAuthStore } from "../stores/useAuthStore";
 
 export default function SignInScreen() {
   const { t } = useTranslation();
@@ -24,15 +25,17 @@ export default function SignInScreen() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [confirm_password, setConfirm_Password] = useState("");
+
+  const registerAction = useAuthStore(state => state.registerAction);
 
   const handleSignUp = async () => {
-    if (!name || !email || !year || !password || !confirmPassword) {
+    if (!name || !email || !password || !confirm_password) {
       Alert.alert(t("error"), t("fill_all_fields"));
       return;
     }
 
-    if (password !== confirmPassword) {
+    if (password !== confirm_password) {
       Alert.alert(t("error"), t("passwords_do_not_match"));
       return;
     }
@@ -43,13 +46,15 @@ export default function SignInScreen() {
       return;
     }
 
-    const response = await api.post("/api/v1/auth/register",{email,password,full_name:""})
-    console.log(response.data)
-    if (response.data.token) {
-      SecureStore.setItem('accessToken', response.data.token);
-      navigation.navigate("Test");
+    try {
+      const data = await registerAction({ email, name, password, confirm_password });
+      console.log(data)
+      if (data.access_token) {
+        navigation.navigate("Test");
+      }
+    } catch (error) {
+      Alert.alert("Помилка", "Реєстрація не вдалася",error);
     }
-
   };
 
   const logoSource = isDark 
@@ -130,8 +135,8 @@ export default function SignInScreen() {
           placeholder={t("confirm_password") || "Confirm Password"}
           placeholderTextColor={colors.primary}
           secureTextEntry
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
+          value={confirm_password}
+          onChangeText={setConfirm_Password}
         />
       </View>
 

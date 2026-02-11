@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  TouchableOpacity,
 } from "react-native";
 
 import {
@@ -19,18 +20,23 @@ import {
 
 import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
 import { useTheme } from "../Theme/ThemeContext";
+import { t } from "i18next";
+import { useNavigation } from "@react-navigation/native";
+import { useAuthStore } from "../stores/useAuthStore";
 
-const WEB_CLIENT_ID =
-  "919528186068-dehjb980ti0jkdoie856nqqlnu75fqse.apps.googleusercontent.com";
+const WEB_CLIENT_ID = process.env.EXPO_PUBLIC_WEB_CLIENT_ID;
 
 const authInstance = getAuth();
 
 export default function GoogleLogin() {
+  const navigation = useNavigation();
   const { colors } = useTheme();
 
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+
+  const syncWithFirebase = useAuthStore((state) => state.syncWithFirebase);
 
   function authStateChanged(user: any) {
     setUser(user);
@@ -60,6 +66,11 @@ export default function GoogleLogin() {
 
       const googleCredential = GoogleAuthProvider.credential(idToken);
       await signInWithCredential(authInstance, googleCredential);
+      console.log(signInResult.data)
+      await syncWithFirebase(signInResult.data?.user,signInResult.data?.idToken);
+      navigation.navigate("Test")
+      // navigation.navigate("Home")
+
     } catch (error: any) {
       if (
         error.code !== statusCodes.SIGN_IN_CANCELLED &&
@@ -72,14 +83,7 @@ export default function GoogleLogin() {
     }
   }
 
-  async function signOut() {
-    try {
-      await firebaseSignOut(authInstance);
-      await GoogleSignin.signOut();
-    } catch (error) {
-      console.error(error);
-    }
-  }
+  
 
   if (initializing) {
     return (
@@ -94,81 +98,33 @@ export default function GoogleLogin() {
     );
   }
 
-  if (!user) {
+  if (true) {!user
     return (
-      <View
-        style={[
-          styles.container,
-          { backgroundColor: colors.backgroundMain },
-        ]}
-      >
-        <Text style={[styles.header, { color: colors.text }]}>
-          Вітаємо!
-        </Text>
-        <Text style={[styles.subHeader, { color: colors.textSecondary }]}>
-          Увійдіть, щоб продовжити
-        </Text>
+      <View style={styles.container}>
+        <View style={styles.dividerContainer}>
+          <View style={styles.line} />
+          <Text style={styles.dividerText}>{t("or_sign_in_with")}</Text>
+          <View style={styles.line} />
+        </View>
 
-        <View style={styles.btnContainer}>
-          <Button
-            title={loading ? "Вхід..." : "Увійти через Google"}
-            onPress={onGoogleButtonPress}
-            disabled={loading}
-            color={colors.primary}
-          />
+        <View style={styles.socialButtonsRow}>
+          <TouchableOpacity style={styles.socialButton} onPress={onGoogleButtonPress}>
+            <Image source={require("../images/google_icon.png")} style={styles.socialIcon} />
+            <Text style={styles.socialButtonText}>Google</Text>
+          </TouchableOpacity>
+
+          {/* <TouchableOpacity style={styles.socialButton}>
+            <Image source={require("../images/apple_icon.png")} style={styles.socialIcon} />
+            <Text style={styles.socialButtonText}>Apple</Text>
+          </TouchableOpacity> */}
         </View>
       </View>
     );
   }
 
-  return (
-    <View
-      style={[
-        styles.container,
-        { backgroundColor: colors.backgroundMain },
-      ]}
-    >
-      <Text style={[styles.header, { color: colors.text }]}>
-        Профіль
-      </Text>
-
-      <View
-        style={[
-          styles.card,
-          {
-            backgroundColor: colors.backgroundCard,
-            borderColor: colors.border,
-          },
-        ]}
-      >
-        {user.photoURL && (
-          <Image source={{ uri: user.photoURL }} style={styles.avatar} />
-        )}
-        <Text style={[styles.name, { color: colors.text }]}>
-          {user.displayName}
-        </Text>
-        <Text style={[styles.email, { color: colors.textSecondary }]}>
-          {user.email}
-        </Text>
-        <Text style={[styles.uid, { color: colors.textSecondary }]}>
-          UID: {user.uid}
-        </Text>
-      </View>
-
-      <View style={styles.btnContainer}>
-        <Button title="Вийти" onPress={signOut} color={colors.danger} />
-      </View>
-    </View>
-  );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
   header: {
     fontSize: 24,
     fontWeight: "bold",
@@ -208,4 +164,67 @@ const styles = StyleSheet.create({
     width: "100%",
     maxWidth: 220,
   },
+  container: {
+    paddingHorizontal: 20,
+    marginTop: 30,
+    width: '100%',
+  },
+  dividerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 25,
+  },
+  line: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#E66A6A',
+    opacity: 0.5,
+  },
+  dividerText: {
+    marginHorizontal: 10,
+    color: '#8E8E93',
+    fontSize: 14,
+  },
+  socialButtonsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 15,
+  },
+  socialButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 50,
+    backgroundColor: '#FFF',
+    borderRadius: 25,
+    borderWidth: 1,
+    borderColor: '#F0F0F0',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    elevation: 2,
+  },
+  socialIcon: {
+    width: 20,
+    height: 20,
+    marginRight: 10,
+    resizeMode: 'contain',
+  },
+  socialButtonText: {
+    fontSize: 16,
+    color: '#444',
+    fontWeight: '500',
+  },
+// });
 });
+
+export async function signOut() {
+    try {
+      await firebaseSignOut(authInstance);
+      await GoogleSignin.signOut();
+    } catch (error) {
+      console.error(error);
+    }
+  }

@@ -6,11 +6,15 @@ import { useTranslation } from "react-i18next";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTheme } from "../Theme/ThemeContext";
 import CustomHeader from "../components/CustomHeader";
+import { useAuthStore } from "../stores/useAuthStore";
+import { CommonActions } from "@react-navigation/native";
 
 const SettingsScreen = ({ navigation }) => {
   const { t } = useTranslation();
 
   const { isLight, colors, toggleTheme } = useTheme();
+
+  const { logout } = useAuthStore();
 
   const toggleSwitch = () => {
     toggleTheme();
@@ -37,6 +41,17 @@ const SettingsScreen = ({ navigation }) => {
     setLanguage(langCode);
     i18n.changeLanguage(langCode);
     await AsyncStorage.setItem("appLanguage", langCode);
+  };
+
+  const handleLogout = async () => {
+    await logout();
+
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: "LogIn" }], 
+      })
+    );
   };
 
   const styles = StyleSheet.create({
@@ -73,8 +88,6 @@ const SettingsScreen = ({ navigation }) => {
     alignItems: "center",
     paddingVertical: 10,
     paddingHorizontal:15,
-    marginTop: "auto",
-    marginBottom: 30,
   },
   deleteText: {
     color: colors.text,
@@ -116,10 +129,19 @@ const SettingsScreen = ({ navigation }) => {
         </View>
       </View>
 
-      <TouchableOpacity style={styles.deleteOption}>
-        <Text style={styles.deleteText}>{t("delete_account")}</Text>
-        <Ionicons name="trash-outline" size={25} color="#E66A6A" />
-      </TouchableOpacity>
+      <View style={{ flex: 1, justifyContent: 'flex-end' , marginBottom:30 }}>
+
+        <TouchableOpacity onPress={handleLogout} style={styles.deleteOption}>
+          <Text style={styles.deleteText}>{t("logout")}</Text>
+          <Ionicons name="log-out-outline" size={25} color="#E66A6A" />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.deleteOption}>
+          <Text style={styles.deleteText}>{t("delete_account")}</Text>
+          <Ionicons name="trash-outline" size={25} color="#E66A6A" />
+        </TouchableOpacity>
+
+      </View>
     </ScrollView></>
   );
   
