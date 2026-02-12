@@ -43,68 +43,26 @@ const monthTitle = (ymd: string) => {
 };
 
 export default function HomeScreen({ navigation }: any) {
-  const { colors, theme, isDark: contextIsDark } = useTheme();
-
-  const isDark =
-    contextIsDark ||
-    theme === "dark" ||
-    colors.text === "#FFFFFF" ||
-    colors.text === "#E0E0E0";
-
-  const ui = useMemo(() => {
-    const light = {
-      pageBg: "#F7E9EA",
-      card: "#FFFFFF",
-      softCard: "#FFF7F7",
-      text: "#2B2B2B",
-      subText: "rgba(43,43,43,0.60)",
-      shadow: "rgba(0,0,0,0.12)",
-      brand: "#E55656",
-      brand2: "#FF7A7A",
-      calendarSurface: "#FFFFFF",
-      calendarDow: "rgba(43,43,43,0.55)",
-      pillBg: "rgba(255,255,255,0.95)",
-      dayText: "#2B2B2B",
-      disabledText: "rgba(0,0,0,0.25)",
-    };
-
-    const dark = {
-      pageBg: "#121214",
-      card: "#1B1B1F",
-      softCard: "#1F1A1A",
-      text: "#F4F4F5",
-      subText: "rgba(244,244,245,0.70)",
-      shadow: "rgba(0,0,0,0.45)",
-      brand: "#FF6B6B",
-      brand2: "#FF7A7A",
-      calendarSurface: "#1B1B1F",
-      calendarDow: "rgba(244,244,245,0.65)",
-      pillBg: "rgba(255,255,255,0.10)",
-      dayText: "#F4F4F5",
-      disabledText: "rgba(255,255,255,0.35)",
-    };
-
-    return isDark ? dark : light;
-  }, [isDark]);
+  const { colors, isLight} = useTheme();
 
   const [current, setCurrent] = useState<string>("2026-08-01");
 
   const marked = useMemo(() => {
     return {
-      "2026-08-10": { selected: true, selectedColor: ui.brand },
-      "2026-08-17": { selected: true, selectedColor: ui.brand },
-      "2026-08-20": { selected: true, selectedColor: ui.brand },
-      "2026-08-22": { selected: true, selectedColor: ui.brand },
-      "2026-08-26": { selected: true, selectedColor: ui.brand },
-      "2026-08-31": { selected: true, selectedColor: ui.brand },
+      "2026-08-10": { selected: true, selectedColor: colors.brand },
+      "2026-08-17": { selected: true, selectedColor: colors.brand },
+      "2026-08-20": { selected: true, selectedColor: colors.brand },
+      "2026-08-22": { selected: true, selectedColor: colors.brand },
+      "2026-08-26": { selected: true, selectedColor: colors.brand },
+      "2026-08-31": { selected: true, selectedColor: colors.brand },
     } as Record<string, any>;
-  }, [ui.brand]);
+  }, [colors.brand]);
 
   const onDayPress = (day: DateData) => {
     navigation.navigate("Registration", { day: day.dateString });
   };
 
-  const logoSource = isDark ? require("../images/logo-white.png") : require("../images/logo.png");
+  const logoSource = isLight ? require("../images/logo-white.png") : require("../images/logo.png");
 
   const donations: DonationItem[] = [
     { id: "1", date: "05.01.26", time: "9:15", vol: "450ml", nurse: "Ivan Melko", addr: "Universytetska\nst." },
@@ -153,9 +111,9 @@ export default function HomeScreen({ navigation }: any) {
   };
 
   return (
-    <View style={[styles.screen, { backgroundColor: ui.pageBg }]}>
+    <View style={[styles.screen, { backgroundColor: colors.pageBg }]}>
       <ScrollView
-        contentContainerStyle={[styles.container, { backgroundColor: ui.pageBg }]}
+        contentContainerStyle={[styles.container, { backgroundColor: colors.pageBg }]}
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
@@ -163,23 +121,23 @@ export default function HomeScreen({ navigation }: any) {
           <Image source={logoSource} style={styles.logo} />
           <TouchableOpacity
             onPress={() => navigation.navigate("NotificationScreen")}
-            style={[styles.headerIconBtn, { backgroundColor: ui.card }]}
+            style={[styles.headerIconBtn, { backgroundColor: colors.card }]}
             activeOpacity={0.85}
           >
             <Image
               source={require("../images/notification.png")}
-              style={[styles.headerIcon, { tintColor: ui.text }]}
+              style={[styles.headerIcon, { tintColor: colors.text }]}
             />
           </TouchableOpacity>
         </View>
 
-        <Text style={[styles.hello, { color: ui.text }]}>
-          Hello, <Text style={{ color: ui.brand, fontWeight: "800" }}>Anton</Text> 👋
+        <Text style={[styles.hello, { color: colors.text }]}>
+          Hello, <Text style={{ color: colors.brand, fontWeight: "800" }}>Anton</Text> 👋
         </Text>
 
         {/* Calendar */}
-        <View style={[styles.calendarCard, { backgroundColor: ui.card, shadowColor: ui.shadow }]}>
-          <View style={[styles.calendarHeader, { backgroundColor: ui.brand2 }]}>
+        <View style={[styles.calendarCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
+          <View style={[styles.calendarHeader, { backgroundColor: colors.brand2 }]}>
             <TouchableOpacity onPress={() => setCurrent((c) => addMonths(c, -1))} style={styles.arrowHit}>
               <Text style={styles.arrowText}>‹</Text>
             </TouchableOpacity>
@@ -192,8 +150,8 @@ export default function HomeScreen({ navigation }: any) {
           </View>
 
           <Calendar
-            key={`${isDark}-${ui.calendarSurface}`}
-            style={{ backgroundColor: ui.calendarSurface }}
+            key={`${isLight}-${colors.calendarSurface}`}
+            style={{ backgroundColor: colors.calendarSurface }}
             firstDay={1}
             hideArrows
             renderHeader={() => null}
@@ -203,14 +161,14 @@ export default function HomeScreen({ navigation }: any) {
             markedDates={marked}
             onDayPress={onDayPress}
             theme={{
-              backgroundColor: ui.calendarSurface,
-              calendarBackground: ui.calendarSurface,
-              textSectionTitleColor: ui.calendarDow,
-              dayTextColor: ui.dayText,
-              todayTextColor: ui.brand,
-              selectedDayBackgroundColor: ui.brand,
+              backgroundColor: colors.calendarSurface,
+              calendarBackground: colors.calendarSurface,
+              textSectionTitleColor: colors.calendarDow,
+              dayTextColor: colors.dayText,
+              todayTextColor: colors.brand,
+              selectedDayBackgroundColor: colors.brand,
               selectedDayTextColor: "#FFFFFF",
-              textDisabledColor: ui.disabledText,
+              textDisabledColor: colors.disabledText,
               textDayFontSize: 14,
             }}
             dayComponent={({ date, state, marking }) => {
@@ -226,13 +184,13 @@ export default function HomeScreen({ navigation }: any) {
                   style={[
                     styles.dayPill,
                     {
-                      backgroundColor: selected ? ui.brand : ui.pillBg,
+                      backgroundColor: selected ? colors.brand : colors.pillBg,
                       opacity: isDisabled ? 0.35 : 1,
                     },
                   ]}
                   activeOpacity={0.85}
                 >
-                  <Text style={[styles.dayText, { color: selected ? "#FFFFFF" : ui.dayText }]}>{date.day}</Text>
+                  <Text style={[styles.dayText, { color: selected ? "#FFFFFF" : colors.dayText }]}>{date.day}</Text>
                 </TouchableOpacity>
               );
             }}
@@ -240,7 +198,7 @@ export default function HomeScreen({ navigation }: any) {
         </View>
 
         {/* History */}
-        <Text style={[styles.sectionTitle, { color: ui.text }]}>Your History of Donation</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Your History of Donation</Text>
         <FlatList
           data={donations}
           keyExtractor={(it) => it.id}
@@ -250,67 +208,67 @@ export default function HomeScreen({ navigation }: any) {
           renderItem={renderDonation}
         />
 
-        {/* Quick Actions */}
-        <Text style={[styles.sectionTitle, { color: ui.text }]}>Quick Actions</Text>
+        {/* Qcolorsck Actions */}
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Qcolorsck Actions</Text>
         <View style={styles.actionsRow}>
           {actions.map((a) => (
             <TouchableOpacity
               key={a.id}
               onPress={a.onPress}
-              style={[styles.actionCard, { backgroundColor: ui.card, shadowColor: ui.shadow }]}
+              style={[styles.actionCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}
               activeOpacity={0.9}
             >
-              <View style={[styles.actionIconWrap, { backgroundColor: ui.softCard }]}>
+              <View style={[styles.actionIconWrap, { backgroundColor: colors.softCard }]}>
                 <Image source={a.icon} style={styles.actionIcon} />
               </View>
-              <Text style={[styles.actionTitle, { color: ui.text }]}>{a.title}</Text>
+              <Text style={[styles.actionTitle, { color: colors.text }]}>{a.title}</Text>
             </TouchableOpacity>
           ))}
         </View>
 
         {/* Informatively */}
-        <Text style={[styles.sectionTitle, { color: ui.text, marginTop: 14 }]}>Informatively</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text, marginTop: 14 }]}>Informatively</Text>
 
         <View style={{ gap: 12, marginTop: 10 }}>
           {/* CARD 1 */}
-          <View style={[styles.infoCard, { backgroundColor: ui.card, shadowColor: ui.shadow }]}>
+          <View style={[styles.infoCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
             <View style={styles.infoRow}>
               <Image source={require("../images/info.png")} style={styles.infoDrop} />
 
               <View style={{ flex: 1 }}>
-                <Text style={[styles.infoTitle, { color: ui.text }]}>Група крові A (II)</Text>
+                <Text style={[styles.infoTitle, { color: colors.text }]}>Група крові A (II)</Text>
 
-                <Text style={[styles.infoText, { color: ui.text }]}>
+                <Text style={[styles.infoText, { color: colors.text }]}>
                   1. Може приймати кров від:{"\n"}групи A (сумісний), групи O (сумісний)
                 </Text>
 
-                <Text style={[styles.infoText, { color: ui.text, marginTop: 6 }]}>
+                <Text style={[styles.infoText, { color: colors.text, marginTop: 6 }]}>
                   2. Можна здавати кров на:{"\n"}групу A, групу AB
                 </Text>
               </View>
             </View>
 
-            <Text style={[styles.infoProgress, { color: ui.brand }]}>50 of 100%</Text>
+            <Text style={[styles.infoProgress, { color: colors.brand }]}>50 of 100%</Text>
           </View>
 
           {/* CARD 2 */}
-          <View style={[styles.infoCard, { backgroundColor: ui.card, shadowColor: ui.shadow }]}>
-            <Text style={[styles.infoTitleCenter, { color: ui.brand }]}>Що можна їсти перед донацією</Text>
-            <Text style={[styles.infoSubtitle, { color: ui.subText }]}>Вуглеводи</Text>
+          <View style={[styles.infoCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
+            <Text style={[styles.infoTitleCenter, { color: colors.brand }]}>Що можна їсти перед донацією</Text>
+            <Text style={[styles.infoSubtitle, { color: colors.subText }]}>Вуглеводи</Text>
 
             <Image source={require("../images/info2.png")} style={styles.infoFood} />
 
             <View style={styles.foodRow}>
-              <Text style={[styles.foodText, { color: ui.text }]}>
+              <Text style={[styles.foodText, { color: colors.text }]}>
                 ПЕРЛОВА{"\n"}АМАРАНТ{"\n"}КУКУРУДЗЯНА
               </Text>
 
-              <Text style={[styles.foodText, { color: ui.text }]}>
+              <Text style={[styles.foodText, { color: colors.text }]}>
                 БУЛГУР{"\n"}МАННА{"\n"}ПШОНЯНА
               </Text>
             </View>
 
-            <Text style={[styles.foodBottom, { color: ui.text }]}>
+            <Text style={[styles.foodBottom, { color: colors.text }]}>
               БУДЬ-ЯКІ ВИДИ ПАСТИ (ОКРІМ ЯЄЧНОЇ ЛОКШИНИ)
             </Text>
           </View>
