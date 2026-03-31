@@ -12,6 +12,9 @@ import messaging, {
 } from '@react-native-firebase/messaging';
 import { Alert } from 'react-native';
 
+// #mobile: нативна Firebase Messaging реалізація для мобільних платформ
+// #web: fallback реалізація PushNotificationService.web.ts без нативних API для веб-платформи
+
 class PushNotificationService {
   private messagingInstance = getMessaging();
 
