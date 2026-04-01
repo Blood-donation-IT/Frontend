@@ -2,10 +2,7 @@ import { create } from 'zustand';
 import * as SecureStore from 'expo-secure-store';
 import api from '../api/api';
 import { User } from '../interfaces/user';
-
-import { getAuth, signOut as firebaseSignOut } from "firebase/auth";
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import { signOut } from '../screens/googleLogin';
+import { providerSignOut } from "../services/authSignOut";
 
 interface AuthState {
   user: User | null;
@@ -205,7 +202,7 @@ export const useAuthStore = create<AuthState>((set,get) => ({
 
   logout: async () => {
     try {
-      await signOut()
+      await providerSignOut();
     } catch (error) {
       console.log("Google/Firebase signout error:", error);
     }
