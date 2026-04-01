@@ -2,16 +2,16 @@ import 'dotenv/config';
 
 export default {
   "expo": {
-    "name": "MyApp",
-    "slug": "MyApp",
-    "scheme": "myapp",
+    "name": "Advanced Donor",
+    "slug": "AdvancedDonor",
+    "scheme": "advanceddonor",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./src/images/logo-black.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./src/images/logo-black.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -21,7 +21,7 @@ export default {
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./src/images/logo-black.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
@@ -33,7 +33,7 @@ export default {
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./src/images/logo-black.png"
     },
     "plugins": [
       "expo-localization",
