@@ -1,25 +1,24 @@
-// AppNavigator.tsx
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 import { ThemeProvider } from "../Theme/ThemeContext";
 
-import SplashScreen from "../screens/mobile/home/SplashScreen";
-import IntroScreen from "../screens/mobile/home/IntroScreen";
-import SignInScreen from "../screens/mobile/auth/SignInScreen";
-import LogInScreen from "../screens/mobile/auth/LogInScreen";
-import Registration from "../screens/mobile/donation/Registration";
+import SplashScreen from "../screens/web/home/SplashScreen";
+import IntroScreen from "../screens/web/home/IntroScreen";
+import SignInScreen from "../screens/web/auth/SignInScreen";
+import LogInScreen from "../screens/web/auth/LogInScreen";
+import Registration from "../screens/web/donation/Registration";
 import BottomTabNavigator from "./BottomTabNavigator";
-import NotificationScreen from "../screens/mobile/home/NotificationScreen";
+import NotificationScreen from "../screens/web/home/NotificationScreen";
 
-import SettingsScreen from "../screens/mobile/profile/SettingsScreen";
-import EditProfileScreen from "../screens/mobile/profile/EditProfileScreen";
-import TestScreen from "../screens/mobile/home/TestScreen";
-import BookScreen from "../screens/mobile/donation/BookScreen";
-import ForgetScreen from "../screens/mobile/auth/ForgetScreen";
+import SettingsScreen from "../screens/web/profile/SettingsScreen";
+import EditProfileScreen from "../screens/web/profile/EditProfileScreen";
+import TestScreen from "../screens/web/home/TestScreen";
+import BookScreen from "../screens/web/donation/BookScreen";
+import ForgetScreen from "../screens/web/auth/ForgetScreen";
 import { RootStackParamList } from "./types";
-import ResetPasswordScreen from "../screens/mobile/auth/ResetPasswordScreen";
-import CreateNewPasswordScreen from "../screens/mobile/auth/Createpassword";
+import ResetPasswordScreen from "../screens/web/auth/ResetPasswordScreen";
+import CreateNewPasswordScreen from "../screens/web/auth/Createpassword";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -46,13 +45,11 @@ export default function AppNavigator() {
             component={ResetPasswordScreen}
             options={{ headerShown: false }}
           />
-
           <Stack.Screen
             name="CreateNewPasswordScreen"
             component={CreateNewPasswordScreen}
             options={{ headerShown: false }}
           />
-
           <Stack.Screen
             name="Intro"
             component={IntroScreen}
