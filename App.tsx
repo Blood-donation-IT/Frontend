@@ -6,37 +6,45 @@ import i18n from './src/i18n';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ThemeProvider } from './src/Theme/ThemeContext'; 
 import PushNotificationService from './src/services/PushNotificationService';
+import { Platform } from 'react-native';
 
 export default function App() {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    (async () => {
-      const savedLang = await AsyncStorage.getItem("appLanguage");
-      if (savedLang) {
-        i18n.changeLanguage(savedLang);
+    const setupApp = async () => {
+      try {
+        const savedLang = await AsyncStorage.getItem("appLanguage");
+        if (savedLang) {
+          await i18n.changeLanguage(savedLang);
+        }
+      } catch (e) {
+        console.error("Language setup error:", e);
       }
 
-      try {
-        const hasPermission = await PushNotificationService.requestUserPermission();
-        
-        if (hasPermission) {
-          const token = await PushNotificationService.getFcmToken();
-          
-          if (token) {
-            console.log("Token logic ready");
+      if (Platform.OS !== 'web') {
+        try {
+          const hasPermission = await PushNotificationService.requestUserPermission();
+          if (hasPermission) {
+            const token = await PushNotificationService.getFcmToken();
+            if (token) console.log("Native Push Token ready");
           }
-
-          // await PushNotificationService.subscribeToTopic('donor_news_global');
+        } catch (error) {
+          console.error("Notification setup error:", error);
         }
-      } catch (error) {
-        console.error("Notification setup error:", error);
+      } else {
+        console.log("Web mode: Skipping native push notifications");
       }
 
       setIsReady(true);
-    })();
+    };
 
-    const unsubscribe = PushNotificationService.initializeListeners();
+    setupApp();
+
+    let unsubscribe: any;
+    if (Platform.OS !== 'web') {
+      unsubscribe = PushNotificationService.initializeListeners();
+    }
 
     return () => {
       if (typeof unsubscribe === 'function') {

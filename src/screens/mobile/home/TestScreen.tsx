@@ -5,6 +5,7 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
+  Platform,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "../../../Theme/ThemeContext";
@@ -151,8 +152,9 @@ export default function TestScreen() {
               {birthDate ? birthDate.toLocaleDateString() : "Оберіть дату"}
             </Text>
           </TouchableOpacity>
-        </View>
-        {showDatePicker && (
+        
+
+        {/* {showDatePicker && (
           <DateTimePicker
             value={birthDate || new Date(2000, 0, 1)}
             mode="date"
@@ -161,7 +163,53 @@ export default function TestScreen() {
             locale="uk-UA"
             onChange={onDateChange}
           />
-        )}
+        )} */}
+        {showDatePicker && (
+  Platform.OS === 'web' ? (
+    <View style={{ marginTop: 10 }}>
+      <Text style={{ color: colors.text, fontSize: 12, marginBottom: 5, opacity: 0.7 }}>
+        Введіть дату (РРРР-ММ-ДД):
+      </Text>
+      <input
+        type="date"
+        // Використовуємо inline-стилі, які імітують твої React Native стилі
+        style={{
+          width: '100%',
+          height: 50,
+          padding: '0 15px',
+          borderRadius: '25px', // Робимо закругленим як твої кнопки
+          border: `1px solid ${colors.primary}80`,
+          backgroundColor: colors.backgroundMain,
+          color: colors.text,
+          fontSize: '16px',
+          fontFamily: 'inherit',
+          outline: 'none',
+          boxSizing: 'border-box',
+        }}
+        onChange={(e) => {
+          if (e.target.value) {
+            setBirthDate(new Date(e.target.value));
+          }
+        }}
+        onBlur={() => setShowDatePicker(false)}
+        autoFocus
+      />
+    </View>
+  ) : (
+    <DateTimePicker
+      value={birthDate || new Date(2000, 0, 1)}
+      mode="date"
+      display="spinner"
+      maximumDate={new Date()}
+      locale="uk-UA"
+      onChange={(event, date) => {
+        setShowDatePicker(false);
+        if (date) setBirthDate(date);
+      }}
+    />
+  )
+)}</View>
+
         {questions.map((q) => (
           <View
             key={q.id}

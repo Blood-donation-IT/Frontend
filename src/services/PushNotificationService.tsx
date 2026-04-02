@@ -1,25 +1,25 @@
-import messaging, { 
-  getMessaging, 
-  getToken, 
-  requestPermission, 
-  subscribeToTopic, 
-  unsubscribeFromTopic, 
-  deleteToken,
-  onMessage,
-  onNotificationOpenedApp,
-  getInitialNotification,
-  AuthorizationStatus 
-} from '@react-native-firebase/messaging';
-import { Alert } from 'react-native';
-
-// #mobile: нативна Firebase Messaging реалізація для мобільних платформ
-// #web: fallback реалізація PushNotificationService.web.ts без нативних API для веб-платформи
+import { Alert, Platform } from 'react-native';
 
 class PushNotificationService {
-  private messagingInstance = getMessaging();
+  private messagingInstance: any = null;
+
+  // Метод для отримання інстансу тільки на нативних платформах
+  private getMessaging() {
+    if (Platform.OS === 'web') return null;
+    if (!this.messagingInstance) {
+      const { getMessaging } = require('@react-native-firebase/messaging');
+      this.messagingInstance = getMessaging();
+    }
+    return this.messagingInstance;
+  }
 
   async requestUserPermission() {
-    const authStatus = await requestPermission(this.messagingInstance);
+    if (Platform.OS === 'web') return false;
+    
+    const { requestPermission, AuthorizationStatus } = require('@react-native-firebase/messaging');
+    const instance = this.getMessaging();
+    
+    const authStatus = await requestPermission(instance);
     const enabled =
       authStatus === AuthorizationStatus.AUTHORIZED ||
       authStatus === AuthorizationStatus.PROVISIONAL;
@@ -32,8 +32,11 @@ class PushNotificationService {
   }
 
   async getFcmToken() {
+    if (Platform.OS === 'web') return null;
+
     try {
-      const fcmToken = await getToken(this.messagingInstance);
+      const { getToken } = require('@react-native-firebase/messaging');
+      const fcmToken = await getToken(this.getMessaging());
       if (fcmToken) {
         console.log('Your Firebase Token is:', fcmToken);
         return fcmToken;
@@ -45,8 +48,11 @@ class PushNotificationService {
   }
 
   async subscribeToTopic(topicName: string) {
+    if (Platform.OS === 'web') return;
+
     try {
-      await subscribeToTopic(this.messagingInstance, topicName);
+      const { subscribeToTopic } = require('@react-native-firebase/messaging');
+      await subscribeToTopic(this.getMessaging(), topicName);
       console.log(`Subscribed to topic: ${topicName}`);
     } catch (error) {
       console.error(`Error subscribing to topic ${topicName}:`, error);
@@ -54,18 +60,23 @@ class PushNotificationService {
   }
 
   initializeListeners() {
-    const unsubscribeOnMessage = onMessage(this.messagingInstance, async remoteMessage => {
+    if (Platform.OS === 'web') return () => {};
+
+    const { onMessage, onNotificationOpenedApp, getInitialNotification } = require('@react-native-firebase/messaging');
+    const instance = this.getMessaging();
+
+    const unsubscribeOnMessage = onMessage(instance, async (remoteMessage: any) => {
       Alert.alert(
         remoteMessage.notification?.title || 'Новина донорства',
         remoteMessage.notification?.body
       );
     });
 
-    onNotificationOpenedApp(this.messagingInstance, remoteMessage => {
+    onNotificationOpenedApp(instance, (remoteMessage: any) => {
       console.log('Opened from background:', remoteMessage.data);
     });
 
-    getInitialNotification(this.messagingInstance).then(remoteMessage => {
+    getInitialNotification(instance).then((remoteMessage: any) => {
       if (remoteMessage) {
         console.log('Opened from quit state:', remoteMessage.data);
       }
@@ -75,8 +86,11 @@ class PushNotificationService {
   }
 
   async deleteToken() {
+    if (Platform.OS === 'web') return;
+
     try {
-      await deleteToken(this.messagingInstance);
+      const { deleteToken } = require('@react-native-firebase/messaging');
+      await deleteToken(this.getMessaging());
     } catch (error) {
       console.error('Error deleting token:', error);
     }

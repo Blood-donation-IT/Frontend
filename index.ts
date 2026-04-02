@@ -1,6 +1,7 @@
 import { registerRootComponent } from 'expo';
+// import { getMessaging, setBackgroundMessageHandler } from '@react-native-firebase/messaging';
 import App from './App';
-import './src/services/setupFirebaseMessaging';
+// import './src/services/setupFirebaseMessaging';
 
 // registerRootComponent calls AppRegistry.registerComponent('main', () => App);
 // It also ensures that whether you load the app in Expo Go or in a native build,
@@ -9,6 +10,11 @@ import './src/services/setupFirebaseMessaging';
 // setBackgroundMessageHandler(messaging, async (remoteMessage) => {
 //   console.log('Повідомлення оброблено у фоні (Modular):', remoteMessage.notification);
 
+// const messaging = getMessaging();
+
+// setBackgroundMessageHandler(messaging, async (remoteMessage) => {
+//   console.log('Повідомлення оброблено у фоні (Modular):', remoteMessage.notification);
+  
 //   return Promise.resolve();
 // });
 

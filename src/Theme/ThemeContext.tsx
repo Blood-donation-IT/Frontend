@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const lightColors = {
-  backgroundMain: "#F7E9EA",//#FAFAFA
+  backgroundMain: "#FAFAFA",//#F7E9EA
   backgroundCard: "#F5EDEB",
   primary: "#E66A6A",
   secondary: "#2B2B2B",
