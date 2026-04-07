@@ -170,7 +170,7 @@ export const useAuthStore = create<AuthState>((set,get) => ({
                 id: firebaseUser.id, 
                 name: data.name || firebaseUser.name,
                 email: data.email || firebaseUser.email,
-                avatar: data.avatar || firebaseUser.photo,
+                avatar: data.avatar || firebaseUser.photoURL,
                 blood_type: data.blood_type || "N/A",
                 donations_count: data.donations_count || 0,
             } as User, 
@@ -179,7 +179,7 @@ export const useAuthStore = create<AuthState>((set,get) => ({
 
     } catch (error) {
         console.error("Помилка синхронізації з бекендом:", error);
-        console.log(firebaseUser.displayName)
+        console.log(firebaseUser)
 
         set({ 
             user: {
@@ -187,7 +187,7 @@ export const useAuthStore = create<AuthState>((set,get) => ({
                 id: firebaseUser.id, 
                 name: firebaseUser.displayName,
                 email: firebaseUser.email,
-                avatar: firebaseUser.photo,
+                avatar: firebaseUser.photoURL,
             } as User, 
             isAuth: true 
         });

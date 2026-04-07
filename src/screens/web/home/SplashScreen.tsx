@@ -72,7 +72,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
       const remainingTime = Math.max(0, minDuration - elapsed);
 
       setTimeout(() => {
-        if (true) {//isAuth
+        if (isAuth) {//true
           navigation.replace('Home'); //Intro
         } else {
           navigation.replace('Intro');
