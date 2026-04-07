@@ -16,8 +16,8 @@ const CustomHeader = ({ title, navigation }: CustomHeaderProps) => {
       backgroundColor: colors.backgroundMain,
       flexDirection: "row",
       alignItems: "center", 
-      paddingTop: 50,       
-      paddingBottom: 20,
+      paddingTop: 40,       
+      // paddingBottom: 20,
       paddingHorizontal: 20,
     },
     headerTitle: {

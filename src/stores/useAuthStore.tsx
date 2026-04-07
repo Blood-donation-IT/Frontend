@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import * as SecureStore from 'expo-secure-store';
+// import * as SecureStore from 'expo-secure-store';
 import api from '../api/api';
 import { User } from '../interfaces/user';
 import { providerSignOut } from "../services/authSignOut";
@@ -11,14 +11,14 @@ interface AuthState {
   donations: any[];
   isLoadingDonations: boolean;
   checkAuth: () => Promise<void>;
-  fetchProfile: () => Promise<void>; // Додали сюди
-  loginAction: (credentials: any) => Promise<any>; // Повертаємо any або data
+  fetchProfile: () => Promise<void>;
+  loginAction: (credentials: any) => Promise<any>;
   registerAction: (data: any) => Promise<any>;
   logout: () => Promise<void>;
   syncWithFirebase: (firebaseUser: any, idToken: string | null) => Promise<void>;
   updateUserAction: (newData:any) => Promise<void>;
-  fetchUserDonations: () => Promise<void>; // Отримати список записів юзера
-  createDonationAction: (donationData: any) => Promise<any>; // Створити новий запис
+  fetchUserDonations: () => Promise<void>;
+  createDonationAction: (donationData: any) => Promise<any>;
 }
 
 const DEFAULT_USER: User = {
@@ -61,7 +61,7 @@ export const useAuthStore = create<AuthState>((set,get) => ({
   checkAuth: async () => {
     set({ isLoading: true });
     try {
-      const token = await SecureStore.getItemAsync('accessToken');
+      const token = localStorage.getItem('accessToken')//await SecureStore.getItemAsync('accessToken');
       console.log(token,"token")
       
       if (token) {
@@ -70,7 +70,8 @@ export const useAuthStore = create<AuthState>((set,get) => ({
         set({ isAuth: false, user: null });
       }
     } catch (e) {
-      await SecureStore.deleteItemAsync('accessToken');
+      localStorage.removeItem('accessToken')
+      //await SecureStore.deleteItemAsync('accessToken');
       set({ isAuth: false, user: null });
     } finally {
       set({ isLoading: false });
@@ -83,8 +84,10 @@ export const useAuthStore = create<AuthState>((set,get) => ({
       const { access_token, refresh_token, user_id } = response.data;
 
       if (access_token) {
-        await SecureStore.setItemAsync('accessToken', access_token);
-        await SecureStore.setItemAsync('refreshToken', refresh_token);
+        localStorage.setItem('accessToken', access_token)
+        localStorage.setItem('refreshToken', refresh_token)
+        // await SecureStore.setItemAsync('accessToken', access_token);
+        // await SecureStore.setItemAsync('refreshToken', refresh_token);
 
         await get().fetchProfile();
       }
@@ -103,8 +106,10 @@ export const useAuthStore = create<AuthState>((set,get) => ({
       const { access_token, refresh_token, user_id } = response.data;
 
       if (access_token) {
-        await SecureStore.setItemAsync('accessToken', access_token);
-        await SecureStore.setItemAsync('refreshToken', refresh_token);
+        localStorage.setItem('accessToken', access_token)
+        localStorage.setItem('refreshToken', refresh_token)
+        // await SecureStore.setItemAsync('accessToken', access_token);
+        // await SecureStore.setItemAsync('refreshToken', refresh_token);
 
         await get().fetchProfile();
       }
@@ -155,7 +160,8 @@ export const useAuthStore = create<AuthState>((set,get) => ({
         });
 
         if (data.token) {
-            await SecureStore.setItemAsync('accessToken', data.token);
+          localStorage.setItem('accessToken', data.token)
+          //await SecureStore.setItemAsync('accessToken', data.token);
         }
 
         set({ 
@@ -173,12 +179,13 @@ export const useAuthStore = create<AuthState>((set,get) => ({
 
     } catch (error) {
         console.error("Помилка синхронізації з бекендом:", error);
+        console.log(firebaseUser.displayName)
 
         set({ 
             user: {
                 ...DEFAULT_USER,
                 id: firebaseUser.id, 
-                name: firebaseUser.name,
+                name: firebaseUser.displayName,
                 email: firebaseUser.email,
                 avatar: firebaseUser.photo,
             } as User, 
@@ -207,8 +214,10 @@ export const useAuthStore = create<AuthState>((set,get) => ({
       console.log("Google/Firebase signout error:", error);
     }
 
-    await SecureStore.deleteItemAsync('accessToken');
-    await SecureStore.deleteItemAsync('refreshToken');
+    localStorage.removeItem('accessToken')
+    localStorage.removeItem('refreshToken')
+    // await SecureStore.deleteItemAsync('accessToken');
+    // await SecureStore.deleteItemAsync('refreshToken');
 
     set({ user: null, isAuth: false });
   }

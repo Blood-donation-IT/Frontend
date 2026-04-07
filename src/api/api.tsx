@@ -1,15 +1,15 @@
-import * as SecureStore from "expo-secure-store";
+// import * as SecureStore from "expo-secure-store";
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://...',
+  baseURL: 'https://52cb-178-136-42-96.ngrok-free.app',
   timeout: 10000,
   headers: { 'Content-Type': 'application/json' },
 });
 
 api.interceptors.request.use(
   async (config) => {
-    const token = await SecureStore.getItemAsync('accessToken');
+    const token = localStorage.getItem('accessToken')//await SecureStore.getItemAsync('accessToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -27,8 +27,8 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const refreshToken = await SecureStore.getItemAsync('refreshToken');
-        
+        const refreshToken = localStorage.getItem('refreshToken');
+        // const refreshToken=null
         const res = await axios.post(`${api.defaults.baseURL}/api/v1/auth/refresh`, {
           refresh_token: refreshToken
         });
@@ -36,15 +36,18 @@ api.interceptors.response.use(
         if (res.status === 200) {
           const { access_token } = res.data;
           
-          await SecureStore.setItemAsync('accessToken', access_token);
+          // await SecureStore.setItemAsync('accessToken', access_token);
+          localStorage.setItem('accessToken', access_token)
           
           originalRequest.headers.Authorization = `Bearer ${access_token}`;
           
           return api(originalRequest);
         }
       } catch (refreshError) {
-        await SecureStore.deleteItemAsync('accessToken');
-        await SecureStore.deleteItemAsync('refreshToken');
+        // await SecureStore.deleteItemAsync('accessToken');
+        // await SecureStore.deleteItemAsync('refreshToken');
+        localStorage.removeItem('accessToken')
+        localStorage.removeItem('refreshToken')
         return Promise.reject(refreshError);
       }
     }

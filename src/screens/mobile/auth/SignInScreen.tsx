@@ -14,6 +14,9 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../Theme/ThemeContext";
 import GoogleLogin from "./googleLogin";
 import { useAuthStore } from "../../../stores/useAuthStore";
+// import * as SecureStore from "expo-secure-store";
+// import api from "../api/api";
+// import { useAuthStore } from "../stores/useAuthStore";
 
 export default function SignInScreen() {
   const { t } = useTranslation();

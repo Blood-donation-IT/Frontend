@@ -12,8 +12,11 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../Theme/ThemeContext";
-import GoogleLogin from "./googleLogin";
+import GoogleLogin from "../../googleLogin";
 import { useAuthStore } from "../../../stores/useAuthStore";
+// import { useTheme } from "../Theme/ThemeContext";
+// import GoogleLogin from "./googleLogin";
+// import { useAuthStore } from "../stores/useAuthStore";
 
 export default function LogInScreen() {
   const { t } = useTranslation();
@@ -27,7 +30,8 @@ export default function LogInScreen() {
     try {
       const data = await loginAction({ email, password });
       if (data.access_token) {
-        navigation.navigate("Home");
+        // navigation.navigate("Home"); 
+        navigation.navigate("Test");
       }
     } catch (_error) {
       Alert.alert("Помилка", "Невірні дані");
