@@ -28,11 +28,10 @@ export default function LogInScreen() {
 
   const handleLogIn = async () => {
     try {
-      // const data = await loginAction({ email, password });
-      // if (data.access_token) {
+      const data = await loginAction({ email, password });
+      if (data.access_token) {
         navigation.navigate("Home"); 
-        // navigation.navigate("Test");
-      // }
+      }
     } catch (_error) {
       Alert.alert("Помилка", "Невірні дані");
     }
