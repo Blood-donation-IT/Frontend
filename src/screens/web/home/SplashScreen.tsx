@@ -14,6 +14,7 @@ import { RootStackParamList } from '../../../navigation/types';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../../../Theme/ThemeContext';
 import { useAuthStore } from '../../../stores/useAuthStore';
+import { useNotificationStore } from '../../../stores/useNotificationStore';
 
 type SplashScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -56,6 +57,14 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
       // await checkAuth();
       
       const isAuth = useAuthStore.getState().isAuth;
+
+      if (isAuth) {
+        try {
+          await useNotificationStore.getState().fetchNotifications();
+        } catch (error) {
+          console.error("Помилка завантаження даних при старті:", error);
+        }
+      }
       
       const endTime = Date.now();
       const elapsed = endTime - startTime;
@@ -64,7 +73,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
 
       setTimeout(() => {
         if (true) {//isAuth
-          navigation.replace('Intro'); //Home
+          navigation.replace('Home'); //Intro
         } else {
           navigation.replace('Intro');
         }
