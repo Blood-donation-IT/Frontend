@@ -22,7 +22,7 @@ import Svg, {
   Circle,
   Text as SvgText,
 } from "react-native-svg";
-
+const screenWidth = Dimensions.get('window').width;
 const { width, height } = Dimensions.get("window");
 
 // --- 1. КОМПОНЕНТ ФОНУ ---
@@ -56,16 +56,16 @@ export default function TestScreen() {
   const { t } = useTranslation();
 
   const allQuestions = [
-    { id: 1, text: "Коли ви народилися?", type: "date" },
-    { id: 2, text: "Ваша вага 50+ кг?", type: "yesno" },
-    { id: 3, text: "Ви загалом вважаєте свій стан здоров’я добрим?", type: "yesno" },
-    { id: 4, text: "Ви не маєте хронічних захворювань у важкій формі?", type: "have" },
-    { id: 5, text: "Ви не маєте хвороб серця або серцевої недостатності?", type: "have" },
-    { id: 6, text: "Ви не маєте цукрового діабету (особливо інсулінозалежного)?", type: "have" },
-    { id: 7, text: "Ви не маєте захворювань крові або порушень згортання?", type: "have" },
-    { id: 8, text: "Ви не маєте онкологічних захворювань?", type: "have" },
-    { id: 9, text: "Ви не маєте гепатиту B, C або жовтяниці в анамнезі?", type: "have" },
-    { id: 10, text: "Яка у вас група крові?", type: "blood" },
+    { id: 1,  type: "yesno" },
+    { id: 2,  type: "yesno" },
+    { id: 3,  type: "yesno" },
+    { id: 4,  type: "have" },
+    { id: 5,  type: "have" },
+    { id: 6,  type: "have" },
+    // { id: 7, text: "Ви не маєте захворювань крові або порушень згортання?", type: "have" },
+    // { id: 8, text: "Ви не маєте онкологічних захворювань?", type: "have" },
+    // { id: 9, text: "Ви не маєте гепатиту B, C або жовтяниці в анамнезі?", type: "have" },
+    { id: 7, text: "Яка у вас група крові?", type: "blood" },
   ];
 
   const bloodTypes = ["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"];
@@ -191,23 +191,23 @@ export default function TestScreen() {
         </View>
 
         {/* ГРАДІЄНТНИЙ ПІДЗАГОЛОВОК */}
-        <Svg height="30" width="300">
+        <Svg height="60" width={screenWidth}>
           <Defs>
             <LinearGradient id="subGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <Stop offset="0%" stopColor="#000000ff" />
+              <Stop offset="0%" stopColor="#000000" />
               <Stop offset="85%" stopColor="#DE7272" />
             </LinearGradient>
           </Defs>
           <SvgText
             fill="url(#subGrad)"
-            fontSize="18"
+            fontSize="16"
             fontWeight="400"
             textAnchor="middle"
-            x="150"
+            x={screenWidth / 2}
             y="20"
             opacity="0.8"
           >
-            {t("It’s necessary for donation")}
+            {t("necessary_for_donation")}
           </SvgText>
         </Svg>
       </View>
@@ -231,7 +231,8 @@ export default function TestScreen() {
             
             <View style={[styles.mainCard, dynamicMainCardStyle]}>
               <Text style={[styles.questionText, { color: "#DE7272" }]}>
-                {currentQ.type === "date" ? "Are you already 18 years old?" : `${t(currentQ.text)}`}
+                {/* {currentQ.type === "date" ? "Are you already 18 years old?" : `${t(currentQ.text)}`} */}
+                {t("question_"+currentQ.id)}
               </Text>
             </View>
           </Animated.View>
@@ -369,7 +370,7 @@ export default function TestScreen() {
                 ]}
               >
                 <Text style={[styles.optionText, { color: answers[currentQ.id] === "unknown" ? "#FFFFFF" : "#DE7272", fontSize: 16 }]}>
-                  Я не знаю свою групу крові
+                  {t("blood_type_unknown")}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -377,7 +378,7 @@ export default function TestScreen() {
         </Animated.View>
       </View>
 
-      <View style={styles.waveContainer}>
+      <View style={styles.waveContainer} pointerEvents="none">
         <Image source={require('../../../images/wave.png')} style={styles.waveImage} resizeMode="cover" />
       </View>
     </View>
