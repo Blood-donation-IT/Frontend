@@ -6,12 +6,13 @@ import {
   TouchableOpacity,
   ScrollView,
   SafeAreaView,
+  Image
 } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { useTheme } from "../../../Theme/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { Ionicons, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
-
+import { format } from "date-fns";
 export default function HomeScreen({ navigation }) {
   const { colors } = useTheme();
   const { t } = useTranslation();
@@ -30,8 +31,8 @@ export default function HomeScreen({ navigation }) {
     };
   }, []);
 
-  const onDayPress = (day) => {
-    navigation.navigate("Registration", { day: day.dateString });
+  const onDayPress = () => {
+    navigation.navigate("Registration", { day: format(new Date(), "yyyy-MM-dd") });//day.dateString
   };
 
   const QuickActionBtn = ({ icon, title, color, onPress }) => (
@@ -55,7 +56,12 @@ export default function HomeScreen({ navigation }) {
         <View style={styles.header}>
           <View>
             <View style={styles.logoRow}>
-              <MaterialCommunityIcons name="water" size={24} color="#ff4d4d" />
+              {/* <MaterialCommunityIcons name="water" size={24} color="#ff4d4d" /> */}
+              <Image 
+                source={require("../../../images/logo.png")} // Шлях до твого файлу
+                style={styles.logo}
+                resizeMode="contain"
+              />
             </View>
             <Text style={[styles.greeting, { color: colors.text }]}>
               Hello, <Text style={styles.boldText}>Anton</Text> 👋
@@ -110,7 +116,7 @@ export default function HomeScreen({ navigation }) {
         </TouchableOpacity>
 
         {/* Calendar */}
-        <View style={styles.calendarWrapper}>
+        {/* <View style={styles.calendarWrapper}>
           <Calendar
             markedDates={markedDates}
             onDayPress={onDayPress}
@@ -149,7 +155,7 @@ export default function HomeScreen({ navigation }) {
               }
             }}
           />
-        </View>
+        </View> */}
 
         {/* Quick Actions */}
         <View style={styles.quickActionsSection}>
@@ -188,7 +194,10 @@ export default function HomeScreen({ navigation }) {
 
       {/* Флекс-контейнер для кнопки без абсолютного позиціонування */}
       <View style={styles.bottomContainer}>
-        <TouchableOpacity style={styles.donateFab}>
+        <TouchableOpacity 
+          onPress={() => onDayPress()}
+          style={styles.donateFab}
+        >
           <Text style={styles.donateFabText}>Donate Now +</Text>
         </TouchableOpacity>
       </View>
@@ -197,6 +206,14 @@ export default function HomeScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  logo: {
+    padding:8,
+    width: 40,
+    height: 25,
+    resizeMode: "contain",
+    // alignSelf: "center",
+    marginBottom: 24,
+  },
   safeArea: {
     flex: 1,
     backgroundColor: "#FFF5F5",
@@ -219,6 +236,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   logoRow: {
+    paddingTop:8,
     marginBottom: 8,
   },
   greeting: {
@@ -359,8 +377,8 @@ const styles = StyleSheet.create({
   /* Нові стилі для флекс-кнопки */
   bottomContainer: {
     paddingHorizontal: 20,
-    paddingBottom: 20, // Відступ від нижнього меню навігації
-    paddingTop: 10,
+    paddingBottom: 150, // Відступ від нижнього меню навігації
+    // paddingTop: 10,
     alignItems: "flex-end", // Притискає кнопку вправо
   },
   donateFab: {
