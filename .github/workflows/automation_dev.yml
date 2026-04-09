@@ -17,6 +17,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Sync branch
         env:
@@ -28,10 +29,23 @@ jobs:
             echo "ACCESS_TOKEN and REPOSITORY_DEV are required."
             exit 1
           fi
-          TARGET="$REPOSITORY_DEV"
-          TARGET="${TARGET#https://github.com/}"
-          TARGET="${TARGET#http://github.com/}"
+          RAW="${REPOSITORY_DEV#"${REPOSITORY_DEV%%[![:space:]]*}"}"
+          RAW="${RAW%"${RAW##*[![:space:]]}"}"
+          RAW="${RAW//$'\r'/}"
+          RAW="${RAW//$'\n'/}"
+          if [[ "$RAW" == *"github.com/"* ]]; then
+            TARGET="${RAW#*github.com/}"
+          else
+            TARGET="$RAW"
+          fi
           TARGET="${TARGET%.git}"
           TARGET="${TARGET%/}"
+          TARGET="${TARGET#"${TARGET%%[![:space:]]*}"}"
+          TARGET="${TARGET%"${TARGET##*[![:space:]]}"}"
+          if [[ ! "$TARGET" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]]; then
+            echo "REPOSITORY_DEV must resolve to owner/repo (got invalid value after normalizing)."
+            exit 1
+          fi
+          echo "Pushing to github.com/${TARGET}.git"
           git remote add automation "https://x-access-token:${TOKEN}@github.com/${TARGET}.git"
-          git push automation HEAD:main
+          GIT_TERMINAL_PROMPT=0 git -c credential.helper= push automation HEAD:main
