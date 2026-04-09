@@ -67,15 +67,18 @@
 
 // ShortTestScreen
   "question_1": "Are you already 18 years old?",
-  "question_2": "Is your age not over 60-65 years?",
-  "question_3": "Is your weight 50+ kg?",
-  "question_4": "Do you generally consider your health to be good?",
-  "question_5": "Do you not have chronic diseases in severe form?",
-  "question_6": "Do you not have heart diseases or heart failure?",
-  "question_7": "Do you not have diabetes (especially insulin-dependent)?",
+  "question_2": "Do you weigh more than 50 kg?",
+  "question_3": "Do you have any serious chronic or infectious diseases (e.g. HIV, hepatitis, syphilis)?",
+  "question_4": "Have you had any surgery or tattoo/piercing in the last 6 months?",
+  "question_5": "Do you have normal hemoglobin levels and blood counts?",
+  "question_6": "Do you consider your health to be good overall?",
+  "question_7": "What is your blood type?",
+  
   "question_8": "Do you not have blood diseases or clotting disorders?",
   "question_9": "Do you not have oncological diseases?",
   "question_10": "Do you not have hepatitis B, C or jaundice in your medical history?",
+
+  "blood_type_unknown": "I don't know my blood type",
   "yes": "Yes",
   "no": "No",
   "have": "Have",
