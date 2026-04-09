@@ -21,14 +21,14 @@ jobs:
       - name: Sync branch
         env:
           TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          DEV_REPOSITORY: ${{ secrets.DEV_REPOSITORY }}
+          REPOSITORY_DEV: ${{ secrets.REPOSITORY_DEV }}
         run: |
           set -e
-          if [ -z "$TOKEN" ] || [ -z "$DEV_REPOSITORY" ]; then
-            echo "ACCESS_TOKEN and DEV_REPOSITORY are required."
+          if [ -z "$TOKEN" ] || [ -z "$REPOSITORY_DEV" ]; then
+            echo "ACCESS_TOKEN and REPOSITORY_DEV are required."
             exit 1
           fi
-          TARGET="$DEV_REPOSITORY"
+          TARGET="$REPOSITORY_DEV"
           TARGET="${TARGET#https://github.com/}"
           TARGET="${TARGET#http://github.com/}"
           TARGET="${TARGET%.git}"
