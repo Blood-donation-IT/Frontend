@@ -1,0 +1,37 @@
+name: Automation dev
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: automation-dev
+  cancel-in-progress: true
+
+jobs:
+  automation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Sync branch
+        env:
+          TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          DEV_REPOSITORY: ${{ secrets.DEV_REPOSITORY }}
+        run: |
+          set -e
+          if [ -z "$TOKEN" ] || [ -z "$DEV_REPOSITORY" ]; then
+            echo "ACCESS_TOKEN and DEV_REPOSITORY are required."
+            exit 1
+          fi
+          TARGET="$DEV_REPOSITORY"
+          TARGET="${TARGET#https://github.com/}"
+          TARGET="${TARGET#http://github.com/}"
+          TARGET="${TARGET%.git}"
+          TARGET="${TARGET%/}"
+          git remote add automation "https://x-access-token:${TOKEN}@github.com/${TARGET}.git"
+          git push automation HEAD:main
