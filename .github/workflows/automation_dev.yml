@@ -51,5 +51,5 @@ jobs:
           GIT_TERMINAL_PROMPT=0 git -c credential.helper= push automation HEAD:main
           git config --global user.name "${{secrets.GIT_NAME}}"
           git config --global user.email "${{secrets.GIT_EMAIL}}"
-          git commit --allow-empty -m "sync branch" || true
-          git push https://x-access-token:${TOKEN}@github.com/${{ github.repository }}.git HEAD:main
+          # git commit --allow-empty -m "sync branch" || true
+          # git push https://x-access-token:${TOKEN}@github.com/${{ github.repository }}.git HEAD:main
