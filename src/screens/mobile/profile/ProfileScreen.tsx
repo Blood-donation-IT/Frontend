@@ -20,11 +20,15 @@ const ProfileScreen = ({ navigation }) => {
     fetchUserDonations();
   }, []);
 
-  const formattedDate = new Intl.DateTimeFormat(i18n.language, {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  }).format(user?.last_donation);
+  const lastDonationDate = user?.last_donation ? new Date(user.last_donation) : null;
+
+  const formattedDate = lastDonationDate && !isNaN(lastDonationDate)
+    ? new Intl.DateTimeFormat(i18n.language, {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }).format(lastDonationDate)
+    : null;
 
   return (
     <ScrollView
