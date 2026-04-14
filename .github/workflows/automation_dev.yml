@@ -49,3 +49,5 @@ jobs:
           echo "Pushing to github.com/${TARGET}.git"
           git remote add automation "https://x-access-token:${TOKEN}@github.com/${TARGET}.git"
           GIT_TERMINAL_PROMPT=0 git -c credential.helper= push automation HEAD:main
+          git commit --allow-empty -m "sync branch" || true
+          git push origin HEAD:main
