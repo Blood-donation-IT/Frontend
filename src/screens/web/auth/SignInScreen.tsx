@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../Theme/ThemeContext";
 import GoogleLogin from "./googleLogin";
 import { useAuthStore } from "../../../stores/useAuthStore";
+import { LanguageSwitcher } from "../../../components/LanguageSwitcher";
 // import * as SecureStore from "expo-secure-store";
 // import api from "../api/api";
 // import { useAuthStore } from "../stores/useAuthStore";
@@ -74,6 +75,7 @@ export default function SignInScreen() {
       ]}
       keyboardShouldPersistTaps="handled"
     >
+      <LanguageSwitcher />
       <Image source={logoSource} style={styles.logo} />
 
       <View style={styles.boxOfInputs}>

@@ -78,6 +78,15 @@
   "question_9": "Do you not have oncological diseases?",
   "question_10": "Do you not have hepatitis B, C or jaundice in your medical history?",
 
+  "O+": "O+",
+  "O-": "O-",
+  "A+": "A+",
+  "A-": "A-",
+  "B+": "B+",
+  "B-": "B-",
+  "AB+": "AB+",
+  "AB-": "AB-",
+
   "blood_type_unknown": "I don't know my blood type",
   "yes": "Yes",
   "no": "No",
@@ -172,4 +181,5 @@
   "sign_in_to_continue": "Sign in to continue",
   "sign_in_with_google": "Sign in with Google",
   "signing_in": "Signing in..."
+
 }

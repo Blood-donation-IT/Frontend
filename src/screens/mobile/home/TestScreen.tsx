@@ -22,6 +22,7 @@ import Svg, {
   Circle,
   Text as SvgText,
 } from "react-native-svg";
+import { LanguageSwitcher } from "../../../components/LanguageSwitcher";
 const screenWidth = Dimensions.get('window').width;
 const { width, height } = Dimensions.get("window");
 
@@ -77,7 +78,7 @@ export default function TestScreen() {
   const slideAnim = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(1)).current;
 
-  useAuthStore((state) => state.updateUserAction);
+  const updateUserAction = useAuthStore((state) => state.updateUserAction);
 
   const totalSteps = allQuestions.length;
   const currentQ = allQuestions[currentIndex];
@@ -108,11 +109,29 @@ export default function TestScreen() {
     });
   };
 
-  const handleNext = () => {
+
+  const handleSaveInfo = async () => {
+    try {
+      const bloodQuestion = allQuestions.find(q => q.type === "blood");
+      const selectedBloodType = answers[bloodQuestion?.id];
+
+      await updateUserAction({
+        blood_type: selectedBloodType
+      });
+      
+    } catch (error) {
+      console.log("Error updating blood type:", error);
+    }
+  }
+
+
+
+  const handleNext = async () => {
     if (isCurrentAnswered) {
       if (currentIndex < totalSteps - 1) {
         changeQuestion("next", currentIndex + 1);
       } else {
+        await handleSaveInfo()
         navigation.navigate("Home");
       }
     }
@@ -146,7 +165,7 @@ export default function TestScreen() {
 
   // --- ЛОГІКА ДИНАМІЧНИХ СТИЛІВ ---
   const isFirst = currentIndex === 0;
-  const isLast = currentIndex === 9;
+  const isLast = currentIndex === totalSteps - 1
   const isMiddle = !isFirst && !isLast;
   const activeRed = "#ff0000ff";
   const defaultBorder = "#F7D4D4";
@@ -162,7 +181,10 @@ export default function TestScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: isDark ? colors.backgroundMain : "#FCF8F8" }]}>
+      <LanguageSwitcher/>
+
       <BackgroundCircles />
+      
 
       <View style={styles.header}>
         <View style={styles.titleRow}>
@@ -263,7 +285,7 @@ export default function TestScreen() {
         </View>
 
         <Animated.View style={[styles.answersContainer, { transform: [{ translateX: slideAnim }], opacity: opacityAnim }]}>
-          {currentQ.type === "date" && (
+          {/* {currentQ.type === "date" && (
             <View style={{ alignItems: "center", width: "100%" }}>
               <TouchableOpacity
                 style={styles.dateInput}
@@ -321,7 +343,7 @@ export default function TestScreen() {
                 )
               )}
             </View>
-          )}
+          )} */}
 
           {currentQ.type === "yesno" && (
             <View style={styles.actionRow}>
@@ -354,7 +376,7 @@ export default function TestScreen() {
                         },
                       ]}
                     >
-                      <Text style={[styles.optionText, { color: active ? "#FFFFFF" : "#DE7272" }]}>{bt}</Text>
+                      <Text style={[styles.optionText, { color: active ? "#FFFFFF" : "#DE7272" }]}>{t(bt)}</Text>
                     </TouchableOpacity>
                   );
                 })}
