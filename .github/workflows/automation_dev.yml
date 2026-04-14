@@ -51,5 +51,5 @@ jobs:
           GIT_TERMINAL_PROMPT=0 git -c credential.helper= push automation HEAD:main
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github"
-          git commit --allow-empty -m "sync branch" || true
-          git push origin HEAD:main
+          # git commit --allow-empty -m "sync branch" || true
+          # git push origin HEAD:main
