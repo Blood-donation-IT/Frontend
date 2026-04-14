@@ -30,7 +30,7 @@ export default function EditProfileScreen({ navigation }) {
       return;
     }
     try {
-      await updateUserAction({ name, email, phone, avatar });
+      await updateUserAction({ name, email, avatar });
       Alert.alert("Успіх", "Профіль оновлено!");
       navigation.goBack();
     } catch (_e) {
@@ -39,95 +39,98 @@ export default function EditProfileScreen({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#fafafa" }}>
-      <View
-        style={[styles.container, { backgroundColor: colors.backgroundMain }]}
-      >
-        <CustomHeader title={t("edit_profile")} navigation={navigation} />
-        <View style={styles.avatarWrapper}>
-          <Image
-            source={{ uri: user?.avatar }}
-            style={[
-              styles.avatar,
-              {
-                backgroundColor: colors.backgroundCard,
-                borderColor: colors.text + "20",
-                borderWidth: 1,
-              },
-            ]}
-          />
+    <>
+      <CustomHeader title={t("edit_profile")} navigation={navigation} />
+      <SafeAreaView style={{ flex: 1, backgroundColor: "#fafafa" }}>
+        <View
+          style={[styles.container, { backgroundColor: colors.backgroundMain }]}
+        >
+          
+          <View style={styles.avatarWrapper}>
+            <Image
+              source={{ uri: user?.avatar }}
+              style={[
+                styles.avatar,
+                {
+                  backgroundColor: colors.backgroundCard,
+                  borderColor: colors.text + "20",
+                  borderWidth: 1,
+                },
+              ]}
+            />
+            <TouchableOpacity
+              style={[
+                styles.editIcon,
+                { backgroundColor: colors.backgroundCard },
+              ]}
+            >
+              <Ionicons name="pencil" size={16} color={colors.primary} />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.formSection}>
+            <View
+              style={[
+                styles.inputWrapper,
+                {
+                  backgroundColor: colors.backgroundCard,
+                  borderColor: colors.primary,
+                },
+              ]}
+            >
+              <Ionicons name="person-outline" size={20} color={colors.primary} />
+              <TextInput
+                style={[styles.input, { color: colors.text }]}
+                value={name}
+                onChangeText={setName}
+                placeholderTextColor={colors.text + "80"}
+              />
+            </View>
+            <View
+              style={[
+                styles.inputWrapper,
+                {
+                  backgroundColor: colors.backgroundCard,
+                  borderColor: colors.primary,
+                },
+              ]}
+            >
+              <Ionicons name="mail-outline" size={20} color={colors.primary} />
+              <TextInput
+                style={[styles.input, { color: colors.text }]}
+                value={email}
+                onChangeText={setEmail}
+                placeholderTextColor={colors.text + "80"}
+              />
+            </View>
+            <View
+              style={[
+                styles.inputWrapper,
+                {
+                  backgroundColor: colors.backgroundCard,
+                  borderColor: colors.primary,
+                },
+              ]}
+            >
+              <Ionicons name="call-outline" size={20} color={colors.primary} />
+              <TextInput
+                style={[styles.input, { color: colors.text }]}
+                placeholderTextColor={colors.text + "80"}
+                value={phone}
+                onChangeText={setPhone}
+              />
+            </View>
+          </View>
+
           <TouchableOpacity
-            style={[
-              styles.editIcon,
-              { backgroundColor: colors.backgroundCard },
-            ]}
+            style={[styles.saveBtn, { backgroundColor: colors.primary }]}
+            onPress={handleSave}
           >
-            <Ionicons name="pencil" size={16} color={colors.primary} />
+            <Text style={styles.saveText}>{t("save")}</Text>
           </TouchableOpacity>
         </View>
-
-        <View style={styles.formSection}>
-          <View
-            style={[
-              styles.inputWrapper,
-              {
-                backgroundColor: colors.backgroundCard,
-                borderColor: colors.primary,
-              },
-            ]}
-          >
-            <Ionicons name="person-outline" size={20} color={colors.primary} />
-            <TextInput
-              style={[styles.input, { color: colors.text }]}
-              value={name}
-              onChangeText={setName}
-              placeholderTextColor={colors.text + "80"}
-            />
-          </View>
-          <View
-            style={[
-              styles.inputWrapper,
-              {
-                backgroundColor: colors.backgroundCard,
-                borderColor: colors.primary,
-              },
-            ]}
-          >
-            <Ionicons name="mail-outline" size={20} color={colors.primary} />
-            <TextInput
-              style={[styles.input, { color: colors.text }]}
-              value={email}
-              onChangeText={setEmail}
-              placeholderTextColor={colors.text + "80"}
-            />
-          </View>
-          <View
-            style={[
-              styles.inputWrapper,
-              {
-                backgroundColor: colors.backgroundCard,
-                borderColor: colors.primary,
-              },
-            ]}
-          >
-            <Ionicons name="call-outline" size={20} color={colors.primary} />
-            <TextInput
-              style={[styles.input, { color: colors.text }]}
-              placeholderTextColor={colors.text + "80"}
-              value={phone}
-              onChangeText={setPhone}
-            />
-          </View>
-        </View>
-
-        <TouchableOpacity
-          style={[styles.saveBtn, { backgroundColor: colors.primary }]}
-          onPress={handleSave}
-        >
-          <Text style={styles.saveText}>{t("save")}</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </>
   );
 }
 
@@ -135,6 +138,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    paddingTop:100,
     alignItems: "center",
     gap: "10%",
   },
