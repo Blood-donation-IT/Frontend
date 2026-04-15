@@ -31,12 +31,16 @@ import i18n from "../../../i18n";
 
 import UniversalMap from '../../../components/Map';
 
+import { useWindowDimensions } from 'react-native';
+
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CONTAINER_PADDING = 60; 
 const GAP = 10; 
 const ITEM_WIDTH = (SCREEN_WIDTH - CONTAINER_PADDING - (GAP * 3)) / 4;
 
 export default function RegistrationScreen({ navigation, route }) {
+
+  const { width } = useWindowDimensions();
 
   const { createDonationAction, user } = useAuthStore();
 
@@ -182,6 +186,11 @@ export default function RegistrationScreen({ navigation, route }) {
 
 
   const hourLabels = useMemo(() => {
+    if (width < 425) {
+      return ["8", "8:30", "9", "9:30", "10", "10:30", "11", "11:30", "12", "12:30", "13"];
+    }
+
+    // Логіка для API даних, якщо екран достатньо великий
     if (apiData) {
       const { startHour, intervalMinutes, data } = apiData;
       return data.map((_, i) => {
@@ -191,8 +200,9 @@ export default function RegistrationScreen({ navigation, route }) {
         return `${h}:${m === 0 ? '00' : m}`;
       });
     }
+
     return ["8", "8:30", "9", "9:30", "10", "10:30", "11", "11:30", "12", "12:30", "13"];
-  }, [apiData]);
+  }, [apiData, width]);
 
   const dataForChart = useMemo(() => {
     if (apiData) return apiData.data;
@@ -221,12 +231,13 @@ export default function RegistrationScreen({ navigation, route }) {
     if (validate()) {
       try {
         const triggerDate = buildDateFromDayAndTime(day, time);
-        
+        console.log("bl",user?.blood_type)
         const applicationData = {
-          user_id: user?.id, 
-          blood_type: user?.blood_type, 
-          application_time: triggerDate.toISOString(), 
-          application_day: triggerDate.toISOString(),  
+          // user_id: user?.id, 
+          blood_type:"A+",//user?.blood_type,
+          slot_index: 9,
+          // application_time: triggerDate.toISOString(),
+          application_day: "2026-04-09T16:09:26.293Z",//triggerDate.toISOString(),  
           location_id: "1",
           status: "pending"
         };
@@ -242,6 +253,7 @@ export default function RegistrationScreen({ navigation, route }) {
         setAlertType('success');
         setAlertVisible(true);
       } catch (e) {
+        console.log(e)
         setAlertType('error');
         setAlertVisible(true);
       }
@@ -336,24 +348,23 @@ export default function RegistrationScreen({ navigation, route }) {
 
       {/*  */}
       {/* Calendar */}
-          <View style={[styles.calendarCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
-            <View style={[styles.calendarHeader, { backgroundColor: colors.brand2 }]}>
-              <TouchableOpacity 
-                onPress={() => setViewDate(prev => addMonths(prev, -1))} 
-                style={styles.arrowHit}
-              >
-                <Text style={styles.arrowText}>‹</Text>
-              </TouchableOpacity>
+        <View style={[styles.calendarCard, { backgroundColor: colors.card,  }]}>{/* shadowColor: colors.shadow */}
+          <View style={[styles.calendarHeader, { backgroundColor: colors.brand2 }]}>
+            <TouchableOpacity 
+              onPress={() => setViewDate(prev => addMonths(prev, -1))} 
+              style={styles.arrowHit}
+            >
+              <Text style={styles.arrowText}>‹</Text>
+            </TouchableOpacity>
 
-        {/* Заголовок тепер залежить від viewDate */}
-        <Text style={styles.calendarHeaderText}>{monthTitle(viewDate)}</Text>
+            <Text style={styles.calendarHeaderText}>{monthTitle(viewDate)}</Text>
 
-        <TouchableOpacity 
-          onPress={() => setViewDate(prev => addMonths(prev, 1))} 
-          style={styles.arrowHit}
-        >
-          <Text style={styles.arrowText}>›</Text>
-        </TouchableOpacity>
+            <TouchableOpacity 
+              onPress={() => setViewDate(prev => addMonths(prev, 1))} 
+              style={styles.arrowHit}
+            >
+              <Text style={styles.arrowText}>›</Text>
+            </TouchableOpacity>
           </View>
 
           <Calendar
@@ -402,13 +413,19 @@ export default function RegistrationScreen({ navigation, route }) {
                     {
                       backgroundColor: isSelected ? colors.brand : colors.pillBg,
                       opacity: isDisabled ? 0.35 : 1,
+
+                      shadowColor:  "#FF7A8480",
+                      shadowOffset: { width: 0, height: 4 },
+                      shadowOpacity: 0.5,
+                      shadowRadius: 6,
+                      elevation: 8,
                     },
                   ]}
                   activeOpacity={0.85}
                 >
-                  <Text style={[styles.dayText, { color: isSelected ? "#FFFFFF" : colors.dayText }]}>{date.day}</Text>
-                </TouchableOpacity>
-              );
+              <Text style={[styles.dayText, { color: isSelected ? "#FFFFFF" : colors.dayText }]}>{date.day}</Text>
+            </TouchableOpacity>
+            );
             }}
           />
         </View>
@@ -612,7 +629,7 @@ export default function RegistrationScreen({ navigation, route }) {
               styles.modalBox,
               { backgroundColor: colors.backgroundMain },
             ]}>
-              <Text style={styles.modalTitle}>{t("select_location")}</Text>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>{t("select_location")}</Text>
               <TextInput
                 style={[styles.modalInput, { color: colors.text }]}
                 placeholder={t("enter_location_name")}
@@ -672,43 +689,45 @@ export default function RegistrationScreen({ navigation, route }) {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
-      <Modal
-  visible={alertVisible}
-  transparent
-  animationType="fade"
-  onRequestClose={() => setAlertVisible(false)}
->
-  <View style={styles.modalOverlay}>
-    <View style={styles.modalContainer}>
-      <Text style={styles.modalTitle}>
-        {alertType === 'success' ? 'Вітаємо! 🎉' : 'Помилка ⚠️'}
-      </Text>
-      
-      <Text style={styles.modalMessage}>
-        {alertType === 'success' 
-          ? 'Запис успішно зроблений!' 
-          : 'Сталася помилка при створенні запису. Спробуйте ще раз.'}
-      </Text>
 
-      <TouchableOpacity 
-        style={[
-          styles.modalButton, 
-          { backgroundColor: alertType === 'success' ? '#E57373' : '#666' }
-        ]} 
-        onPress={() => {
-          setAlertVisible(false);
-          if (alertType === 'success') {
-            navigation.goBack();
-          }
-        }}
+      
+      <Modal
+        visible={alertVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setAlertVisible(false)}
       >
-        <Text style={styles.modalButtonText}>
-          {alertType === 'success' ? 'Перейти' : 'Закрити'}
-        </Text>
-      </TouchableOpacity>
-    </View>
-  </View>
-</Modal>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>
+              {alertType === 'success' ? 'Вітаємо! 🎉' : 'Помилка ⚠️'}
+            </Text>
+            
+            <Text style={styles.modalMessage}>
+              {alertType === 'success' 
+                ? 'Запис успішно зроблений!' 
+                : 'Сталася помилка при створенні запису. Спробуйте ще раз.'}
+            </Text>
+
+            <TouchableOpacity 
+              style={[
+                styles.modalButton, 
+                { backgroundColor: alertType === 'success' ? '#E57373' : '#666' }
+              ]} 
+              onPress={() => {
+                setAlertVisible(false);
+                if (alertType === 'success') {
+                  navigation.goBack();
+                }
+              }}
+            >
+              <Text style={styles.modalButtonText}>
+                {alertType === 'success' ? 'Перейти' : 'Закрити'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 }
@@ -717,11 +736,12 @@ const styles = StyleSheet.create({
 
   calendarCard: {
     borderRadius: 20,
-    overflow: "hidden",
-    shadowOpacity: 0.18,
-    shadowRadius: 14,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 6,
+    overflow: "hidden", 
+    shadowColor: "#FF7A84",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 6,
+    elevation: 5, 
   },
 
   
@@ -740,27 +760,31 @@ const styles = StyleSheet.create({
   },
 
   calendarHeader: {
-    height: 36,
-    paddingHorizontal: 8,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
+  height: 36,
+  paddingHorizontal: 8,
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "space-between",
+  borderTopLeftRadius: 20,
+  borderTopRightRadius: 20,
+},
   calendarHeaderText: { 
     color: "#FFFFFF", 
     fontWeight: "800",
     fontSize: 14
   },
   dayPill: {
-    width: 28,
-    height: 22,
+    width: 30,
+    height: 24,
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
+    marginVertical: 2,
+    overflow: Platform.OS === 'ios' ? 'visible' : 'hidden', 
   },
-  dayText: { 
-    fontSize: 11,
-    fontWeight: "700" 
+  dayText: {
+    fontSize: 14,
+    fontWeight: "600",
   },
 
 
@@ -866,12 +890,19 @@ const styles = StyleSheet.create({
   },
 
 
-
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.4)', 
     justifyContent: 'center',
     alignItems: 'center',
+
+    ...Platform.select({
+    web: {
+      alignSelf: 'center',
+      width: '100%',
+      maxWidth: 440,
+    }
+  })
   },
   modalContainer: {
     width: '85%',
@@ -1032,16 +1063,24 @@ option: {
     color: "#E66A6A80",
     position: "absolute",
     right: 12,
-    top: "50%",
+    top: "20%",
   },
   inputWithIcon: {
     paddingRight: 40,
   },
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    
+    ...Platform.select({
+      web: {
+        alignSelf: 'center',
+        width: '100%',
+        maxWidth: 440,
+      }
+    })
   },
   modalBox: {
     backgroundColor: "#fff",
