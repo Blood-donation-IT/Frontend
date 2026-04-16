@@ -87,6 +87,12 @@
   "AB+": "AB+",
   "AB-": "AB-",
 
+  "almost_done": "Almost done! Last question",
+  "please_indicate_blood": "Please indicate your blood type for donation selection.",
+
+  "short_test_title": "Short Test",
+  "blood_type_title": "Blood Type",
+
   "blood_type_unknown": "I don't know my blood type",
   "yes": "Yes",
   "no": "No",
