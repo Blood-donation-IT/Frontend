@@ -60,14 +60,14 @@ export default function TestScreen() {
     { id: 1,  type: "yesno" },
     { id: 2,  type: "yesno" },
     { id: 3,  type: "yesno" },
-    { id: 4,  type: "have" },
-    { id: 5,  type: "have" },
-    { id: 6,  type: "have" },
-    // { id: 7, text: "Ви не маєте захворювань крові або порушень згортання?", type: "have" },
-    // { id: 8, text: "Ви не маєте онкологічних захворювань?", type: "have" },
-    // { id: 9, text: "Ви не маєте гепатиту B, C або жовтяниці в анамнезі?", type: "have" },
+    { id: 4,  type: "yesno" },
+    { id: 5,  type: "yesno" },
+    { id: 6,  type: "yesno" },
     { id: 7, text: "Яка у вас група крові?", type: "blood" },
   ];
+
+  const testQuestions = allQuestions.filter(q => q.type !== "blood");
+  const totalTestSteps = testQuestions.length;
 
   const bloodTypes = ["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"];
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -188,23 +188,29 @@ export default function TestScreen() {
 
       <View style={styles.header}>
         <View style={styles.titleRow}>
-          <Svg height="45" width="180">
-            <Defs>
-              <LinearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <Stop offset="0%" stopColor="#000000ff" />
-                <Stop offset="85%" stopColor="#DE7272" />
-              </LinearGradient>
-            </Defs>
-            <SvgText
-              fill="url(#textGrad)"
-              fontSize="32"
-              fontWeight="700"
-              x="0"
-              y="35"
-            >
-              Short Test
-            </SvgText>
-          </Svg>
+          {/* <View style={styles.textContainer}>
+            <Svg height="45" width={title_width}>
+              <Defs>
+                <LinearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <Stop offset="0%" stopColor="#000000ff" />
+                  <Stop offset="85%" stopColor="#DE7272" />
+                </LinearGradient>
+              </Defs>
+              <SvgText
+                fill="url(#textGrad)"
+                fontSize="32"
+                fontWeight="700"
+                x="0"
+                y="35"
+                // textAnchor="middle"
+              >
+                {currentQ.type != "blood" ? t("short_test_title") : t("blood_type_title")}
+              </SvgText>
+            </Svg>
+          </View> */}
+          <Text style={styles.headerText}>
+            {currentQ.type !== "blood" ? t("short_test_title") : t("blood_type_title")}
+          </Text>
           <Image 
             source={require('../../../images/logo.png')} 
             style={styles.logo}
@@ -213,76 +219,106 @@ export default function TestScreen() {
         </View>
 
         {/* ГРАДІЄНТНИЙ ПІДЗАГОЛОВОК */}
-        <Svg height="60" width={screenWidth}>
-          <Defs>
-            <LinearGradient id="subGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <Stop offset="0%" stopColor="#000000" />
-              <Stop offset="85%" stopColor="#DE7272" />
-            </LinearGradient>
-          </Defs>
-          <SvgText
-            fill="url(#subGrad)"
-            fontSize="16"
-            fontWeight="400"
-            textAnchor="middle"
-            x={screenWidth / 2}
-            y="20"
-            opacity="0.8"
-          >
-            {t("necessary_for_donation")}
-          </SvgText>
-        </Svg>
+        {currentQ.type !== "blood" && (
+          <Svg height="60" width={screenWidth}>
+            <Defs>
+              <LinearGradient id="subGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <Stop offset="0%" stopColor="#000000" />
+                <Stop offset="85%" stopColor="#DE7272" />
+              </LinearGradient>
+            </Defs>
+            <SvgText
+              fill="url(#subGrad)"
+              fontSize="16"
+              fontWeight="400"
+              textAnchor="middle"
+              x={screenWidth / 2}
+              y="20"
+              opacity="0.8"
+            >
+              {t("necessary_for_donation")}
+            </SvgText>
+          </Svg>
+        )}
+        { currentQ.type == "blood" ?
+          <View style={[styles.statusBadge,{marginTop:10}]}>
+            <Text style={styles.statusText}>{t("please_indicate_blood")}</Text>
+          </View>
+          : null
+        }
       </View>
 
+      { currentQ.type == "blood" ?
+        <TouchableOpacity
+          onPress={handlePrev}
+          style={styles.backButton}
+        >
+          <Text style={styles.backButtonText}>{"‹"}</Text>
+        </TouchableOpacity>
+        : null
+      }
+
       <View style={styles.centerContent}>
-        <View style={styles.carouselWrapper}>
-          <TouchableOpacity
-            onPress={handlePrev}
-            disabled={currentIndex === 0}
-            style={[styles.arrowButton, { opacity: currentIndex === 0 ? 0 : 1 }]}
-          >
-            <Text style={styles.arrowText}>{"‹"}</Text>
-          </TouchableOpacity>
+        
+        { currentIndex == totalSteps - 2 ?
+          <View style={[styles.statusBadge,{marginBottom:20}]}>
+            <View style={styles.greenDot} />
+            <Text style={styles.statusText}>{t("almost_done")}</Text>
+          </View>
+          : null
+        }
+        { currentQ.type != "blood" ?
+          <View style={styles.carouselWrapper}>
+            <TouchableOpacity
+              onPress={handlePrev}
+              disabled={currentIndex === 0}
+              style={[styles.arrowButton, { opacity: currentIndex === 0 ? 0 : 1 }]}
+            >
+              <Text style={styles.arrowText}>{"‹"}</Text>
+            </TouchableOpacity>
+            
 
-          <Animated.View style={[styles.cardStack, { transform: [{ translateX: slideAnim }], opacity: opacityAnim }]}>
-            
-            
-            {!isLast && <View style={styles.layeredCard} />}
-            
-            {!isFirst && <View style={styles.layeredCard1} />}
-            
-            <View style={[styles.mainCard, dynamicMainCardStyle]}>
-              <Text style={[styles.questionText, { color: "#DE7272" }]}>
-                {/* {currentQ.type === "date" ? "Are you already 18 years old?" : `${t(currentQ.text)}`} */}
-                {t("question_"+currentQ.id)}
-              </Text>
-            </View>
-          </Animated.View>
+            <Animated.View style={[styles.cardStack, { transform: [{ translateX: slideAnim }], opacity: opacityAnim }]}>
+              {!isLast && <View style={styles.layeredCard} />}
+              {!isFirst && <View style={styles.layeredCard1} />}
+              
+              <View style={[styles.mainCard, dynamicMainCardStyle]}>
+                <Text style={[styles.questionText, { color: "#DE7272" }]}>
+                  {t("question_"+currentQ.id)}
+                </Text>
+              </View>
+            </Animated.View>
 
-          <TouchableOpacity
-            onPress={handleNext}
-            disabled={!isCurrentAnswered}
-            style={[styles.arrowButton, { opacity: isCurrentAnswered ? 1 : 0.3 }]}
-          >
-            <Text style={styles.arrowText}>{currentIndex === totalSteps - 1 ? "✓" : "›"}</Text>
-          </TouchableOpacity>
-        </View>
+            <TouchableOpacity
+              onPress={handleNext}
+              disabled={!isCurrentAnswered}
+              style={[styles.arrowButton, { opacity: isCurrentAnswered ? 1 : 0.3 }]}
+            >
+              <Text style={styles.arrowText}>{currentIndex === totalSteps - 1 ? "✓" : "›"}</Text>
+            </TouchableOpacity>
+            
+          </View>
+          : null
+        }
 
-        <View style={styles.progressContainer}>
-          {allQuestions.map((_, idx) => (
-            <View
-              key={idx}
-              style={[
-                styles.progressDash,
-                {
-                  backgroundColor: idx <= currentIndex ? "#DE7272" : "#ffffffff",
-                  width: idx === currentIndex ? 40 : 25,
-                  height: 8,
-                },
-              ]}
-            />
-          ))}
-        </View>
+        {currentQ.type !== "blood" && (
+          <View style={styles.progressContainer}>
+            {testQuestions.map((_, idx) => (
+              <View
+                key={idx}
+                style={[
+                  styles.progressDash,
+                  {
+                    backgroundColor: idx <= currentIndex ? "#DE7272" : "#FFFFFF",
+                    width: idx === currentIndex ? 40 : 25,
+                    height: 8,
+                  },
+                ]}
+              />
+            ))}
+          </View>
+        )}
+        
 
         <Animated.View style={[styles.answersContainer, { transform: [{ translateX: slideAnim }], opacity: opacityAnim }]}>
           {/* {currentQ.type === "date" && (
@@ -352,48 +388,53 @@ export default function TestScreen() {
             </View>
           )}
 
-          {currentQ.type === "have" && (
+          {/* {currentQ.type === "have" && (
             <View style={styles.actionRow}>
               {renderButton(currentQ.id, "have", t("have") || "Yes")}
               {renderButton(currentQ.id, "no", t("dont_have") || "No")}
             </View>
-          )}
+          )} */}
 
           {currentQ.type === "blood" && (
-            <View style={{ width: "90%", alignItems: "center" }}>
-              <View style={styles.bloodGrid}>
+            <View style={styles.bloodContentWrapper}>
+              
+              <View style={styles.newBloodGrid}>
                 {bloodTypes.map((bt) => {
                   const active = answers[currentQ.id] === bt;
+
                   return (
                     <TouchableOpacity
                       key={bt}
                       onPress={() => setAnswers({ ...answers, [currentQ.id]: bt })}
                       style={[
-                        styles.bloodOption,
-                        {
-                          backgroundColor: active ? "#DE7272" : "transparent",
-                          borderColor: "#DE7272",
-                        },
+                        styles.newBloodCard,
+                        active && { borderColor: '#DE7272', backgroundColor: '#FFF5F5' }
                       ]}
                     >
-                      <Text style={[styles.optionText, { color: active ? "#FFFFFF" : "#DE7272" }]}>{t(bt)}</Text>
+                      <Text style={[styles.bloodMainText, active && { color: '#DE7272' }]}>
+                        {t(`${bt}`)}
+                      </Text>
                     </TouchableOpacity>
                   );
                 })}
               </View>
-              <TouchableOpacity
-                onPress={() => setAnswers({ ...answers, [currentQ.id]: "unknown" })}
+
+              <TouchableOpacity 
                 style={[
-                  styles.unknownOption,
-                  {
-                    backgroundColor: answers[currentQ.id] === "unknown" ? "#DE7272" : "transparent",
-                    borderColor: "#DE7272",
-                  },
+                  styles.unknownButton, 
+                  answers[currentQ.id] === 'unknown' && { borderColor: '#DE7272', backgroundColor: '#FFF5F5' }
                 ]}
+                onPress={() => setAnswers({ ...answers, [currentQ.id]: 'unknown' })}
               >
-                <Text style={[styles.optionText, { color: answers[currentQ.id] === "unknown" ? "#FFFFFF" : "#DE7272", fontSize: 16 }]}>
-                  {t("blood_type_unknown")}
-                </Text>
+                <Text style={styles.unknownButtonText}>{t("blood_type_unknown")}</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={[styles.continueButton, !answers[currentQ.id] && { opacity: 0.5 }]}
+                onPress={handleNext}
+                disabled={!answers[currentQ.id]}
+              >
+                <Text style={styles.continueButtonText}>{t("continue")}</Text>
               </TouchableOpacity>
             </View>
           )}
@@ -408,6 +449,81 @@ export default function TestScreen() {
 }
 
 const styles = StyleSheet.create({
+
+  bloodContentWrapper: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  newBloodGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    justifyContent: 'center',
+    width: '100%',
+    marginBottom: 20,
+  },
+  newBloodCard: {
+    width: '45%',
+    padding: 15,
+    borderRadius: 20,
+    borderWidth: 1.5,
+    borderColor: '#F0F0F0',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  bloodMainText: { 
+    fontSize: 18, 
+    fontWeight: 'bold', 
+    color: '#DE7272' 
+  },
+  rhText: { 
+    fontSize: 14, 
+    fontWeight: '600', 
+    marginVertical: 2,
+    color: '#2B2B2B' 
+  },
+  descText: { 
+    fontSize: 10, 
+    color: '#999', 
+    textAlign: 'center' 
+  },
+
+  unknownButton: {
+    width: '92%',
+    height: 55,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#F0F0F0',
+    backgroundColor: '#FFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  unknownButtonText: {
+    fontSize: 16,
+    color: '#2B2B2B',
+    fontWeight: '500',
+  },
+  continueButton: {
+    width: '92%',
+    height: 55,
+    borderRadius: 20,
+    backgroundColor: '#DE7272',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 25,
+    shadowColor: "#DE7272",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 6,
+  },
+  continueButtonText: {
+    color: '#FFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+
   container: {
     flex: 1,
     overflow: "hidden",
@@ -422,11 +538,22 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    width: '100%',
+  },
+  headerText: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#DE7272', 
+    marginRight: 10,
+  },
+
+  textContainer: {
+    marginRight: 5, 
   },
   logo: {
     width: 45,
     height: 35,
-    marginLeft: -35,
+    marginLeft: 10,
   },
   centerContent: {
     flex: 1,
@@ -445,6 +572,19 @@ const styles = StyleSheet.create({
     padding: 10,
     width: 50,
     alignItems: "center",
+  },
+  backButton: {
+    position: 'absolute',
+    top: 10,
+    left: 20,
+    zIndex: 10,
+    padding: 10,
+  },
+  backButtonText: {
+    fontSize: 45,
+    fontWeight: '300',
+    color: '#DE7272',
+    lineHeight: 40,
   },
   arrowText: {
     fontSize: 45,
@@ -585,4 +725,31 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
+
+  statusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent:"center",
+    backgroundColor: '#E8F5E9',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    maxWidth:"80%",
+  },
+  greenDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#4CAF50',
+    marginRight: 8,
+  },
+  statusText: {
+    flex: 1,               
+    textAlign: 'center',
+    color: '#4CAF50',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+
+
 });
