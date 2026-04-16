@@ -4,8 +4,11 @@ import QRCode from "react-native-qrcode-svg";
 import { useTheme } from "../../../Theme/ThemeContext";
 import { useAuthStore } from "../../../stores/useAuthStore";
 import { useTranslation } from "react-i18next";
+import { useNavigation } from "@react-navigation/native";
+
 
 const BookScreen = () => {
+  const navigation = useNavigation();
   const { colors } = useTheme();
   const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);

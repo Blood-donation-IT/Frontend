@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -7,7 +7,6 @@ import {
   ScrollView,
   SafeAreaView,
 } from "react-native";
-import { Calendar } from "react-native-calendars";
 import { useTheme } from "../../../Theme/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { Ionicons, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
@@ -18,33 +17,28 @@ export default function HomeScreen({ navigation }) {
   
   const [isAppointmentExpanded, setIsAppointmentExpanded] = useState(true);
 
-  const markedDates = useMemo(() => {
-    return {
-      "2026-08-10": { selected: true, marked: true, dotColor: "#ff4d4d", selectedColor: "transparent", selectedTextColor: "#000", customStyles: { container: { borderWidth: 1, borderColor: "#ff4d4d", borderStyle: "dashed" } } },
-      "2026-08-16": { selected: true, selectedColor: "#ff4d4d" },
-      "2026-08-17": { selected: true, selectedColor: "#ff4d4d" },
-      "2026-08-19": { selected: true, selectedColor: "#ff4d4d" },
-      "2026-08-20": { selected: true, selectedColor: "#ff4d4d" },
-      "2026-08-22": { selected: true, selectedColor: "#ff6b81", customStyles: { container: { borderRadius: 50 } } },
-      "2026-08-30": { selected: true, selectedColor: "#8c52ff" },
-    };
-  }, []);
-
-  const onDayPress = (day) => {
-    navigation.navigate("Registration", { day: day.dateString });
-  };
-
+  // Компонент для кнопок Quick Actions з підтримкою теми
   const QuickActionBtn = ({ icon, title, color, onPress }) => (
-    <TouchableOpacity style={styles.actionCard} onPress={onPress}>
+    <TouchableOpacity 
+      style={[
+        styles.actionCard, 
+        { 
+          backgroundColor: colors.backgroundCard,
+          borderColor: colors.border || 'transparent',
+          borderWidth: colors.border ? 1 : 0
+        }
+      ]} 
+      onPress={onPress}
+    >
       <View style={[styles.iconWrapper, { backgroundColor: `${color}15` }]}>
         <MaterialCommunityIcons name={icon} size={28} color={color} />
       </View>
-      <Text style={styles.actionText}>{title}</Text>
+      <Text style={[styles.actionText, { color: colors.text }]}>{title}</Text>
     </TouchableOpacity>
   );
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.backgroundMain }]}>
       <ScrollView 
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -58,10 +52,10 @@ export default function HomeScreen({ navigation }) {
               <MaterialCommunityIcons name="water" size={24} color="#ff4d4d" />
             </View>
             <Text style={[styles.greeting, { color: colors.text }]}>
-              Hello, <Text style={styles.boldText}>Anton</Text> 👋
+              {t("hello", "Hello")}, <Text style={styles.boldText}>Anton</Text> 👋
             </Text>
-            <Text style={styles.subtitle}>
-              Your Blood <Text style={{ color: "#ff4d4d" }}>Saves Lives!</Text>
+            <Text style={[styles.subtitle, { color: colors.text, opacity: 0.7 }]}>
+              {t("your_blood", "Your Blood")} <Text style={{ color: "#ff4d4d" }}>{t("saves_lives", "Saves Lives!")}</Text>
             </Text>
           </View>
           <TouchableOpacity onPress={() => navigation.navigate("NotificationScreen")} style={styles.bellBtn}>
@@ -70,7 +64,7 @@ export default function HomeScreen({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        {/* Appointment Banner */}
+        {/* Appointment Banner (Залишається яскравим незалежно від теми) */}
         <TouchableOpacity 
           style={styles.appointmentBanner}
           activeOpacity={0.8}
@@ -81,7 +75,7 @@ export default function HomeScreen({ navigation }) {
               <View style={styles.appointmentHeaderRow}>
                 <View style={styles.row}>
                   <Ionicons name="calendar-outline" size={16} color="#fff" />
-                  <Text style={styles.appointmentLabel}> Your Appointment</Text>
+                  <Text style={styles.appointmentLabel}> {t("your_appointment", "Your Appointment")}</Text>
                 </View>
                 <Feather name="chevron-down" size={20} color="#fff" />
               </View>
@@ -109,75 +103,33 @@ export default function HomeScreen({ navigation }) {
           )}
         </TouchableOpacity>
 
-        {/* Calendar */}
-        <View style={styles.calendarWrapper}>
-          <Calendar
-            markedDates={markedDates}
-            onDayPress={onDayPress}
-            markingType={'custom'}
-            hideExtraDays
-            firstDay={1}
-            theme={{
-              calendarBackground: "#fff",
-              textSectionTitleColor: "#b6c1cd",
-              selectedDayBackgroundColor: "#ff4d4d",
-              selectedDayTextColor: "#ffffff",
-              todayTextColor: "#ff4d4d",
-              dayTextColor: "#2d4150",
-              textDisabledColor: "#d9e1e8",
-              arrowColor: "#fff",
-              monthTextColor: "#fff",
-              textDayFontWeight: "500",
-              textMonthFontWeight: "bold",
-              textDayHeaderFontWeight: "500",
-              textDayFontSize: 14,
-              textMonthFontSize: 16,
-              textDayHeaderFontSize: 12,
-              "stylesheet.calendar.header": {
-                header: {
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  paddingLeft: 10,
-                  paddingRight: 10,
-                  marginTop: 6,
-                  alignItems: "center",
-                  backgroundColor: "#ff6b81",
-                  borderRadius: 12,
-                  paddingVertical: 8,
-                  marginBottom: 10,
-                }
-              }
-            }}
-          />
-        </View>
-
-        {/* Quick Actions */}
+        {/* Quick Actions (Без календаря) */}
         <View style={styles.quickActionsSection}>
           <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            Quick Actions
+            {t("quick_actions", "Quick Actions")}
           </Text>
           <View style={styles.actionsGrid}>
             <QuickActionBtn
               icon="magnify"
-              title="Find Donors"
+              title={t("find_donors", "Find Donors")}
               color="#ff4d4d"
               onPress={() => {}}
             />
             <QuickActionBtn
               icon="map-marker-outline"
-              title="Hospitals Nearby"
+              title={t("hospitals_nearby", "Hospitals Nearby")}
               color="#ff8c00"
               onPress={() => {}}
             />
             <QuickActionBtn
               icon="pulse"
-              title="Activity"
+              title={t("activity", "Activity")}
               color="#ff4d4d"
               onPress={() => {}}
             />
             <QuickActionBtn
               icon="camera-outline"
-              title="Blog"
+              title={t("blog", "Blog")}
               color="#8c52ff"
               onPress={() => {}}
             />
@@ -186,10 +138,10 @@ export default function HomeScreen({ navigation }) {
 
       </ScrollView>
 
-      {/* Флекс-контейнер для кнопки без абсолютного позиціонування */}
+      {/* Floating Donate Now Button */}
       <View style={styles.bottomContainer}>
         <TouchableOpacity style={styles.donateFab}>
-          <Text style={styles.donateFabText}>Donate Now +</Text>
+          <Text style={styles.donateFabText}>{t("donate_now", "Donate Now")} +</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -199,7 +151,6 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#FFF5F5",
   },
   scrollView: {
     flex: 1,
@@ -216,7 +167,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
-    marginBottom: 20,
+    marginBottom: 24,
   },
   logoRow: {
     marginBottom: 8,
@@ -229,7 +180,6 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 14,
-    color: "#666",
     marginTop: 4,
     fontWeight: "500",
   },
@@ -246,7 +196,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     backgroundColor: "#ff4d4d",
     borderWidth: 1,
-    borderColor: "#FFF5F5",
+    borderColor: "transparent",
   },
   appointmentBanner: {
     backgroundColor: "#ff6b81",
@@ -304,22 +254,11 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 14,
   },
-  calendarWrapper: {
-    backgroundColor: "#fff",
-    borderRadius: 20,
-    padding: 10,
-    marginBottom: 24,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-  },
   quickActionsSection: {
     marginBottom: 20,
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
     marginBottom: 16,
   },
@@ -331,16 +270,15 @@ const styles = StyleSheet.create({
   },
   actionCard: {
     width: "48%",
-    backgroundColor: "#fff",
     borderRadius: 20,
     padding: 16,
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
+    shadowOpacity: 0.05,
     shadowRadius: 8,
-    elevation: 1,
+    elevation: 2,
   },
   iconWrapper: {
     width: 48,
@@ -353,15 +291,12 @@ const styles = StyleSheet.create({
   actionText: {
     fontSize: 13,
     fontWeight: "600",
-    color: "#333",
   },
-  
-  /* Нові стилі для флекс-кнопки */
   bottomContainer: {
     paddingHorizontal: 20,
-    paddingBottom: 20, // Відступ від нижнього меню навігації
+    paddingBottom: 20,
     paddingTop: 10,
-    alignItems: "flex-end", // Притискає кнопку вправо
+    alignItems: "flex-end",
   },
   donateFab: {
     backgroundColor: "#ff6b81",

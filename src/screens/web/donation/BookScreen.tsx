@@ -1,5 +1,14 @@
 import React, { useRef, useState, useEffect } from "react";
-import { StyleSheet, View, Text, Dimensions, TouchableWithoutFeedback, Animated, TouchableOpacity } from "react-native";
+import { 
+  StyleSheet, 
+  View, 
+  Text, 
+  Dimensions, 
+  TouchableWithoutFeedback, 
+  Animated, 
+  TouchableOpacity,
+  ScrollView
+} from "react-native";
 import Svg, { Defs, RadialGradient, Rect, Stop } from "react-native-svg";
 import QRCode from 'react-native-qrcode-svg';
 import { useTheme } from "../../../Theme/ThemeContext";
@@ -17,6 +26,7 @@ const BookScreen = () => {
     setQrValue(`${baseUrl}?r=${randomString}`);
   }, []);
 
+  // --- Анімація перевертання картки ---
   const flipAnim = useRef(new Animated.Value(0)).current;
   const [flipped, setFlipped] = useState(false);
 
@@ -39,6 +49,27 @@ const BookScreen = () => {
     outputRange: ["180deg", "360deg"],
   });
 
+  // --- Анімація Bottom Sheet ---
+  const sheetAnim = useRef(new Animated.Value(height)).current;
+  const [sheetVisible, setSheetVisible] = useState(false);
+
+  const openSheet = () => {
+    setSheetVisible(true);
+    Animated.spring(sheetAnim, {
+      toValue: height * 0.15, // Піднімаємо до 85% екрану, щоб вмістити всі дані з картинки 2
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const closeSheet = () => {
+    Animated.timing(sheetAnim, {
+      toValue: height,
+      duration: 250,
+      useNativeDriver: true,
+    }).start(() => setSheetVisible(false));
+  };
+
+  // Кольори
   const bgBase = colors.backgroundMain;
   const spotPrimary = colors.primary; 
   const spotSecondary = isLight ? "#FFFBDF" : colors.backgroundCard; 
@@ -55,6 +86,7 @@ const BookScreen = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: bgBase }]}>
+      {/* SVG Градієнтний фон */}
       <Svg height={height} width={width} style={StyleSheet.absoluteFill}>
         <Defs>
           <RadialGradient id="spot1" cx="85%" cy="15%" r="100%" fx="85%" fy="15%" gradientUnits="userSpaceOnUse">
@@ -89,6 +121,7 @@ const BookScreen = () => {
       <TouchableWithoutFeedback onPress={flipCard}>
         <View style={styles.cardContainer}>
           
+          {/* Лицьова сторона картки */}
           <Animated.View 
             style={[
               styles.cardFace, 
@@ -132,7 +165,9 @@ const BookScreen = () => {
                   <Text style={[styles.nameText, { color: cardTextColor }]}>Jack</Text>
                   <Text style={[styles.nameText, { color: cardTextColor }]}>Bober</Text>
                 </View>
-                <TouchableOpacity>
+                
+                {/* Кнопка "..." яка відкриває Bottom Sheet */}
+                <TouchableOpacity onPress={openSheet} hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}>
                   <Text style={[styles.dots, { color: cardTextColor }]}>...</Text>
                 </TouchableOpacity>
               </View>
@@ -140,6 +175,7 @@ const BookScreen = () => {
             </View>
           </Animated.View>
 
+          {/* Задня сторона картки */}
           <Animated.View 
             style={[
               styles.cardFace, 
@@ -167,11 +203,77 @@ const BookScreen = () => {
 
         </View>
       </TouchableWithoutFeedback>
+
+      {/* --- BOTTOM SHEET --- */}
+      {sheetVisible && (
+        <TouchableWithoutFeedback onPress={closeSheet}>
+          <View style={styles.overlay}>
+            <TouchableWithoutFeedback>
+              <Animated.View
+                style={[
+                  styles.bottomSheet,
+                  { 
+                    backgroundColor: colors.backgroundMain, 
+                    transform: [{ translateY: sheetAnim }] 
+                  }
+                ]}
+              >
+                {/* Header модалки */}
+                <View style={styles.sheetHeader}>
+                  <View style={{ width: 40 }} /> 
+                  <Text style={[styles.sheetTitle, { color: colors.text }]}>
+                    Full Information
+                  </Text>
+                  <TouchableOpacity onPress={closeSheet} hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}>
+                    <Text style={styles.closeBtn}>Done</Text>
+                  </TouchableOpacity>
+                </View>
+
+                {/* Вміст, який можна скролити */}
+                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+                  <Text style={[styles.sheetSeries, { color: colors.text }]}>Series №0203</Text>
+
+                  {/* Профіль (Фото + Ім'я) */}
+                  <View style={[styles.profileCardSheet, { backgroundColor: colors.backgroundCard }]}>
+                    <View style={[styles.photoPlaceholderSheet, { backgroundColor: placeholderColor }]} />
+                    <View style={styles.profileInfo}>
+                      <Text style={[styles.profileName, { color: colors.text }]}>Blues</Text>
+                      <Text style={[styles.profileName, { color: colors.text }]}>Jack</Text>
+                      <Text style={[styles.profileName, { color: colors.text }]}>Boberovuch</Text>
+                      <Text style={[styles.profileDobLabel, { color: colors.text }]}>Date of Birth</Text>
+                      <Text style={[styles.profileDob, { color: colors.text }]}>07.07.1999</Text>
+                    </View>
+                  </View>
+
+                  {/* Інфо картки (кров, дата, локація) */}
+                  <View style={[styles.infoBlockSheet, { backgroundColor: colors.backgroundCard }]}>
+                    <Text style={[styles.infoLabelSheet, { color: colors.text }]}>Type Blood</Text>
+                    <Text style={[styles.infoValueSheet, { color: colors.text }]}>A(II)Rh+</Text>
+                  </View>
+
+                  <View style={[styles.infoBlockSheet, { backgroundColor: colors.backgroundCard }]}>
+                    <Text style={[styles.infoLabelSheet, { color: colors.text }]}>Date Of Issue</Text>
+                    <Text style={[styles.infoValueSheet, { color: colors.text }]}>24 June 2025</Text>
+                  </View>
+
+                  <View style={[styles.infoBlockSheet, { backgroundColor: colors.backgroundCard }]}>
+                    <Text style={[styles.infoLabelSheet, { color: colors.text }]}>Location</Text>
+                    <Text style={[styles.infoValueSheet, { color: colors.text }]}>NNI JHP Lviv Region</Text>
+                  </View>
+                </ScrollView>
+
+              </Animated.View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      )}
+
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  // --- Стилі Картки та Головного Екрану ---
   container: {
     flex: 1,
     justifyContent: "center",
@@ -285,7 +387,94 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
     opacity: 0.7,
-  }
+  },
+
+  // --- Стилі Bottom Sheet ---
+  overlay: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "flex-end",
+    zIndex: 9999,
+    elevation: 10,
+  },
+  bottomSheet: {
+    height: height * 0.85, // 85% екрану, щоб влізла вся Full Information
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    padding: 25,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 10,
+  },
+  sheetHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  sheetTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+  },
+  closeBtn: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#EF4444", // Червоний, як на макеті
+  },
+  sheetSeries: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 16,
+  },
+  profileCardSheet: {
+    flexDirection: "row",
+    padding: 16,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#FCA5A5", // Світло-червона рамка
+    marginBottom: 20,
+  },
+  photoPlaceholderSheet: {
+    width: 100,
+    height: 120,
+    borderRadius: 12,
+    marginRight: 16,
+  },
+  profileInfo: {
+    justifyContent: "center",
+  },
+  profileName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 2,
+  },
+  profileDobLabel: {
+    fontSize: 12,
+    opacity: 0.6,
+    marginTop: 12,
+  },
+  profileDob: {
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  infoBlockSheet: {
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 12,
+  },
+  infoLabelSheet: {
+    fontSize: 12,
+    opacity: 0.6,
+    marginBottom: 4,
+  },
+  infoValueSheet: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
 });
 
 export default BookScreen;

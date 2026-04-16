@@ -20,6 +20,7 @@ import ForgetScreen from "../screens/mobile/auth/ForgetScreen";
 import { RootStackParamList } from "./types";
 import ResetPasswordScreen from "../screens/mobile/auth/ResetPasswordScreen";
 import CreateNewPasswordScreen from "../screens/mobile/auth/Createpassword";
+import DonorInfoSheet from "../screens/DonorInfoSheet";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -103,6 +104,15 @@ export default function AppNavigator() {
             component={EditProfileScreen}
             options={{ headerShown: false }}
           />
+          <Stack.Screen
+          name="DonorInfoSheet"
+          component={DonorInfoSheet}
+          options={{
+          presentation: "transparentModal",
+          animation: "slide_from_bottom",
+          headerShown: false
+          }}
+/>
         </Stack.Navigator>
       </NavigationContainer>
     </ThemeProvider>
