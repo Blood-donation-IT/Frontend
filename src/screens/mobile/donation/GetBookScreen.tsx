@@ -27,16 +27,26 @@ const GetBookScreen = () => {
         {t("donor_id_title", "Donor ID")}
       </Text>
 
-      {/* Круговий прогрес */}
+      {/* Круговий прогрес (Тепер це кнопка) */}
       <View style={styles.progressSection}>
-        <View style={[styles.progressCircle, { borderColor: progressColor }]}>
+        <TouchableOpacity 
+          style={[styles.progressCircle, { borderColor: progressColor }]}
+          activeOpacity={0.7}
+          onPress={() => {
+            if (!isReady) {
+              setDonations((d) => Math.min(d + 1, maxDonations));
+            } else {
+              navigation.navigate("BookScreen");
+            }
+          }}
+        >
           <Text style={[styles.progressValue, { color: colors.text }]}>
             {donations}/{maxDonations}
           </Text>
           <Text style={[styles.progressLabel, { color: "#888" }]}>
             {t("donations_label", "donations")}
           </Text>
-        </View>
+        </TouchableOpacity>
 
         <Text style={[styles.statusTitle, { color: colors.text }]}>
           {isReady ? t("completed", "Completed") : t("days_left", "3 days left")}
@@ -72,27 +82,6 @@ const GetBookScreen = () => {
             </Text>
           </View>
         )}
-      </View>
-
-      {/* Кнопка */}
-      <View style={styles.bottomSection}>
-        <TouchableOpacity
-          style={[
-            styles.button,
-            { backgroundColor: isReady ? "#EF4444" : "#D1D5DB" },
-          ]}
-          onPress={() => {
-            if (!isReady) {
-              setDonations((d) => Math.min(d + 1, maxDonations));
-            } else {
-              navigation.navigate("BookScreen");
-            }
-          }}
-        >
-          <Text style={[styles.buttonText, { color: isReady ? "#FFF" : "#6B7280" }]}>
-            {t("get_donor_id", "Get Donor ID")}
-          </Text>
-        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -166,21 +155,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   boldText: {
-    fontWeight: "bold",
-  },
-  bottomSection: {
-    width: "100%",
-    alignItems: "center",
-  },
-  button: {
-    paddingVertical: 16,
-    paddingHorizontal: 40,
-    borderRadius: 30,
-    width: "80%",
-    alignItems: "center",
-  },
-  buttonText: {
-    fontSize: 18,
     fontWeight: "bold",
   },
 });
