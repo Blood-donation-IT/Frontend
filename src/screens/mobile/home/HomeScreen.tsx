@@ -13,9 +13,12 @@ import { useTheme } from "../../../Theme/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { Ionicons, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { format } from "date-fns";
+import { useAuthStore } from "../../../stores/useAuthStore";
 export default function HomeScreen({ navigation }) {
   const { colors } = useTheme();
   const { t } = useTranslation();
+
+  const { user } = useAuthStore();
   
   const [isAppointmentExpanded, setIsAppointmentExpanded] = useState(true);
 
@@ -64,7 +67,7 @@ export default function HomeScreen({ navigation }) {
               />
             </View>
             <Text style={[styles.greeting, { color: colors.text }]}>
-              Hello, <Text style={styles.boldText}>Anton</Text> 👋
+              Hello, <Text style={styles.boldText}>{user?.name}</Text> 👋
             </Text>
             <Text style={styles.subtitle}>
               Your Blood <Text style={{ color: "#ff4d4d" }}>Saves Lives!</Text>

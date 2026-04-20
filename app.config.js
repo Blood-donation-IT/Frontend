@@ -7,11 +7,11 @@ export default {
     "scheme": "advanceddonor",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./src/images/logo-black.png",
+    "icon": "./src/images/logo-white.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./src/images/logo-black.png",
+      "image": "./src/images/logo-white.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -21,7 +21,7 @@ export default {
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./src/images/logo-black.png",
+        "foregroundImage": "./src/images/logo-white.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
@@ -33,7 +33,8 @@ export default {
       }
     },
     "web": {
-      "favicon": "./src/images/logo-black.png"
+      "favicon": "./src/images/logo-white.png",
+      "name": "Advanced Donor"
     },
     "plugins": [
       "expo-localization",

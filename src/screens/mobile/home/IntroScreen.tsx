@@ -39,7 +39,7 @@ const IntroScreen: React.FC<IntroScreenProps> = ({ navigation }) => {
           <Text style={styles.subtitle}>{t("thank_you_for_joining_us")}</Text>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate("SignIn")}
+            onPress={() => navigation.navigate("LogIn")}
           >
             <Text style={styles.buttonText}>{t("get_started")}</Text>
           </TouchableOpacity>
