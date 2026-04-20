@@ -55,7 +55,7 @@ export default function TestScreen() {
   const navigation = useNavigation();
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
-
+  
   const allQuestions = [
     { id: 1,  type: "yesno" },
     { id: 2,  type: "yesno" },
@@ -127,14 +127,14 @@ export default function TestScreen() {
 
 
   const handleNext = async () => {
-    if (isCurrentAnswered) {
+    // if (isCurrentAnswered) {
       if (currentIndex < totalSteps - 1) {
         changeQuestion("next", currentIndex + 1);
       } else {
         await handleSaveInfo()
         navigation.navigate("Home");
       }
-    }
+    // }
   };
 
   const handlePrev = () => {
@@ -147,7 +147,11 @@ export default function TestScreen() {
     const active = answers[qid] === value;
     return (
       <TouchableOpacity
-        onPress={() => setAnswers({ ...answers, [qid]: value })}
+        onPress={() => {
+            setAnswers({ ...answers, [qid]: value })
+            handleNext()
+          }
+        }
         style={[
           styles.optionButton,
           {
@@ -258,7 +262,7 @@ export default function TestScreen() {
         : null
       }
 
-      <View style={styles.centerContent}>
+      <View style={[styles.centerContent,currentQ.type == "blood" && height < 800 ? {marginBottom: 80} : {}]}>
         
         { currentIndex == totalSteps - 2 ?
           <View style={[styles.statusBadge,{marginBottom:20}]}>
@@ -529,10 +533,15 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     position: "relative",
   },
+  // header: {
+  //   paddingTop: 50,
+  //   alignItems: "center",
+  //   marginTop: 50,
+  // },
   header: {
-    paddingTop: 50,
+    paddingTop: height < 700 ? 10 : 30, // Адаптивно
     alignItems: "center",
-    marginTop: 50,
+    marginTop: height < 700 ? 10 : 20,  // Зменшили з 50
   },
   titleRow: {
     flexDirection: "row",
@@ -559,7 +568,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: -50,
+    marginBottom: height < 800 ? 180 : -50,
   },
   carouselWrapper: {
     flexDirection: "row",
@@ -591,12 +600,26 @@ const styles = StyleSheet.create({
     fontWeight: "300",
     color: "#DE7272",
   },
+  // cardStack: {
+  //   flex: 1,
+  //   height: 270,
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  //   position: "relative",
+  // },
   cardStack: {
     flex: 1,
-    height: 270,
+    height: height < 700 ? 200 : 270, // Зменшуємо висоту картки на малих екранах
     alignItems: "center",
     justifyContent: "center",
     position: "relative",
+  },
+  answersContainer: {
+    marginTop: height < 700 ? 20 : 50, // Менший проміжок між карткою і кнопками
+    width: "100%",
+    alignItems: "center",
+    paddingHorizontal: 40,
+    minHeight: 50,
   },
   layeredCard: {
     position: "absolute",
@@ -662,13 +685,13 @@ const styles = StyleSheet.create({
     borderBottomColor: "#DE7272",
     borderColor: "#ffffffff",
   },
-  answersContainer: {
-    marginTop: 50,
-    width: "100%",
-    alignItems: "center",
-    paddingHorizontal: 40,
-    minHeight: 50,
-  },
+  // answersContainer: {
+  //   marginTop: 50,
+  //   width: "100%",
+  //   alignItems: "center",
+  //   paddingHorizontal: 40,
+  //   minHeight: 50,
+  // },
   actionRow: {
     flexDirection: "row",
     gap: 20,
@@ -717,9 +740,19 @@ const styles = StyleSheet.create({
     borderWidth: 3.5,
     alignItems: "center",
   },
+  // waveContainer: {
+  //   width: "100%",
+  //   height: 290,
+  // },
   waveContainer: {
     width: "100%",
-    height: 290,
+    // Якщо висота мала, ставимо висоту 50, інакше 290
+    height: height < 700 ? 210 : 290, 
+    // Позиціонування: якщо екран малий, робимо absolute, інакше relative (за замовчуванням)
+    position: height < 800 ? 'absolute' : 'relative',
+    bottom: height < 800 ? 0 : undefined,
+    // Важливо: додаємо zIndex, щоб хвиля не перекрила кнопки, якщо вона absolute
+    zIndex: -1, 
   },
   waveImage: {
     width: "100%",

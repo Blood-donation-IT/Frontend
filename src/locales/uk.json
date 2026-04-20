@@ -192,6 +192,9 @@
   "welcome!": "Вітаємо!",
   "sign_in_to_continue": "Увійдіть, щоб продовжити",
   "sign_in_with_google": "Увійти за допомогою Google",
-  "signing_in": "Виконується вхід..."
+  "signing_in": "Виконується вхід...",
 
+  //Registration
+  "people_registered_day": "Кількість зареєстрованих на цей день",
+  "total_registered_time": "Всього зареєстровано на цей час:"
 }

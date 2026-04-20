@@ -115,8 +115,6 @@ export default function RegistrationScreen({ navigation, route }) {
   const registrationData = mockDataByDate[current] || mockDataByDate["default"];
 
 
-  const totalRegistered = registrationData.reduce((acc, val) => acc + val, 0);
-
   const handleDateSelect = (date) => {
     setCurrent(date.dateString);
   };
@@ -215,6 +213,8 @@ export default function RegistrationScreen({ navigation, route }) {
   }, [current, location, time, apiData]);
 
 
+  const totalRegistered = dataForChart[selectedIndex]//registrationData.reduce((acc, val) => acc + val, 0);
+
 
 
 
@@ -278,6 +278,12 @@ export default function RegistrationScreen({ navigation, route }) {
     setSelectedLocation(point.coords);
     setLocation(point.title);
     setSuggestions([]);
+
+   mapRef.current.animateToRegion({
+    latitude: point.coords.latitude,
+    longitude: point.coords.longitude
+  });
+    
   };
 
   const pad2 = (n: number) => String(n).padStart(2, "0");
@@ -554,7 +560,7 @@ export default function RegistrationScreen({ navigation, route }) {
         {errors.time && <Text style={styles.errorText}>{errors.time}</Text>}
 
         <View style={styles.chartWrapper}>
-          <Text style={styles.chartTitle}>People registered for this day</Text>
+          <Text style={styles.chartTitle}>{t("people_registered_day")}</Text>
           
           <View style={styles.mainChartArea}>
             {/* ЛІВА ЧАСТИНА: Вісь Y (числа) */}
@@ -605,7 +611,7 @@ export default function RegistrationScreen({ navigation, route }) {
       </View>
 
       <View style={styles.totalBadge}>
-        <Text style={styles.totalText}>Total registered: <Text style={{fontWeight: 'bold'}}>{totalRegistered}</Text></Text>
+        <Text style={styles.totalText}>{t("total_registered_time")} <Text style={{fontWeight: 'bold'}}>{totalRegistered}</Text></Text>
       </View>
     </View>
 
@@ -664,7 +670,6 @@ export default function RegistrationScreen({ navigation, route }) {
                   points={points}
                   selectedLocation={location}
                   onSelectPoint={handleSelectPoint}
-                  // Для вебу ми ігноруємо onMapReady, бо Leaflet ініціалізується сам
                   onMapReady={Platform.OS !== 'web' ? () => {
                     mapRef.current?.fitToCoordinates(points.map((p) => p.coords), {
                       edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
@@ -1190,7 +1195,7 @@ option: {
     backgroundColor: "#F5EDEB66",
   },
   mapContainer: {
-    height: 180,
+    height: 280,
     borderRadius: 15,
     overflow: "hidden",
     borderWidth: 1,
@@ -1217,12 +1222,16 @@ option: {
     marginBottom: 10,
   },
   suggestionsBox: {
+    position:"absolute",
+    top:110,
+    width:"90%",
     maxHeight: 150,
     backgroundColor: "#fff",
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "#E66A6A80",
     marginBottom: 12,
+    zIndex:10000
   },
   suggestionItem: {
     padding: 10,

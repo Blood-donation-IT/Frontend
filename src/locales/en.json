@@ -186,6 +186,10 @@
   "welcome!": "Welcome!",
   "sign_in_to_continue": "Sign in to continue",
   "sign_in_with_google": "Sign in with Google",
-  "signing_in": "Signing in..."
+  "signing_in": "Signing in...",
+
+  //Registration
+  "people_registered_day": "People registered for this day",
+  "total_registered_time": "Total registered for this time:"
 
 }
