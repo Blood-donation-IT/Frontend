@@ -24,10 +24,10 @@ import Svg, {
 } from "react-native-svg";
 import { LanguageSwitcher } from "../../../components/LanguageSwitcher";
 const screenWidth = Dimensions.get('window').width;
-const { width, height } = Dimensions.get("window");
+import { useWindowDimensions } from 'react-native';
 
 // --- 1. КОМПОНЕНТ ФОНУ ---
-const BackgroundCircles = () => {
+const BackgroundCircles = ({ width, height }) => {
   return (
     <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
       <Svg height="100%" width="100%">
@@ -55,7 +55,8 @@ export default function TestScreen() {
   const navigation = useNavigation();
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
-  
+
+  const { height, width } = useWindowDimensions();
   const allQuestions = [
     { id: 1,  type: "yesno" },
     { id: 2,  type: "yesno" },
@@ -183,14 +184,20 @@ export default function TestScreen() {
     borderRightColor: isLast ? activeRed : defaultBorder,
   };
 
+  let dynamicMargin = height < 800 ? 180 : -50;
+
+  if (currentQ.type === "blood" && height < 800) {
+    dynamicMargin = 80;
+  }
+
   return (
     <View style={[styles.container, { backgroundColor: isDark ? colors.backgroundMain : "#FCF8F8" }]}>
       <LanguageSwitcher/>
 
-      <BackgroundCircles />
+      <BackgroundCircles width={width} height={height} />
       
 
-      <View style={styles.header}>
+      <View style={[styles.header,{paddingTop: height < 700 ? 10 : 30},{marginTop: height < 700 ? 10 : 20}]}>
         <View style={styles.titleRow}>
           {/* <View style={styles.textContainer}>
             <Svg height="45" width={title_width}>
@@ -262,7 +269,7 @@ export default function TestScreen() {
         : null
       }
 
-      <View style={[styles.centerContent,currentQ.type == "blood" && height < 800 ? {marginBottom: 80} : {}]}>
+      <View style={[styles.centerContent, { marginBottom: dynamicMargin }]}>
         
         { currentIndex == totalSteps - 2 ?
           <View style={[styles.statusBadge,{marginBottom:20}]}>
@@ -282,7 +289,7 @@ export default function TestScreen() {
             </TouchableOpacity>
             
 
-            <Animated.View style={[styles.cardStack, { transform: [{ translateX: slideAnim }], opacity: opacityAnim }]}>
+            <Animated.View style={[styles.cardStack, { transform: [{ translateX: slideAnim }], opacity: opacityAnim },{height: height < 700 ? 200 : 270,}]}>
               {!isLast && <View style={styles.layeredCard} />}
               {!isFirst && <View style={styles.layeredCard1} />}
               
@@ -324,7 +331,7 @@ export default function TestScreen() {
         )}
         
 
-        <Animated.View style={[styles.answersContainer, { transform: [{ translateX: slideAnim }], opacity: opacityAnim }]}>
+        <Animated.View style={[styles.answersContainer, { transform: [{ translateX: slideAnim }], opacity: opacityAnim },{marginTop: height < 700 ? 20 : 50,}]}>
           {/* {currentQ.type === "date" && (
             <View style={{ alignItems: "center", width: "100%" }}>
               <TouchableOpacity
@@ -445,7 +452,7 @@ export default function TestScreen() {
         </Animated.View>
       </View>
 
-      <View style={styles.waveContainer} pointerEvents="none">
+      <View style={[styles.waveContainer,{height: height < 700 ? 210 : 290}, {position: height < 800 ? 'absolute' : 'relative'},{bottom: height < 800 ? 0 : undefined,}]} pointerEvents="none">
         <Image source={require('../../../images/wave.png')} style={styles.waveImage} resizeMode="cover" />
       </View>
     </View>
@@ -539,9 +546,7 @@ const styles = StyleSheet.create({
   //   marginTop: 50,
   // },
   header: {
-    paddingTop: height < 700 ? 10 : 30, // Адаптивно
     alignItems: "center",
-    marginTop: height < 700 ? 10 : 20,  // Зменшили з 50
   },
   titleRow: {
     flexDirection: "row",
@@ -568,7 +573,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: height < 800 ? 180 : -50,
   },
   carouselWrapper: {
     flexDirection: "row",
@@ -609,13 +613,11 @@ const styles = StyleSheet.create({
   // },
   cardStack: {
     flex: 1,
-    height: height < 700 ? 200 : 270, // Зменшуємо висоту картки на малих екранах
     alignItems: "center",
     justifyContent: "center",
     position: "relative",
   },
   answersContainer: {
-    marginTop: height < 700 ? 20 : 50, // Менший проміжок між карткою і кнопками
     width: "100%",
     alignItems: "center",
     paddingHorizontal: 40,
@@ -746,12 +748,6 @@ const styles = StyleSheet.create({
   // },
   waveContainer: {
     width: "100%",
-    // Якщо висота мала, ставимо висоту 50, інакше 290
-    height: height < 700 ? 210 : 290, 
-    // Позиціонування: якщо екран малий, робимо absolute, інакше relative (за замовчуванням)
-    position: height < 800 ? 'absolute' : 'relative',
-    bottom: height < 800 ? 0 : undefined,
-    // Важливо: додаємо zIndex, щоб хвиля не перекрила кнопки, якщо вона absolute
     zIndex: -1, 
   },
   waveImage: {
