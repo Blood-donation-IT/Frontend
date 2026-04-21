@@ -131,8 +131,8 @@ export default function RegistrationScreen({ navigation, route }) {
     const dayNumber = parseInt(date.split('-')[2]) || 1;
 
     const generatedData = Array.from({ length: 11 }).map((_, i) => {
-      const val = (dayNumber * (i + 1) * 7) % 95; 
-      return val < 10 ? val + 15 : val;
+      const val = (dayNumber + i * 3) % 11; 
+      return val;
     });
 
     return {
@@ -565,7 +565,7 @@ export default function RegistrationScreen({ navigation, route }) {
           <View style={styles.mainChartArea}>
             {/* ЛІВА ЧАСТИНА: Вісь Y (числа) */}
             <View style={styles.yAxis}>
-              {[100, 80, 60, 40, 20, 0].map((val) => (
+              {[10, 8, 6, 4, 2, 0].map((val) => (
                 <Text key={val} style={styles.yLabel}>{val}</Text>
               ))}
             </View>
@@ -587,18 +587,17 @@ export default function RegistrationScreen({ navigation, route }) {
               </View>
             ))} */}
             {dataForChart.map((val, idx) => {
-          // Перевіряємо, чи цей стовпчик відповідає вибраному часу
-          const isSelectedBar = idx === selectedIndex;
+            const isSelectedBar = idx === selectedIndex;
 
-          return (
-            <AnimatedBar 
-              key={idx} //`${current}-${idx}`
-              index={idx} 
-              value={val} 
-              isSelected={idx === selectedIndex} 
-            />
-          );
-        })}
+            return (
+              <AnimatedBar 
+                key={idx}
+                index={idx} 
+                value={val*10} 
+                isSelected={idx === selectedIndex} 
+              />
+            );
+          })}
           </View>
         </View>
       </View>
@@ -687,9 +686,9 @@ export default function RegistrationScreen({ navigation, route }) {
               >
                 <Text style={styles.saveButtonText}>{t("save")}</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => setModalVisible(false)}>
+              {/* <TouchableOpacity onPress={() => setModalVisible(false)}>
                 <Text style={styles.cancelText}>{t("cancel")}</Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
           </View>
         </TouchableWithoutFeedback>

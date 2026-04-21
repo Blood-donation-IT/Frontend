@@ -54,6 +54,7 @@ const SettingsScreen = ({ navigation }) => {
   const styles = StyleSheet.create({
     flag: {
       fontSize: 18,
+      color: colors.text,
     },
     container: {
       padding: 20,
