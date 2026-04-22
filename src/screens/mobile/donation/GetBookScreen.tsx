@@ -22,21 +22,21 @@ const GetBookScreen = () => {
         styles.container,
         { backgroundColor: colors.backgroundMain },
       ]}
+      showsVerticalScrollIndicator={false}
     >
       <Text style={[styles.mainTitle, { color: colors.text }]}>
         {t("donor_id_title", "Donor ID")}
       </Text>
 
-      {/* Круговий прогрес (Тепер це кнопка) */}
+      {/* Круговий прогрес (натисніть на нього, щоб додати донацію для тесту) */}
       <View style={styles.progressSection}>
         <TouchableOpacity 
           style={[styles.progressCircle, { borderColor: progressColor }]}
           activeOpacity={0.7}
           onPress={() => {
+            // Симуляція додавання донацій для тестування
             if (!isReady) {
               setDonations((d) => Math.min(d + 1, maxDonations));
-            } else {
-              navigation.navigate("BookScreen");
             }
           }}
         >
@@ -83,6 +83,26 @@ const GetBookScreen = () => {
           </View>
         )}
       </View>
+
+      {/* Відновлена кнопка Get Donor ID */}
+      <View style={styles.bottomSection}>
+        <TouchableOpacity
+          style={[
+            styles.button,
+            { backgroundColor: isReady ? "#EF4444" : "#D1D5DB" }, // Червона, якщо готово, інакше сіра
+          ]}
+          disabled={!isReady} // Кнопка не працює, поки немає 5 донацій
+          onPress={() => {
+            if (isReady) {
+              navigation.navigate("BookScreen");
+            }
+          }}
+        >
+          <Text style={[styles.buttonText, { color: isReady ? "#FFF" : "#6B7280" }]}>
+            {t("get_donor_id", "Get Donor ID")}
+          </Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 };
@@ -92,7 +112,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: 20,
     paddingTop: 40,
-    paddingBottom: 100,
+    paddingBottom: 120, // Відступ знизу, щоб меню не перекривало контент
     alignItems: "center",
   },
   mainTitle: {
@@ -112,6 +132,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 20,
+    backgroundColor: 'transparent',
   },
   progressValue: {
     fontSize: 32,
@@ -132,7 +153,7 @@ const styles = StyleSheet.create({
   },
   infoSection: {
     width: "100%",
-    marginBottom: 40,
+    marginBottom: 30,
   },
   infoCard: {
     borderWidth: 1,
@@ -155,6 +176,27 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   boldText: {
+    fontWeight: "bold",
+  },
+  bottomSection: {
+    width: "100%",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  button: {
+    paddingVertical: 16,
+    paddingHorizontal: 40,
+    borderRadius: 30,
+    width: "80%",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  buttonText: {
+    fontSize: 18,
     fontWeight: "bold",
   },
 });

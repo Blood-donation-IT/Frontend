@@ -138,12 +138,10 @@ export default function HomeScreen({ navigation }) {
 
       </ScrollView>
 
-      {/* Floating Donate Now Button */}
-      <View style={styles.bottomContainer}>
-        <TouchableOpacity style={styles.donateFab}>
-          <Text style={styles.donateFabText}>{t("donate_now", "Donate Now")} +</Text>
-        </TouchableOpacity>
-      </View>
+      {/* Floating Donate Now Button (Абсолютно позиційована, щоб не падати під меню) */}
+      <TouchableOpacity style={styles.donateFab}>
+        <Text style={styles.donateFabText}>{t("donate_now", "Donate Now")} +</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -157,7 +155,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 20,
-    paddingBottom: 20, 
+    paddingBottom: 40, 
   },
   row: {
     flexDirection: "row",
@@ -292,13 +290,10 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "600",
   },
-  bottomContainer: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-    paddingTop: 10,
-    alignItems: "flex-end",
-  },
   donateFab: {
+    position: 'absolute',
+    bottom: 150, // Збільшіть або зменшіть це значення, щоб ідеально відрегулювати висоту над меню
+    right: 20,
     backgroundColor: "#ff6b81",
     paddingVertical: 14,
     paddingHorizontal: 24,
@@ -307,7 +302,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
     shadowRadius: 8,
-    elevation: 5,
+    elevation: 10,
+    zIndex: 999, 
   },
   donateFabText: {
     color: "#fff",

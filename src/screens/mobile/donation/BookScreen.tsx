@@ -1,45 +1,267 @@
-import React from "react";
-import { StyleSheet, View, Text } from "react-native";
-import QRCode from "react-native-qrcode-svg";
+import React, { useRef, useState, useEffect } from "react";
+import { 
+  StyleSheet, 
+  View, 
+  Text, 
+  Dimensions, 
+  TouchableWithoutFeedback, 
+  Animated, 
+  TouchableOpacity,
+  ScrollView,
+  Modal 
+} from "react-native";
+import Svg, { Defs, RadialGradient, Rect, Stop } from "react-native-svg";
+import QRCode from 'react-native-qrcode-svg';
 import { useTheme } from "../../../Theme/ThemeContext";
-import { useAuthStore } from "../../../stores/useAuthStore";
-import { useTranslation } from "react-i18next";
-import { useNavigation } from "@react-navigation/native";
 
+const { width, height } = Dimensions.get("window");
+const SHEET_HEIGHT = height * 0.85; // Висота нашого вікна
 
 const BookScreen = () => {
-  const navigation = useNavigation();
-  const { colors } = useTheme();
-  const { t } = useTranslation();
-  const user = useAuthStore((state) => state.user);
-  const qrValue = `https://blood-donation.com/user/${user?.id || "guest"}`;
+  const { colors, isLight } = useTheme(); 
+
+  const baseUrl = "https://blood-donation.com/user/profile";
+  const [qrValue, setQrValue] = useState(baseUrl);
+
+  useEffect(() => {
+    const randomString = Math.random().toString(36).substring(7);
+    setQrValue(`${baseUrl}?r=${randomString}`);
+  }, []);
+
+  // --- Анімація перевертання картки ---
+  const flipAnim = useRef(new Animated.Value(0)).current;
+  const [flipped, setFlipped] = useState(false);
+
+  const flipCard = () => {
+    Animated.spring(flipAnim, {
+      toValue: flipped ? 0 : 180,
+      useNativeDriver: true,
+      friction: 8,
+      tension: 10,
+    }).start(() => setFlipped(!flipped));
+  };
+
+  const frontInterpolate = flipAnim.interpolate({
+    inputRange: [0, 180],
+    outputRange: ["0deg", "180deg"],
+  });
+
+  const backInterpolate = flipAnim.interpolate({
+    inputRange: [0, 180],
+    outputRange: ["180deg", "360deg"],
+  });
+
+  // --- ВИПРАВЛЕНА Анімація Bottom Sheet ---
+  // Спочатку ховаємо вікно за межі екрану (зсуваємо вниз на всю його висоту)
+  const sheetAnim = useRef(new Animated.Value(SHEET_HEIGHT)).current;
+  const [sheetVisible, setSheetVisible] = useState(false);
+
+  const openSheet = () => {
+    setSheetVisible(true);
+    // Додаємо мінімальну затримку, щоб Modal встиг відрендеритись перед анімацією
+    setTimeout(() => {
+      Animated.spring(sheetAnim, {
+        toValue: 0, // 0 означає, що воно стане рівно на дно екрану без зазорів
+        useNativeDriver: true,
+        friction: 9,
+        tension: 40,
+      }).start();
+    }, 0);
+  };
+
+  const closeSheet = () => {
+    Animated.timing(sheetAnim, {
+      toValue: SHEET_HEIGHT, // Зсуваємо вниз на всю висоту, щоб сховати
+      duration: 250,
+      useNativeDriver: true,
+    }).start(() => setSheetVisible(false));
+  };
+
+  // Кольори
+  const bgBase = colors.backgroundMain;
+  const spotPrimary = colors.primary; 
+  const spotSecondary = isLight ? "#FFFBDF" : colors.backgroundCard; 
+
+  const cardStyle = {
+    backgroundColor: isLight ? "rgba(255, 255, 255, 0.55)" : "rgba(58, 58, 58, 0.7)" ,
+    borderColor: isLight ? colors.primary : "transparent",
+  };
+
+  const cardTextColor = isLight ? colors.text : "#E0E0E0";
+  const qrColor = "#000000"; 
+  const qrBackgroundColor = "#FFFFFF"; 
+  const placeholderColor = "#D9D9D9";
 
   return (
-    <View
-      style={[styles.container, { backgroundColor: colors.backgroundMain }]}
-    >
-      <View
-        style={[
-          styles.card,
-          {
-            backgroundColor: colors.backgroundCard,
-            borderColor: colors.primary,
-          },
-        ]}
-      >
-        <Text style={[styles.title, { color: colors.text }]}>
-          {t("donors_book")}
-        </Text>
-        <Text style={[styles.text, { color: colors.text }]}>
-          {user?.name || "User"}
-        </Text>
-        <Text style={[styles.text, { color: colors.text }]}>
-          {t("blood_type")}: {user?.blood_type || "N/A"}
-        </Text>
-        <View style={styles.qrWrap}>
-          <QRCode value={qrValue} size={170} />
+    <View style={[styles.container, { backgroundColor: bgBase }]}>
+      {/* SVG Градієнтний фон */}
+      <Svg height={height} width={width} style={StyleSheet.absoluteFill}>
+        <Defs>
+          <RadialGradient id="spot1" cx="85%" cy="15%" r="100%" fx="85%" fy="15%" gradientUnits="userSpaceOnUse">
+            <Stop offset="0%" stopColor={spotPrimary} stopOpacity={isLight ? 0.4 : 0.2} />
+            <Stop offset="100%" stopColor={spotPrimary} stopOpacity="0" />
+          </RadialGradient>
+          <RadialGradient id="spot2" cx="25%" cy="75%" r="100%" fx="20%" fy="75%" gradientUnits="userSpaceOnUse">
+            <Stop offset="0%" stopColor={spotPrimary} stopOpacity={isLight ? 0.3 : 0.15} />
+            <Stop offset="100%" stopColor={spotPrimary} stopOpacity="0" />
+          </RadialGradient>
+          <RadialGradient id="spot4" cx="80%" cy="85%" r="50%" fx="80%" fy="85%" gradientUnits="userSpaceOnUse">
+            <Stop offset="0%" stopColor={spotSecondary} stopOpacity={isLight ? 0.95 : 0.1} />
+            <Stop offset="100%" stopColor={spotSecondary} stopOpacity="0" />
+          </RadialGradient>
+          <RadialGradient id="spot5" cx="40%" cy="35%" r="30%" fx="40%" fy="35%" gradientUnits="userSpaceOnUse">
+            <Stop offset="0%" stopColor={spotSecondary} stopOpacity={isLight ? 0.9 : 0.05} />
+            <Stop offset="100%" stopColor={spotSecondary} stopOpacity="0" />
+          </RadialGradient>
+          <RadialGradient id="spot6" cx="60%" cy="40%" r="50%" fx="60%" fy="40%" gradientUnits="userSpaceOnUse">
+            <Stop offset="0%" stopColor={spotPrimary} stopOpacity={isLight ? 0.2 : 0.1} />
+            <Stop offset="100%" stopColor={spotPrimary} stopOpacity="0" />
+          </RadialGradient>
+        </Defs>
+        <Rect x="0" y="0" width={width} height={height} fill={bgBase} />
+        <Rect x="0" y="0" width={width} height={height} fill="url(#spot1)" />
+        <Rect x="0" y="0" width={width} height={height} fill="url(#spot2)" />
+        <Rect x="0" y="0" width={width} height={height} fill="url(#spot4)" />
+        <Rect x="0" y="0" width={width} height={height} fill="url(#spot5)" />
+        <Rect x="0" y="0" width={width} height={height} fill="url(#spot6)" />
+      </Svg>
+
+      <TouchableWithoutFeedback onPress={flipCard}>
+        <View style={styles.cardContainer}>
+          
+          <Animated.View 
+            style={[
+              styles.cardFace, 
+              { transform: [{ rotateY: frontInterpolate }], ...cardStyle }
+            ]}
+          >
+            <View style={styles.contentWrapper}>
+              <View style={styles.rowTop}>
+                <Text style={[styles.headerTitle, { color: cardTextColor }]}>Donor Book</Text>
+                <Text style={[styles.headerSeries, { color: cardTextColor }]}>Series №0203</Text>
+              </View>
+
+              <View style={styles.rowMiddle}>
+                <View style={styles.photoContainer}>
+                  <View style={[styles.photoPlaceholder, { backgroundColor: placeholderColor }]} />
+                </View>
+                
+                <View style={styles.detailsContainer}>
+                  <View style={styles.infoBlock}>
+                    <Text style={[styles.infoLabel, { color: cardTextColor }]}>Date Of Issue:</Text>
+                    <Text style={[styles.infoValue, { color: cardTextColor, opacity: 0.8 }]}>24 June 2025</Text>
+                  </View>
+                  <View style={styles.infoBlock}>
+                    <Text style={[styles.infoLabel, { color: cardTextColor }]}>Location:</Text>
+                    <Text style={[styles.infoValue, { color: cardTextColor, opacity: 0.8 }]}>NNI JHP Lviv Region</Text>
+                  </View>
+                  <View style={styles.infoBlock}>
+                    <Text style={[styles.infoLabel, { color: cardTextColor }]}>Type Blood:</Text>
+                    <Text style={[styles.infoValue, { color: cardTextColor, opacity: 0.8 }]}>A(II)Rh+</Text>
+                  </View>
+                </View>
+              </View>
+
+              <View style={styles.rowBottom}>
+                <View>
+                  <Text style={[styles.nameText, { color: cardTextColor }]}>Blue</Text>
+                  <Text style={[styles.nameText, { color: cardTextColor }]}>Jack</Text>
+                  <Text style={[styles.nameText, { color: cardTextColor }]}>Bober</Text>
+                </View>
+                
+                <TouchableOpacity onPress={openSheet} hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}>
+                  <Text style={[styles.dots, { color: cardTextColor }]}>...</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Animated.View>
+
+          <Animated.View 
+            style={[
+              styles.cardFace, 
+              styles.cardBack, 
+              { transform: [{ rotateY: backInterpolate }], ...cardStyle }
+            ]}
+          >
+            <View style={styles.qrContainer}>
+              <View style={[styles.qrCodeBox, { borderColor: qrColor, backgroundColor: qrBackgroundColor }]}>
+                 <QRCode value={qrValue} size={150} color={qrColor} backgroundColor={qrBackgroundColor} />
+              </View>
+              <Text style={[styles.qrText, { color: cardTextColor }]}>Scan for details</Text>
+            </View>
+          </Animated.View>
+
         </View>
-      </View>
+      </TouchableWithoutFeedback>
+
+      {/* --- БЕЗДОГАННИЙ BOTTOM SHEET --- */}
+      <Modal
+        visible={sheetVisible}
+        transparent={true}
+        animationType="none"
+        statusBarTranslucent={true} 
+        onRequestClose={closeSheet}
+      >
+        <TouchableWithoutFeedback onPress={closeSheet}>
+          <View style={styles.overlay}>
+            <TouchableWithoutFeedback>
+              <Animated.View
+                style={[
+                  styles.bottomSheet,
+                  { 
+                    backgroundColor: colors.backgroundMain, 
+                    transform: [{ translateY: sheetAnim }] 
+                  }
+                ]}
+              >
+                {/* Header модалки */}
+                <View style={styles.sheetHeader}>
+                  <View style={{ width: 40 }} /> 
+                  <Text style={[styles.sheetTitle, { color: colors.text }]}>
+                    Full Information
+                  </Text>
+                  <TouchableOpacity onPress={closeSheet} hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}>
+                    <Text style={styles.closeBtn}>Done</Text>
+                  </TouchableOpacity>
+                </View>
+
+                {/* Вміст */}
+                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+                  <Text style={[styles.sheetSeries, { color: colors.text }]}>Series №0203</Text>
+
+                  <View style={[styles.profileCardSheet, { backgroundColor: colors.backgroundCard }]}>
+                    <View style={[styles.photoPlaceholderSheet, { backgroundColor: placeholderColor }]} />
+                    <View style={styles.profileInfo}>
+                      <Text style={[styles.profileName, { color: colors.text }]}>Blues</Text>
+                      <Text style={[styles.profileName, { color: colors.text }]}>Jack</Text>
+                      <Text style={[styles.profileName, { color: colors.text }]}>Boberovuch</Text>
+                      <Text style={[styles.profileDobLabel, { color: colors.text }]}>Date of Birth</Text>
+                      <Text style={[styles.profileDob, { color: colors.text }]}>07.07.1999</Text>
+                    </View>
+                  </View>
+
+                  <View style={[styles.infoBlockSheet, { backgroundColor: colors.backgroundCard }]}>
+                    <Text style={[styles.infoLabelSheet, { color: colors.text }]}>Type Blood</Text>
+                    <Text style={[styles.infoValueSheet, { color: colors.text }]}>A(II)Rh+</Text>
+                  </View>
+
+                  <View style={[styles.infoBlockSheet, { backgroundColor: colors.backgroundCard }]}>
+                    <Text style={[styles.infoLabelSheet, { color: colors.text }]}>Date Of Issue</Text>
+                    <Text style={[styles.infoValueSheet, { color: colors.text }]}>24 June 2025</Text>
+                  </View>
+
+                  <View style={[styles.infoBlockSheet, { backgroundColor: colors.backgroundCard }]}>
+                    <Text style={[styles.infoLabelSheet, { color: colors.text }]}>Location</Text>
+                    <Text style={[styles.infoValueSheet, { color: colors.text }]}>NNI JHP Lviv Region</Text>
+                  </View>
+                </ScrollView>
+
+              </Animated.View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+
     </View>
   );
 };
@@ -49,30 +271,198 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
   },
-  card: {
-    width: "100%",
-    maxWidth: 360,
+  cardContainer: {
+    width: 323,
+    height: 478,
+  },
+  cardFace: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 45,
     borderWidth: 1,
-    borderRadius: 22,
-    padding: 22,
-    alignItems: "center",
+    backfaceVisibility: 'hidden',
+    padding: 25,
+    paddingTop: 35,
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 20,
+    shadowOffset: { width: 0, height: 10 },
   },
-  title: {
-    fontSize: 24,
+  cardBack: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  contentWrapper: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  rowTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 20,
+  },
+  rowMiddle: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    flex: 1,
+    marginTop: 10,
+  },
+  rowBottom: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    marginBottom: 10,
+  },
+  headerTitle: {
+    fontSize: 22,
     fontWeight: "700",
+    letterSpacing: 0.5,
+  },
+  headerSeries: {
+    fontSize: 14,
+    fontWeight: "600",
+    marginTop: 6,
+    opacity: 0.9,
+  },
+  photoContainer: {
+    width: "42%",
+  },
+  photoPlaceholder: {
+    width: 125,
+    height: 160,
+    borderRadius: 20,
+  },
+  detailsContainer: {
+    width: "55%",
+    justifyContent: 'flex-start',
+    paddingTop: 0,
+    paddingLeft: 10,
+  },
+  infoBlock: {
     marginBottom: 18,
   },
-  text: {
-    fontSize: 16,
-    marginBottom: 6,
+  infoLabel: {
+    fontSize: 16, 
+    fontWeight: "500",
+    marginBottom: 4,
   },
-  qrWrap: {
-    marginTop: 18,
-    padding: 12,
-    backgroundColor: "#fff",
+  infoValue: {
+    fontSize: 15,
+    fontWeight: "400",
+    lineHeight: 20,
+  },
+  nameText: {
+    fontSize: 22,
+    fontWeight: "700",
+    lineHeight: 28,
+  },
+  dots: {
+    fontSize: 32,
+    fontWeight: "600",
+    marginBottom: 5,
+    opacity: 0.8,
+  },
+  qrContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  qrCodeBox: {
+    width: 200,
+    height: 200,
+    borderWidth: 5,
+    borderRadius: 20,
+    marginBottom: 20,
+    justifyContent: 'center', 
+    alignItems: 'center',
+  },
+  qrText: {
+    fontSize: 16,
+    fontWeight: '500',
+    opacity: 0.7,
+  },
+
+  // --- Стилі Bottom Sheet ---
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "flex-end", // Притискає контент до самого низу екрану
+  },
+  bottomSheet: {
+    height: SHEET_HEIGHT, 
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    padding: 25,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 10,
+  },
+  sheetHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  sheetTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+  },
+  closeBtn: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#EF4444", 
+  },
+  sheetSeries: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 16,
+  },
+  profileCardSheet: {
+    flexDirection: "row",
+    padding: 16,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#FCA5A5", 
+    marginBottom: 20,
+  },
+  photoPlaceholderSheet: {
+    width: 100,
+    height: 120,
     borderRadius: 12,
+    marginRight: 16,
+  },
+  profileInfo: {
+    justifyContent: "center",
+  },
+  profileName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 2,
+  },
+  profileDobLabel: {
+    fontSize: 12,
+    opacity: 0.6,
+    marginTop: 12,
+  },
+  profileDob: {
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  infoBlockSheet: {
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 12,
+  },
+  infoLabelSheet: {
+    fontSize: 12,
+    opacity: 0.6,
+    marginBottom: 4,
+  },
+  infoValueSheet: {
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 
