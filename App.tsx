@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import AppNavigator from './src/navigation/AppNavigator';
 import "./src/i18n";
-import { useEffect, useState } from 'react';
 import i18n from './src/i18n';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { ThemeProvider } from './src/Theme/ThemeContext'; 
 import PushNotificationService from './src/services/PushNotificationService';
-// import { Platform } from 'react-native';
 
 import { Platform, useWindowDimensions, View, StyleSheet } from 'react-native';
 
@@ -19,6 +20,7 @@ export default function App() {
     const setupApp = async () => {
       try {
         const savedLang = await AsyncStorage.getItem("appLanguage");
+
         if (savedLang) {
           await i18n.changeLanguage(savedLang);
         }
@@ -29,6 +31,7 @@ export default function App() {
       if (Platform.OS !== 'web') {
         try {
           const hasPermission = await PushNotificationService.requestUserPermission();
+
           if (hasPermission) {
             const token = await PushNotificationService.getFcmToken();
             if (token) console.log("Native Push Token ready");
@@ -36,8 +39,6 @@ export default function App() {
         } catch (error) {
           console.error("Notification setup error:", error);
         }
-      } else {
-        console.log("Web mode: Skipping native push notifications");
       }
 
       setIsReady(true);
@@ -45,7 +46,8 @@ export default function App() {
 
     setupApp();
 
-    let unsubscribe: any;
+    let unsubscribe;
+
     if (Platform.OS !== 'web') {
       unsubscribe = PushNotificationService.initializeListeners();
     }
@@ -62,6 +64,13 @@ export default function App() {
   const isLargeWeb = Platform.OS === 'web' && width > 440;
 
   return (
+//     <GestureHandlerRootView style={{ flex: 1 }}>
+//       <ThemeProvider>
+//         <AppNavigator />
+//       </ThemeProvider>
+//     </GestureHandlerRootView>
+//   );
+// }
     <ThemeProvider>
       <View style={styles.rootContainer}>
         <View style={[

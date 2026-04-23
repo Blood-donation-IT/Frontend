@@ -1,129 +1,203 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "../../../Theme/ThemeContext";
 import { useTranslation } from "react-i18next";
 
-const GetBookScreen = ({
-  activateCallback,
-}: {
-  activateCallback?: () => void;
-}) => {
+const GetBookScreen = () => {
   const navigation = useNavigation();
   const { colors } = useTheme();
   const { t } = useTranslation();
 
   const [donations, setDonations] = useState(0);
-  const daysLeft = 1;
   const maxDonations = 5;
   const remainingDonations = maxDonations - donations;
   const isReady = donations >= maxDonations;
 
+  const progressColor = isReady ? "#10B981" : "#EF4444"; // Зелений або Червоний
+
   return (
-    <View
-      style={[styles.container, { backgroundColor: colors.backgroundMain }]}
+    <ScrollView
+      contentContainerStyle={[
+        styles.container,
+        { backgroundColor: colors.backgroundMain },
+      ]}
+      showsVerticalScrollIndicator={false}
     >
-      <View style={styles.topSection}>
-        <Text style={[styles.title, { color: colors.text }]}>
-          {t("donors_book")}
-        </Text>
-        {isReady && (
-          <Text style={[styles.subtitle, { color: colors.text }]}>
-            {t("n_days_left", { count: daysLeft })}
+      <Text style={[styles.mainTitle, { color: colors.text }]}>
+        {t("donor_id_title", "Donor ID")}
+      </Text>
+
+      {/* Круговий прогрес (натисніть на нього, щоб додати донацію для тесту) */}
+      <View style={styles.progressSection}>
+        <TouchableOpacity 
+          style={[styles.progressCircle, { borderColor: progressColor }]}
+          activeOpacity={0.7}
+          onPress={() => {
+            // Симуляція додавання донацій для тестування
+            if (!isReady) {
+              setDonations((d) => Math.min(d + 1, maxDonations));
+            }
+          }}
+        >
+          <Text style={[styles.progressValue, { color: colors.text }]}>
+            {donations}/{maxDonations}
           </Text>
-        )}
-        <Text style={[styles.paragraph, { color: colors.text }]}>
-          Lorem Ipsum is simply dummy text of the printing and typesetting
-          industry. Lorem Ipsum has been the industry's standard dummy text ever
-          since the 1500s.
+          <Text style={[styles.progressLabel, { color: "#888" }]}>
+            {t("donations_label", "donations")}
+          </Text>
+        </TouchableOpacity>
+
+        <Text style={[styles.statusTitle, { color: colors.text }]}>
+          {isReady ? t("completed", "Completed") : t("days_left", "3 days left")}
         </Text>
-        <Text style={[styles.note, { color: colors.text }]}>
+        <Text style={[styles.statusSubtitle, { color: colors.text }]}>
           {isReady
-            ? t("donations_success")
-            : t("to_get_your_donor_book", { count: remainingDonations })}
+            ? t("now_you_have_book", "now you have a donor book")
+            : t("to_receive_book", "to receive the donor's book")}
         </Text>
       </View>
 
+      {/* Інформаційні картки */}
+      <View style={styles.infoSection}>
+        <View style={[styles.infoCard, { backgroundColor: colors.backgroundCard, borderColor: "#FCA5A5" }]}>
+          <Text style={styles.cardTitle}>
+            {t("what_is_donor_book", "What is donor book?")}
+          </Text>
+          <Text style={[styles.cardText, { color: colors.text }]}>
+            {t(
+              "donor_book_desc",
+              "A donor card is an official document confirming your status as a blood donor. It entitles you to benefits, free examinations, and priority medical care."
+            )}
+          </Text>
+        </View>
+
+        {!isReady && (
+          <View style={[styles.infoCard, { backgroundColor: colors.backgroundCard, borderColor: "#D1D5DB" }]}>
+            <Text style={[styles.cardText, { color: colors.text }]}>
+              {t("to_receive_need_5", "To receive the book, you need to make")} <Text style={styles.highlightText}>5 donations</Text>.
+            </Text>
+            <Text style={[styles.cardText, { color: colors.text, marginTop: 10 }]}>
+              {t("already_donated", "You have already donated blood")} <Text style={styles.boldText}>{donations}</Text> {t("times", "times")} - {t("only", "only")} <Text style={styles.highlightText}>{remainingDonations} {t("donations_left", "donations left!")}</Text>
+            </Text>
+          </View>
+        )}
+      </View>
+
+      {/* Відновлена кнопка Get Donor ID */}
       <View style={styles.bottomSection}>
         <TouchableOpacity
           style={[
             styles.button,
-            { backgroundColor: isReady ? colors.primary : "#d3d3d3ff" },
+            { backgroundColor: isReady ? "#EF4444" : "#D1D5DB" }, // Червона, якщо готово, інакше сіра
           ]}
+          disabled={!isReady} // Кнопка не працює, поки немає 5 донацій
           onPress={() => {
-            if (!isReady) {
-              setDonations((d) => Math.min(d + 1, maxDonations));
-              return;
+            if (isReady) {
+              navigation.navigate("BookScreen");
             }
-            navigation.navigate("BookScreen");
           }}
         >
-          <Text
-            style={[styles.buttonText, { color: colors.textCard || "#fff" }]}
-          >
-            {isReady
-              ? t("get_donors_book")
-              : `${t("make_a_donation")} (${donations}/${maxDonations})`}
+          <Text style={[styles.buttonText, { color: isReady ? "#FFF" : "#6B7280" }]}>
+            {t("get_donor_id", "Get Donor ID")}
           </Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: "center",
+    flexGrow: 1,
+    paddingHorizontal: 20,
+    paddingTop: 40,
+    paddingBottom: 120, // Відступ знизу, щоб меню не перекривало контент
     alignItems: "center",
-    paddingHorizontal: 25,
   },
-  topSection: {
-    flex: 2,
+  mainTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 40,
+  },
+  progressSection: {
+    alignItems: "center",
+    marginBottom: 40,
+  },
+  progressCircle: {
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    borderWidth: 6,
     justifyContent: "center",
     alignItems: "center",
+    marginBottom: 20,
+    backgroundColor: 'transparent',
+  },
+  progressValue: {
+    fontSize: 32,
+    fontWeight: "bold",
+  },
+  progressLabel: {
+    fontSize: 14,
+    marginTop: -4,
+  },
+  statusTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 4,
+  },
+  statusSubtitle: {
+    fontSize: 14,
+    opacity: 0.8,
+  },
+  infoSection: {
+    width: "100%",
+    marginBottom: 30,
+  },
+  infoCard: {
+    borderWidth: 1,
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#EF4444",
+    marginBottom: 8,
+  },
+  cardText: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  highlightText: {
+    color: "#EF4444",
+    fontWeight: "bold",
+  },
+  boldText: {
+    fontWeight: "bold",
   },
   bottomSection: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
     width: "100%",
-    paddingBottom: 100,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: "700",
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  subtitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: 20,
-    textAlign: "center",
-    color: "#E66A6A",
-  },
-  paragraph: {
-    fontSize: 16,
-    textAlign: "center",
-    marginBottom: 20,
-    lineHeight: 22,
-  },
-  note: {
-    fontSize: 16,
-    textAlign: "center",
-    marginTop: 0,
-    fontWeight: "500",
+    alignItems: "center",
+    marginTop: 10,
   },
   button: {
-    paddingVertical: 15,
+    paddingVertical: 16,
     paddingHorizontal: 40,
-    borderRadius: 25,
+    borderRadius: 30,
+    width: "80%",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   buttonText: {
     fontSize: 18,
-    fontWeight: "600",
-    textAlign: "center",
+    fontWeight: "bold",
   },
 });
 

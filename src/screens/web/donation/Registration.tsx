@@ -58,13 +58,15 @@ export default function RegistrationScreen({ navigation, route }) {
   const [suggestions, setSuggestions] = useState([]);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const day = route.params["day"];
-  const times = ["8:00", "8:30", "9:00", "9:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00"];//
+  const times = ["8:00", "8:30", "9:00", "9:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30" ];//,"13:00"
   const points = [
-    { id: 1, title: t("main_square"), coords: { latitude: 49.8419, longitude: 24.0315 } },
-    { id: 2, title: t("opera_theater"), coords: { latitude: 49.8456, longitude: 24.0269 } },
-    { id: 3, title: t("university"), coords: { latitude: 49.80439178581702 , longitude: 23.989689135563367 } },
+    { id: 1, nameUA: "Площа Ринок", title: t("main_square"), coords: { latitude: 49.8419, longitude: 24.0315 } },
+    { id: 2, nameUA: "Оперний театр", title: t("opera_theater"), coords: { latitude: 49.8456, longitude: 24.0269 } },
+    { id: 3, nameUA: "Університет", title: t("university"), coords: { latitude: 49.80439178581702 , longitude: 23.989689135563367 } },
 
   ];
+
+  const locationForBackend = points.find(point => point.title === location)?.nameUA
 
   const { colors } = useTheme();
 
@@ -87,28 +89,28 @@ export default function RegistrationScreen({ navigation, route }) {
   const [current, setCurrent] = useState<string>(route.params["day"] || format(new Date(), 'yyyy-MM-dd'));
 
   const mockDataByDate = {
-    "2026-03-03": [20, 35, 30, 40, 33, 28, 48, 60, 40, 30, 20],
-    "2026-03-04": [40, 20, 60, 10, 25, 30, 15, 45, 10, 5, 15],
-    "2026-03-05": [10, 15, 20, 25, 80, 90, 70, 40, 20, 10, 5],
-    "2026-03-06": [50,5,15, 10, 40,55, 20, 25, 30, 35,  45  ],
+    "2026-03-03": [20, 35, 30, 40, 33, 28, 48, 60, 40, 30 ],
+    "2026-03-04": [40, 20, 60, 10, 25, 30, 15, 45, 10, 5 ],
+    "2026-03-05": [10, 15, 20, 25, 80, 90, 70, 40, 20, 10],
+    "2026-03-06": [50,5,15, 10, 40,55, 20, 25, 30, 35  ],
     "default": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
   };
 
   const extendedMockData = {
     "2026-03-05": {
       "University": {
-        "8:00": [10, 20, 30, 40, 50, 60, 50, 40, 30, 20, 10],
-        "9:00": [5, 15, 25, 55, 15, 23, 32, 55, 45, 35, 25],
+        "8:00": [10, 20, 30, 40, 50, 60, 50, 40, 30, 20],
+        "9:00": [5, 15, 25, 55, 15, 23, 32, 55, 45, 35],
       },
       "Opera Theater": {
-        "8:00": [80, 70, 60, 50, 40, 30, 20, 10, 5, 2, 1],
-        "10:30": [20, 40, 60, 80, 100, 80, 60, 40, 20, 10, 5],
+        "8:00": [80, 70, 60, 50, 40, 30, 20, 10, 5, 2],
+        "10:30": [20, 40, 60, 80, 100, 80, 60, 40, 20, 10],
       },
       "Main Square": {
-        "12:00": [10, 56, 40, 30, 90, 90, 10, 10, 34, 12, 7],
+        "12:00": [10, 56, 40, 30, 90, 90, 10, 10, 34, 12],
       }
     },
-    "default": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    "default": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
   };
 
 
@@ -130,7 +132,7 @@ export default function RegistrationScreen({ navigation, route }) {
     
     const dayNumber = parseInt(date.split('-')[2]) || 1;
 
-    const generatedData = Array.from({ length: 11 }).map((_, i) => {
+    const generatedData = Array.from({ length: 10 }).map((_, i) => {
       const val = (dayNumber + i * 3) % 11; 
       return val;
     });
@@ -185,7 +187,7 @@ export default function RegistrationScreen({ navigation, route }) {
 
   const hourLabels = useMemo(() => {
     if (width < 425) {
-      return ["8", "8:30", "9", "9:30", "10", "10:30", "11", "11:30", "12", "12:30", "13"];
+      return ["8", "8:30", "9", "9:30", "10", "10:30", "11", "11:30", "12", "12:30"];//, "13"
     }
 
     // Логіка для API даних, якщо екран достатньо великий
@@ -199,7 +201,7 @@ export default function RegistrationScreen({ navigation, route }) {
       });
     }
 
-    return ["8", "8:30", "9", "9:30", "10", "10:30", "11", "11:30", "12", "12:30", "13"];
+    return ["8", "8:30", "9", "9:30", "10", "10:30", "11", "11:30", "12", "12:30"];//, "13"
   }, [apiData, width]);
 
   const dataForChart = useMemo(() => {
@@ -230,25 +232,26 @@ export default function RegistrationScreen({ navigation, route }) {
   const handleRegister = async () => {
     if (validate()) {
       try {
-        const triggerDate = buildDateFromDayAndTime(day, time);
-        console.log("bl",user?.blood_type)
+        const triggerDate = buildDateFromDayAndTime(current, time);
+        
         const applicationData = {
           // user_id: user?.id, 
-          blood_type:"A+",//user?.blood_type,
-          slot_index: 9,
+          blood_type: user?.blood_type,//"A+",
+          slot_index: selectedIndex,
           // application_time: triggerDate.toISOString(),
-          application_day: "2026-04-09T16:09:26.293Z",//triggerDate.toISOString(),  
-          location_id: "1",
+          application_day:   triggerDate.toISOString(),//"2026-04-23T12:49:08.442Z",
+          location_id: locationForBackend,
           status: "pending"
         };
+        console.log(applicationData)
 
         await createDonationAction(applicationData);
 
-        await scheduleDateNotification(
-          "Запис на донацію",
-          `Чекаємо на вас о ${triggerDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
-          triggerDate
-        );
+        // await scheduleDateNotification(
+        //   "Запис на донацію",
+        //   `Чекаємо на вас о ${triggerDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
+        //   triggerDate
+        // );
 
         setAlertType('success');
         setAlertVisible(true);
