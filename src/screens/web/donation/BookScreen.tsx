@@ -7,17 +7,20 @@ import {
   TouchableWithoutFeedback, 
   Animated, 
   TouchableOpacity,
-  ScrollView
+  ScrollView,
+  useWindowDimensions
 } from "react-native";
 import Svg, { Defs, RadialGradient, Rect, Stop } from "react-native-svg";
 import QRCode from 'react-native-qrcode-svg';
 import { useTheme } from "../../../Theme/ThemeContext";
 
-const { width, height } = Dimensions.get("window");
+
 
 const BookScreen = () => {
   const { colors, isLight } = useTheme(); 
-
+  
+  const { width, height } = useWindowDimensions();
+  
   const baseUrl = "https://blood-donation.com/user/profile";
   const [qrValue, setQrValue] = useState(baseUrl);
 
@@ -230,7 +233,8 @@ const BookScreen = () => {
                 </View>
 
                 {/* Вміст, який можна скролити */}
-                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+                {/* <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}> */}
+                  <View>
                   <Text style={[styles.sheetSeries, { color: colors.text }]}>Series №0203</Text>
 
                   {/* Профіль (Фото + Ім'я) */}
@@ -260,7 +264,8 @@ const BookScreen = () => {
                     <Text style={[styles.infoLabelSheet, { color: colors.text }]}>Location</Text>
                     <Text style={[styles.infoValueSheet, { color: colors.text }]}>NNI JHP Lviv Region</Text>
                   </View>
-                </ScrollView>
+                {/* </ScrollView> */}
+                </View>
 
               </Animated.View>
             </TouchableWithoutFeedback>
@@ -400,7 +405,7 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   bottomSheet: {
-    height: height * 0.85, // 85% екрану, щоб влізла вся Full Information
+    height: "95%", // 85% екрану, щоб влізла вся Full Information
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     padding: 25,
