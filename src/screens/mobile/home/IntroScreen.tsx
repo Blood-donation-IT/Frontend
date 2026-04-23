@@ -13,6 +13,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../navigation/types";
 import { useTheme } from "../../../Theme/ThemeContext";
 import { useTranslation } from "react-i18next";
+import { LanguageSwitcher } from "../../../components/LanguageSwitcher";
 
 type IntroScreenProps = NativeStackScreenProps<RootStackParamList, "Intro">;
 const donorImage = require("../../../images/donor-intro.png");
@@ -25,6 +26,7 @@ const IntroScreen: React.FC<IntroScreenProps> = ({ navigation }) => {
       colors={[colors.backgroundMain, colors.backgroundCard]}
       style={styles.container}
     >
+      <LanguageSwitcher />
       <StatusBar barStyle="dark-content" backgroundColor="#FFF6F6" />
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.content}>
@@ -37,7 +39,7 @@ const IntroScreen: React.FC<IntroScreenProps> = ({ navigation }) => {
           <Text style={styles.subtitle}>{t("thank_you_for_joining_us")}</Text>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate("SignIn")}
+            onPress={() => navigation.navigate("LogIn")}
           >
             <Text style={styles.buttonText}>{t("get_started")}</Text>
           </TouchableOpacity>

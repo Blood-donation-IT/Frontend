@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 // import * as SecureStore from 'expo-secure-store';
 import api from '../api/api';
-import { User } from '../interfaces/user';
+import { UpdateUserPayload, User } from '../interfaces/user';
 import { providerSignOut } from "../services/authSignOut";
 
 interface AuthState {
@@ -16,7 +16,7 @@ interface AuthState {
   registerAction: (data: any) => Promise<any>;
   logout: () => Promise<void>;
   syncWithFirebase: (firebaseUser: any, idToken: string | null) => Promise<void>;
-  updateUserAction: (newData:any) => Promise<void>;
+  updateUserAction: (newData: UpdateUserPayload) => Promise<void>;
   fetchUserDonations: () => Promise<void>;
   createDonationAction: (donationData: any) => Promise<any>;
 }
@@ -45,7 +45,7 @@ export const useAuthStore = create<AuthState>((set,get) => ({
   fetchProfile: async () => {
     try {
       const { data } = await api.get('/api/v1/users/me');
-      
+      console.log("user me : ",data)
       const mergedUser: User = {
         ...DEFAULT_USER,
         ...data,
@@ -142,7 +142,7 @@ export const useAuthStore = create<AuthState>((set,get) => ({
       console.log(response)
       
       if (response.status === 201 || response.status === 200) {
-       await get().fetchUserDonations(); 
+        await get().fetchUserDonations(); 
         return response.data;
       }
     } catch (error) {
@@ -155,8 +155,12 @@ export const useAuthStore = create<AuthState>((set,get) => ({
     if (!firebaseUser || !idToken) return;
 
     try {
-        const { data } = await api.post('/api/v1/auth/google-sync', { 
-            token: idToken 
+      // console.log(firebaseUser)
+        const { data } = await api.post('/api/v1/oauth/google/', { 
+          IdToken: idToken,
+          email: firebaseUser.email,
+          name: firebaseUser.displayName,
+          avatar: firebaseUser.photoURL
         });
 
         if (data.token) {
@@ -168,7 +172,7 @@ export const useAuthStore = create<AuthState>((set,get) => ({
             user: { 
                 ...DEFAULT_USER,
                 id: firebaseUser.id, 
-                name: data.name || firebaseUser.name,
+                name: data.name || firebaseUser.displayName,
                 email: data.email || firebaseUser.email,
                 avatar: data.avatar || firebaseUser.photoURL,
                 blood_type: data.blood_type || "N/A",
@@ -196,7 +200,7 @@ export const useAuthStore = create<AuthState>((set,get) => ({
 
   updateUserAction: async (newData) => {
     try {
-        const { data } = await api.patch('/api/v1/user/update', newData);
+        const { data } = await api.post('/api/v1/users/edit_profile', newData);
         
         set((state) => ({
           user: state.user ? { ...state.user, ...newData } : null

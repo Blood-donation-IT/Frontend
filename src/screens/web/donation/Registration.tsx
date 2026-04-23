@@ -31,12 +31,16 @@ import i18n from "../../../i18n";
 
 import UniversalMap from '../../../components/Map';
 
+import { useWindowDimensions } from 'react-native';
+
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CONTAINER_PADDING = 60; 
 const GAP = 10; 
 const ITEM_WIDTH = (SCREEN_WIDTH - CONTAINER_PADDING - (GAP * 3)) / 4;
 
 export default function RegistrationScreen({ navigation, route }) {
+
+  const { width } = useWindowDimensions();
 
   const { createDonationAction, user } = useAuthStore();
 
@@ -54,13 +58,15 @@ export default function RegistrationScreen({ navigation, route }) {
   const [suggestions, setSuggestions] = useState([]);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const day = route.params["day"];
-  const times = ["8:00", "8:30", "9:00", "9:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00"];//
+  const times = ["8:00", "8:30", "9:00", "9:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30" ];//,"13:00"
   const points = [
-    { id: 1, title: t("main_square"), coords: { latitude: 49.8419, longitude: 24.0315 } },
-    { id: 2, title: t("opera_theater"), coords: { latitude: 49.8456, longitude: 24.0269 } },
-    { id: 3, title: t("university"), coords: { latitude: 49.80439178581702 , longitude: 23.989689135563367 } },
+    { id: 1, nameUA: "Площа Ринок", title: t("main_square"), coords: { latitude: 49.8419, longitude: 24.0315 } },
+    { id: 2, nameUA: "Оперний театр", title: t("opera_theater"), coords: { latitude: 49.8456, longitude: 24.0269 } },
+    { id: 3, nameUA: "Університет", title: t("university"), coords: { latitude: 49.80439178581702 , longitude: 23.989689135563367 } },
 
   ];
+
+  const locationForBackend = points.find(point => point.title === location)?.nameUA
 
   const { colors } = useTheme();
 
@@ -83,35 +89,33 @@ export default function RegistrationScreen({ navigation, route }) {
   const [current, setCurrent] = useState<string>(route.params["day"] || format(new Date(), 'yyyy-MM-dd'));
 
   const mockDataByDate = {
-    "2026-03-03": [20, 35, 30, 40, 33, 28, 48, 60, 40, 30, 20],
-    "2026-03-04": [40, 20, 60, 10, 25, 30, 15, 45, 10, 5, 15],
-    "2026-03-05": [10, 15, 20, 25, 80, 90, 70, 40, 20, 10, 5],
-    "2026-03-06": [50,5,15, 10, 40,55, 20, 25, 30, 35,  45  ],
+    "2026-03-03": [20, 35, 30, 40, 33, 28, 48, 60, 40, 30 ],
+    "2026-03-04": [40, 20, 60, 10, 25, 30, 15, 45, 10, 5 ],
+    "2026-03-05": [10, 15, 20, 25, 80, 90, 70, 40, 20, 10],
+    "2026-03-06": [50,5,15, 10, 40,55, 20, 25, 30, 35  ],
     "default": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
   };
 
   const extendedMockData = {
     "2026-03-05": {
       "University": {
-        "8:00": [10, 20, 30, 40, 50, 60, 50, 40, 30, 20, 10],
-        "9:00": [5, 15, 25, 55, 15, 23, 32, 55, 45, 35, 25],
+        "8:00": [10, 20, 30, 40, 50, 60, 50, 40, 30, 20],
+        "9:00": [5, 15, 25, 55, 15, 23, 32, 55, 45, 35],
       },
       "Opera Theater": {
-        "8:00": [80, 70, 60, 50, 40, 30, 20, 10, 5, 2, 1],
-        "10:30": [20, 40, 60, 80, 100, 80, 60, 40, 20, 10, 5],
+        "8:00": [80, 70, 60, 50, 40, 30, 20, 10, 5, 2],
+        "10:30": [20, 40, 60, 80, 100, 80, 60, 40, 20, 10],
       },
       "Main Square": {
-        "12:00": [10, 56, 40, 30, 90, 90, 10, 10, 34, 12, 7],
+        "12:00": [10, 56, 40, 30, 90, 90, 10, 10, 34, 12],
       }
     },
-    "default": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    "default": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
   };
 
 
   const registrationData = mockDataByDate[current] || mockDataByDate["default"];
 
-
-  const totalRegistered = registrationData.reduce((acc, val) => acc + val, 0);
 
   const handleDateSelect = (date) => {
     setCurrent(date.dateString);
@@ -128,9 +132,9 @@ export default function RegistrationScreen({ navigation, route }) {
     
     const dayNumber = parseInt(date.split('-')[2]) || 1;
 
-    const generatedData = Array.from({ length: 11 }).map((_, i) => {
-      const val = (dayNumber * (i + 1) * 7) % 95; 
-      return val < 10 ? val + 15 : val;
+    const generatedData = Array.from({ length: 10 }).map((_, i) => {
+      const val = (dayNumber + i * 3) % 11; 
+      return val;
     });
 
     return {
@@ -182,6 +186,11 @@ export default function RegistrationScreen({ navigation, route }) {
 
 
   const hourLabels = useMemo(() => {
+    if (width < 425) {
+      return ["8", "8:30", "9", "9:30", "10", "10:30", "11", "11:30", "12", "12:30"];//, "13"
+    }
+
+    // Логіка для API даних, якщо екран достатньо великий
     if (apiData) {
       const { startHour, intervalMinutes, data } = apiData;
       return data.map((_, i) => {
@@ -191,8 +200,9 @@ export default function RegistrationScreen({ navigation, route }) {
         return `${h}:${m === 0 ? '00' : m}`;
       });
     }
-    return ["8", "8:30", "9", "9:30", "10", "10:30", "11", "11:30", "12", "12:30", "13"];
-  }, [apiData]);
+
+    return ["8", "8:30", "9", "9:30", "10", "10:30", "11", "11:30", "12", "12:30"];//, "13"
+  }, [apiData, width]);
 
   const dataForChart = useMemo(() => {
     if (apiData) return apiData.data;
@@ -204,6 +214,8 @@ export default function RegistrationScreen({ navigation, route }) {
     return locationData[time] || extendedMockData.default;
   }, [current, location, time, apiData]);
 
+
+  const totalRegistered = dataForChart[selectedIndex]//registrationData.reduce((acc, val) => acc + val, 0);
 
 
 
@@ -220,28 +232,31 @@ export default function RegistrationScreen({ navigation, route }) {
   const handleRegister = async () => {
     if (validate()) {
       try {
-        const triggerDate = buildDateFromDayAndTime(day, time);
+        const triggerDate = buildDateFromDayAndTime(current, time);
         
         const applicationData = {
-          user_id: user?.id, 
-          blood_type: user?.blood_type, 
-          application_time: triggerDate.toISOString(), 
-          application_day: triggerDate.toISOString(),  
-          location_id: "1",
+          // user_id: user?.id, 
+          blood_type: user?.blood_type,//"A+",
+          slot_index: selectedIndex,
+          // application_time: triggerDate.toISOString(),
+          application_day:   triggerDate.toISOString(),//"2026-04-23T12:49:08.442Z",
+          location_id: locationForBackend,
           status: "pending"
         };
+        console.log(applicationData)
 
         await createDonationAction(applicationData);
 
-        await scheduleDateNotification(
-          "Запис на донацію",
-          `Чекаємо на вас о ${triggerDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
-          triggerDate
-        );
+        // await scheduleDateNotification(
+        //   "Запис на донацію",
+        //   `Чекаємо на вас о ${triggerDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
+        //   triggerDate
+        // );
 
         setAlertType('success');
         setAlertVisible(true);
       } catch (e) {
+        console.log(e)
         setAlertType('error');
         setAlertVisible(true);
       }
@@ -266,6 +281,12 @@ export default function RegistrationScreen({ navigation, route }) {
     setSelectedLocation(point.coords);
     setLocation(point.title);
     setSuggestions([]);
+
+   mapRef.current.animateToRegion({
+    latitude: point.coords.latitude,
+    longitude: point.coords.longitude
+  });
+    
   };
 
   const pad2 = (n: number) => String(n).padStart(2, "0");
@@ -336,24 +357,23 @@ export default function RegistrationScreen({ navigation, route }) {
 
       {/*  */}
       {/* Calendar */}
-          <View style={[styles.calendarCard, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
-            <View style={[styles.calendarHeader, { backgroundColor: colors.brand2 }]}>
-              <TouchableOpacity 
-                onPress={() => setViewDate(prev => addMonths(prev, -1))} 
-                style={styles.arrowHit}
-              >
-                <Text style={styles.arrowText}>‹</Text>
-              </TouchableOpacity>
+        <View style={[styles.calendarCard, { backgroundColor: colors.card,  }]}>{/* shadowColor: colors.shadow */}
+          <View style={[styles.calendarHeader, { backgroundColor: colors.brand2 }]}>
+            <TouchableOpacity 
+              onPress={() => setViewDate(prev => addMonths(prev, -1))} 
+              style={styles.arrowHit}
+            >
+              <Text style={styles.arrowText}>‹</Text>
+            </TouchableOpacity>
 
-        {/* Заголовок тепер залежить від viewDate */}
-        <Text style={styles.calendarHeaderText}>{monthTitle(viewDate)}</Text>
+            <Text style={styles.calendarHeaderText}>{monthTitle(viewDate)}</Text>
 
-        <TouchableOpacity 
-          onPress={() => setViewDate(prev => addMonths(prev, 1))} 
-          style={styles.arrowHit}
-        >
-          <Text style={styles.arrowText}>›</Text>
-        </TouchableOpacity>
+            <TouchableOpacity 
+              onPress={() => setViewDate(prev => addMonths(prev, 1))} 
+              style={styles.arrowHit}
+            >
+              <Text style={styles.arrowText}>›</Text>
+            </TouchableOpacity>
           </View>
 
           <Calendar
@@ -402,13 +422,19 @@ export default function RegistrationScreen({ navigation, route }) {
                     {
                       backgroundColor: isSelected ? colors.brand : colors.pillBg,
                       opacity: isDisabled ? 0.35 : 1,
+
+                      shadowColor:  "#FF7A8480",
+                      shadowOffset: { width: 0, height: 4 },
+                      shadowOpacity: 0.5,
+                      shadowRadius: 6,
+                      elevation: 8,
                     },
                   ]}
                   activeOpacity={0.85}
                 >
-                  <Text style={[styles.dayText, { color: isSelected ? "#FFFFFF" : colors.dayText }]}>{date.day}</Text>
-                </TouchableOpacity>
-              );
+              <Text style={[styles.dayText, { color: isSelected ? "#FFFFFF" : colors.dayText }]}>{date.day}</Text>
+            </TouchableOpacity>
+            );
             }}
           />
         </View>
@@ -537,12 +563,12 @@ export default function RegistrationScreen({ navigation, route }) {
         {errors.time && <Text style={styles.errorText}>{errors.time}</Text>}
 
         <View style={styles.chartWrapper}>
-          <Text style={styles.chartTitle}>People registered for this day</Text>
+          <Text style={styles.chartTitle}>{t("people_registered_day")}</Text>
           
           <View style={styles.mainChartArea}>
             {/* ЛІВА ЧАСТИНА: Вісь Y (числа) */}
             <View style={styles.yAxis}>
-              {[100, 80, 60, 40, 20, 0].map((val) => (
+              {[10, 8, 6, 4, 2, 0].map((val) => (
                 <Text key={val} style={styles.yLabel}>{val}</Text>
               ))}
             </View>
@@ -564,18 +590,17 @@ export default function RegistrationScreen({ navigation, route }) {
               </View>
             ))} */}
             {dataForChart.map((val, idx) => {
-          // Перевіряємо, чи цей стовпчик відповідає вибраному часу
-          const isSelectedBar = idx === selectedIndex;
+            const isSelectedBar = idx === selectedIndex;
 
-          return (
-            <AnimatedBar 
-              key={idx} //`${current}-${idx}`
-              index={idx} 
-              value={val} 
-              isSelected={idx === selectedIndex} 
-            />
-          );
-        })}
+            return (
+              <AnimatedBar 
+                key={idx}
+                index={idx} 
+                value={val*10} 
+                isSelected={idx === selectedIndex} 
+              />
+            );
+          })}
           </View>
         </View>
       </View>
@@ -588,7 +613,7 @@ export default function RegistrationScreen({ navigation, route }) {
       </View>
 
       <View style={styles.totalBadge}>
-        <Text style={styles.totalText}>Total registered: <Text style={{fontWeight: 'bold'}}>{totalRegistered}</Text></Text>
+        <Text style={styles.totalText}>{t("total_registered_time")} <Text style={{fontWeight: 'bold'}}>{totalRegistered}</Text></Text>
       </View>
     </View>
 
@@ -612,7 +637,7 @@ export default function RegistrationScreen({ navigation, route }) {
               styles.modalBox,
               { backgroundColor: colors.backgroundMain },
             ]}>
-              <Text style={styles.modalTitle}>{t("select_location")}</Text>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>{t("select_location")}</Text>
               <TextInput
                 style={[styles.modalInput, { color: colors.text }]}
                 placeholder={t("enter_location_name")}
@@ -647,7 +672,6 @@ export default function RegistrationScreen({ navigation, route }) {
                   points={points}
                   selectedLocation={location}
                   onSelectPoint={handleSelectPoint}
-                  // Для вебу ми ігноруємо onMapReady, бо Leaflet ініціалізується сам
                   onMapReady={Platform.OS !== 'web' ? () => {
                     mapRef.current?.fitToCoordinates(points.map((p) => p.coords), {
                       edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
@@ -665,50 +689,52 @@ export default function RegistrationScreen({ navigation, route }) {
               >
                 <Text style={styles.saveButtonText}>{t("save")}</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => setModalVisible(false)}>
+              {/* <TouchableOpacity onPress={() => setModalVisible(false)}>
                 <Text style={styles.cancelText}>{t("cancel")}</Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
           </View>
         </TouchableWithoutFeedback>
       </Modal>
-      <Modal
-  visible={alertVisible}
-  transparent
-  animationType="fade"
-  onRequestClose={() => setAlertVisible(false)}
->
-  <View style={styles.modalOverlay}>
-    <View style={styles.modalContainer}>
-      <Text style={styles.modalTitle}>
-        {alertType === 'success' ? 'Вітаємо! 🎉' : 'Помилка ⚠️'}
-      </Text>
-      
-      <Text style={styles.modalMessage}>
-        {alertType === 'success' 
-          ? 'Запис успішно зроблений!' 
-          : 'Сталася помилка при створенні запису. Спробуйте ще раз.'}
-      </Text>
 
-      <TouchableOpacity 
-        style={[
-          styles.modalButton, 
-          { backgroundColor: alertType === 'success' ? '#E57373' : '#666' }
-        ]} 
-        onPress={() => {
-          setAlertVisible(false);
-          if (alertType === 'success') {
-            navigation.goBack();
-          }
-        }}
+      
+      <Modal
+        visible={alertVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setAlertVisible(false)}
       >
-        <Text style={styles.modalButtonText}>
-          {alertType === 'success' ? 'Перейти' : 'Закрити'}
-        </Text>
-      </TouchableOpacity>
-    </View>
-  </View>
-</Modal>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>
+              {alertType === 'success' ? 'Вітаємо! 🎉' : 'Помилка ⚠️'}
+            </Text>
+            
+            <Text style={styles.modalMessage}>
+              {alertType === 'success' 
+                ? 'Запис успішно зроблений!' 
+                : 'Сталася помилка при створенні запису. Спробуйте ще раз.'}
+            </Text>
+
+            <TouchableOpacity 
+              style={[
+                styles.modalButton, 
+                { backgroundColor: alertType === 'success' ? '#E57373' : '#666' }
+              ]} 
+              onPress={() => {
+                setAlertVisible(false);
+                if (alertType === 'success') {
+                  navigation.goBack();
+                }
+              }}
+            >
+              <Text style={styles.modalButtonText}>
+                {alertType === 'success' ? 'Перейти' : 'Закрити'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 }
@@ -717,11 +743,12 @@ const styles = StyleSheet.create({
 
   calendarCard: {
     borderRadius: 20,
-    overflow: "hidden",
-    shadowOpacity: 0.18,
-    shadowRadius: 14,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 6,
+    overflow: "hidden", 
+    shadowColor: "#FF7A84",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 6,
+    elevation: 5, 
   },
 
   
@@ -740,27 +767,31 @@ const styles = StyleSheet.create({
   },
 
   calendarHeader: {
-    height: 36,
-    paddingHorizontal: 8,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
+  height: 36,
+  paddingHorizontal: 8,
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "space-between",
+  borderTopLeftRadius: 20,
+  borderTopRightRadius: 20,
+},
   calendarHeaderText: { 
     color: "#FFFFFF", 
     fontWeight: "800",
     fontSize: 14
   },
   dayPill: {
-    width: 28,
-    height: 22,
+    width: 30,
+    height: 24,
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
+    marginVertical: 2,
+    overflow: Platform.OS === 'ios' ? 'visible' : 'hidden', 
   },
-  dayText: { 
-    fontSize: 11,
-    fontWeight: "700" 
+  dayText: {
+    fontSize: 14,
+    fontWeight: "600",
   },
 
 
@@ -866,12 +897,19 @@ const styles = StyleSheet.create({
   },
 
 
-
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.4)', 
     justifyContent: 'center',
     alignItems: 'center',
+
+    ...Platform.select({
+    web: {
+      alignSelf: 'center',
+      width: '100%',
+      maxWidth: 440,
+    }
+  })
   },
   modalContainer: {
     width: '85%',
@@ -1032,16 +1070,24 @@ option: {
     color: "#E66A6A80",
     position: "absolute",
     right: 12,
-    top: "50%",
+    top: "20%",
   },
   inputWithIcon: {
     paddingRight: 40,
   },
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    
+    ...Platform.select({
+      web: {
+        alignSelf: 'center',
+        width: '100%',
+        maxWidth: 440,
+      }
+    })
   },
   modalBox: {
     backgroundColor: "#fff",
@@ -1151,7 +1197,7 @@ option: {
     backgroundColor: "#F5EDEB66",
   },
   mapContainer: {
-    height: 180,
+    height: 280,
     borderRadius: 15,
     overflow: "hidden",
     borderWidth: 1,
@@ -1178,12 +1224,16 @@ option: {
     marginBottom: 10,
   },
   suggestionsBox: {
+    position:"absolute",
+    top:110,
+    width:"90%",
     maxHeight: 150,
     backgroundColor: "#fff",
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "#E66A6A80",
     marginBottom: 12,
+    zIndex:10000
   },
   suggestionItem: {
     padding: 10,

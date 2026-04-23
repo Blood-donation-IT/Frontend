@@ -1,67 +1,91 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   StyleSheet,
   View,
   Text,
   TouchableOpacity,
-  ScrollView,
   Platform,
+  Dimensions,
+  Image,
+  Animated,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "../../../Theme/ThemeContext";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useAuthStore } from "../../../stores/useAuthStore";
 import { useTranslation } from "react-i18next";
+import Svg, {
+  Defs,
+  RadialGradient,
+  LinearGradient,
+  Stop,
+  Circle,
+  Text as SvgText,
+} from "react-native-svg";
+import { LanguageSwitcher } from "../../../components/LanguageSwitcher";
+const screenWidth = Dimensions.get('window').width;
+import { useWindowDimensions } from 'react-native';
+
+// --- 1. КОМПОНЕНТ ФОНУ ---
+const BackgroundCircles = ({ width, height }) => {
+  return (
+    <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
+      <Svg height="100%" width="100%">
+        <Defs>
+          <RadialGradient id="grad1" cx="50%" cy="50%" rx="50%" ry="50%">
+            <Stop offset="0%" stopColor="#fe6464ff" stopOpacity="0.32" />
+            <Stop offset="60%" stopColor="#f87e7eff" stopOpacity="0.15" />
+            <Stop offset="100%" stopColor="#ff6161ff" stopOpacity="0" />
+          </RadialGradient>
+          <RadialGradient id="grad2" cx="50%" cy="50%" rx="50%" ry="50%">
+            <Stop offset="0%" stopColor="#f25656ff" stopOpacity="0.3" />
+            <Stop offset="60%" stopColor="rgba(255, 122, 122, 1)" stopOpacity="0.14" />
+            <Stop offset="100%" stopColor="#e78484ff" stopOpacity="0" />
+          </RadialGradient>
+        </Defs>
+        <Circle cx={width} cy={height - 950} r={400} fill="url(#grad1)" />
+        <Circle cx={0} cy={height * 0.45} r={350} fill="url(#grad2)" />
+        <Circle cx={width - 50} cy={height - 250} r={300} fill="url(#grad1)" />
+      </Svg>
+    </View>
+  );
+};
 
 export default function TestScreen() {
   const navigation = useNavigation();
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
-  const questions = [
-    { id: 2, text: "Ваша вага 50+ кг?", type: "yesno" },
-    {
-      id: 3,
-      text: "Ви загалом вважаєте свій стан здоров’я добрим?",
-      type: "yesno",
-    },
-    {
-      id: 4,
-      text: "Ви не маєте хронічних захворювань у важкій формі?",
-      type: "have",
-    },
-    {
-      id: 5,
-      text: "Ви не маєте хвороб серця або серцевої недостатності?",
-      type: "have",
-    },
-    {
-      id: 6,
-      text: "Ви не маєте цукрового діабету (особливо інсулінозалежного)?",
-      type: "have",
-    },
-    {
-      id: 7,
-      text: "Ви не маєте захворювань крові або порушень згортання?",
-      type: "have",
-    },
-    { id: 8, text: "Ви не маєте онкологічних захворювань?", type: "have" },
-    {
-      id: 9,
-      text: "Ви не маєте гепатиту B, C або жовтяниці в анамнезі?",
-      type: "have",
-    },
-    { id: 10, text: "Яка у вас група крові?", type: "blood" },
-  ];
-  const bloodTypes = ["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"];
-  const [birthDate, setBirthDate] = useState<Date | null>(null);
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [answers, setAnswers] = useState<Record<number, string>>({});
-  const [showWarning, setShowWarning] = useState(false);
-  const allAnswered =
-    questions.every((q) => answers[q.id]) && birthDate !== null;
-  useAuthStore((state) => state.updateUserAction);
 
-  const checkIsAdult = (date: Date) => {
+  const { height, width } = useWindowDimensions();
+  const allQuestions = [
+    { id: 1,  type: "yesno" },
+    { id: 2,  type: "yesno" },
+    { id: 3,  type: "yesno" },
+    { id: 4,  type: "yesno" },
+    { id: 5,  type: "yesno" },
+    { id: 6,  type: "yesno" },
+    { id: 7, text: "Яка у вас група крові?", type: "blood" },
+  ];
+
+  const testQuestions = allQuestions.filter(q => q.type !== "blood");
+  const totalTestSteps = testQuestions.length;
+
+  const bloodTypes = ["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"];
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [birthDate, setBirthDate] = useState(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [answers, setAnswers] = useState({});
+
+  const slideAnim = useRef(new Animated.Value(0)).current;
+  const opacityAnim = useRef(new Animated.Value(1)).current;
+
+  const updateUserAction = useAuthStore((state) => state.updateUserAction);
+
+  const totalSteps = allQuestions.length;
+  const currentQ = allQuestions[currentIndex];
+  const isCurrentAnswered = currentQ.type === "date" ? birthDate !== null : !!answers[currentQ.id];
+
+  const checkIsAdult = (date) => {
     const today = new Date();
     let age = today.getFullYear() - date.getFullYear();
     const m = today.getMonth() - date.getMonth();
@@ -69,362 +93,692 @@ export default function TestScreen() {
     return age >= 18;
   };
 
-  const onDateChange = (_event: any, selectedDate?: Date) => {
-    setShowDatePicker(false);
-    if (selectedDate) {
-      setBirthDate(selectedDate);
-      setAnswers((prev) => ({
-        ...prev,
-        1: checkIsAdult(selectedDate) ? "yes" : "no",
-      }));
+  const changeQuestion = (direction, newIndex) => {
+    const exitTo = direction === "next" ? -width : width;
+    const enterFrom = direction === "next" ? width : -width;
+
+    Animated.parallel([
+      Animated.timing(slideAnim, { toValue: exitTo, duration: 200, useNativeDriver: true }),
+      Animated.timing(opacityAnim, { toValue: 0, duration: 200, useNativeDriver: true }),
+    ]).start(() => {
+      setCurrentIndex(newIndex);
+      slideAnim.setValue(enterFrom);
+      Animated.parallel([
+        Animated.timing(slideAnim, { toValue: 0, duration: 250, useNativeDriver: true }),
+        Animated.timing(opacityAnim, { toValue: 1, duration: 250, useNativeDriver: true }),
+      ]).start();
+    });
+  };
+
+
+  const handleSaveInfo = async () => {
+    try {
+      const bloodQuestion = allQuestions.find(q => q.type === "blood");
+      const selectedBloodType = answers[bloodQuestion?.id];
+
+      await updateUserAction({
+        blood_type: selectedBloodType
+      });
+      
+    } catch (error) {
+      console.log("Error updating blood type:", error);
+    }
+  }
+
+
+
+  const handleNext = async () => {
+    // if (isCurrentAnswered) {
+      if (currentIndex < totalSteps - 1) {
+        changeQuestion("next", currentIndex + 1);
+      } else {
+        await handleSaveInfo()
+        navigation.navigate("Home");
+      }
+    // }
+  };
+
+  const handlePrev = () => {
+    if (currentIndex > 0) {
+      changeQuestion("prev", currentIndex - 1);
     }
   };
 
-  const handleFinishTest = async () => {
-    if (!allAnswered) {
-      setShowWarning(true);
-      return;
-    }
-    navigation.navigate("Home");
-  };
-
-  const renderButton = (qid: number, value: string, label: string) => {
+  const renderButton = (qid, value, label) => {
     const active = answers[qid] === value;
     return (
       <TouchableOpacity
-        onPress={() => setAnswers({ ...answers, [qid]: value })}
+        onPress={() => {
+            setAnswers({ ...answers, [qid]: value })
+            handleNext()
+          }
+        }
         style={[
-          styles.option,
+          styles.optionButton,
           {
-            borderColor: active
-              ? colors.primary
-              : isDark
-                ? colors.text
-                : colors.primary,
-            backgroundColor: active ? colors.primary : "transparent",
+            borderColor: "#DE7272",
+            backgroundColor: active ? "#DE7272" : "transparent",
           },
         ]}
       >
-        <Text
-          style={[
-            styles.optionText,
-            { color: active ? "#FFFFFF" : colors.text },
-          ]}
-        >
+        <Text style={[styles.optionText, { color: active ? "#FFFFFF" : "#DE7272" }]}>
           {label}
         </Text>
       </TouchableOpacity>
     );
   };
 
+  // --- ЛОГІКА ДИНАМІЧНИХ СТИЛІВ ---
+  const isFirst = currentIndex === 0;
+  const isLast = currentIndex === totalSteps - 1
+  const isMiddle = !isFirst && !isLast;
+  const activeRed = "#ff0000ff";
+  const defaultBorder = "#F7D4D4";
+
+  const dynamicMainCardStyle = {
+    borderBottomWidth: isMiddle ? 4 : 2,
+    borderBottomColor: activeRed,
+    borderLeftWidth: isFirst ? 4 : 1.5,
+    borderLeftColor: isFirst ? activeRed : defaultBorder,
+    borderRightWidth: isLast ? 4 : 1.5,
+    borderRightColor: isLast ? activeRed : defaultBorder,
+  };
+
+  let dynamicMargin = height < 800 ? 180 : -50;
+
+  if (currentQ.type === "blood" && height < 800) {
+    dynamicMargin = 80;
+  }
+
   return (
-    <View
-      style={[styles.container, { backgroundColor: colors.backgroundMain }]}
-    >
-      <Text style={[styles.title, { color: colors.primary }]}>
-        {t("short_test")}
-      </Text>
-      <Text style={[styles.subtitle, { color: colors.text }]}>
-        {t("necessary_for_donation")}
-      </Text>
-      <ScrollView
-        style={styles.list}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 20 }}
-      >
-        <View
-          style={[
-            styles.card,
-            {
-              backgroundColor: colors.backgroundCard,
-              borderColor: isDark ? colors.text : colors.primary + "50",
-            },
-          ]}
-        >
-          <Text style={[styles.questionText, { color: colors.primary }]}>
-            1. Коли ви народилися?
+    <View style={[styles.container, { backgroundColor: isDark ? colors.backgroundMain : "#FCF8F8" }]}>
+      <LanguageSwitcher/>
+
+      <BackgroundCircles width={width} height={height} />
+      
+
+      <View style={[styles.header,{paddingTop: height < 700 ? 10 : 30},{marginTop: height < 700 ? 10 : 20}]}>
+        <View style={styles.titleRow}>
+          {/* <View style={styles.textContainer}>
+            <Svg height="45" width={title_width}>
+              <Defs>
+                <LinearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <Stop offset="0%" stopColor="#000000ff" />
+                  <Stop offset="85%" stopColor="#DE7272" />
+                </LinearGradient>
+              </Defs>
+              <SvgText
+                fill="url(#textGrad)"
+                fontSize="32"
+                fontWeight="700"
+                x="0"
+                y="35"
+                // textAnchor="middle"
+              >
+                {currentQ.type != "blood" ? t("short_test_title") : t("blood_type_title")}
+              </SvgText>
+            </Svg>
+          </View> */}
+          <Text style={styles.headerText}>
+            {currentQ.type !== "blood" ? t("short_test_title") : t("blood_type_title")}
           </Text>
-          <TouchableOpacity
-            style={[styles.dateInput, { borderColor: colors.primary + "50" }]}
-            onPress={() => setShowDatePicker(true)}
-          >
-            <Text style={{ color: colors.text, fontSize: 16 }}>
-              {birthDate ? birthDate.toLocaleDateString() : "Оберіть дату"}
-            </Text>
-          </TouchableOpacity>
+          <Image 
+            source={require('../../../images/logo.png')} 
+            style={styles.logo}
+            resizeMode="contain"
+          />
+        </View>
+
+        {/* ГРАДІЄНТНИЙ ПІДЗАГОЛОВОК */}
+        {currentQ.type !== "blood" && (
+          <Svg height="60" width={screenWidth}>
+            <Defs>
+              <LinearGradient id="subGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <Stop offset="0%" stopColor="#000000" />
+                <Stop offset="85%" stopColor="#DE7272" />
+              </LinearGradient>
+            </Defs>
+            <SvgText
+              fill="url(#subGrad)"
+              fontSize="16"
+              fontWeight="400"
+              textAnchor="middle"
+              x={screenWidth / 2}
+              y="20"
+              opacity="0.8"
+            >
+              {t("necessary_for_donation")}
+            </SvgText>
+          </Svg>
+        )}
+        { currentQ.type == "blood" ?
+          <View style={[styles.statusBadge,{marginTop:10}]}>
+            <Text style={styles.statusText}>{t("please_indicate_blood")}</Text>
+          </View>
+          : null
+        }
+      </View>
+
+      { currentQ.type == "blood" ?
+        <TouchableOpacity
+          onPress={handlePrev}
+          style={styles.backButton}
+        >
+          <Text style={styles.backButtonText}>{"‹"}</Text>
+        </TouchableOpacity>
+        : null
+      }
+
+      <View style={[styles.centerContent, { marginBottom: dynamicMargin }]}>
+        
+        { currentIndex == totalSteps - 2 ?
+          <View style={[styles.statusBadge,{marginBottom:20}]}>
+            <View style={styles.greenDot} />
+            <Text style={styles.statusText}>{t("almost_done")}</Text>
+          </View>
+          : null
+        }
+        { currentQ.type != "blood" ?
+          <View style={styles.carouselWrapper}>
+            <TouchableOpacity
+              onPress={handlePrev}
+              disabled={currentIndex === 0}
+              style={[styles.arrowButton, { opacity: currentIndex === 0 ? 0 : 1 }]}
+            >
+              <Text style={styles.arrowText}>{"‹"}</Text>
+            </TouchableOpacity>
+            
+
+            <Animated.View style={[styles.cardStack, { transform: [{ translateX: slideAnim }], opacity: opacityAnim },{height: height < 700 ? 200 : 270,}]}>
+              {!isLast && <View style={styles.layeredCard} />}
+              {!isFirst && <View style={styles.layeredCard1} />}
+              
+              <View style={[styles.mainCard, dynamicMainCardStyle]}>
+                <Text style={[styles.questionText, { color: "#DE7272" }]}>
+                  {t("question_"+currentQ.id)}
+                </Text>
+              </View>
+            </Animated.View>
+
+            <TouchableOpacity
+              onPress={handleNext}
+              disabled={!isCurrentAnswered}
+              style={[styles.arrowButton, { opacity: isCurrentAnswered ? 1 : 0.3 }]}
+            >
+              <Text style={styles.arrowText}>{currentIndex === totalSteps - 1 ? "✓" : "›"}</Text>
+            </TouchableOpacity>
+            
+          </View>
+          : null
+        }
+
+        {currentQ.type !== "blood" && (
+          <View style={styles.progressContainer}>
+            {testQuestions.map((_, idx) => (
+              <View
+                key={idx}
+                style={[
+                  styles.progressDash,
+                  {
+                    backgroundColor: idx <= currentIndex ? "#DE7272" : "#FFFFFF",
+                    width: idx === currentIndex ? 40 : 25,
+                    height: 8,
+                  },
+                ]}
+              />
+            ))}
+          </View>
+        )}
         
 
-        {/* {showDatePicker && (
-          <DateTimePicker
-            value={birthDate || new Date(2000, 0, 1)}
-            mode="date"
-            display="spinner"
-            maximumDate={new Date()}
-            locale="uk-UA"
-            onChange={onDateChange}
-          />
-        )} */}
-        {showDatePicker && (
-  Platform.OS === 'web' ? (
-    <View style={{ marginTop: 10 }}>
-      <Text style={{ color: colors.text, fontSize: 12, marginBottom: 5, opacity: 0.7 }}>
-        Введіть дату (РРРР-ММ-ДД):
-      </Text>
-      <input
-        type="date"
-        // Використовуємо inline-стилі, які імітують твої React Native стилі
-        style={{
-          width: '100%',
-          height: 50,
-          padding: '0 15px',
-          borderRadius: '25px', // Робимо закругленим як твої кнопки
-          border: `1px solid ${colors.primary}80`,
-          backgroundColor: colors.backgroundMain,
-          color: colors.text,
-          fontSize: '16px',
-          fontFamily: 'inherit',
-          outline: 'none',
-          boxSizing: 'border-box',
-        }}
-        onChange={(e) => {
-          if (e.target.value) {
-            setBirthDate(new Date(e.target.value));
-          }
-        }}
-        onBlur={() => setShowDatePicker(false)}
-        autoFocus
-      />
-    </View>
-  ) : (
-    <DateTimePicker
-      value={birthDate || new Date(2000, 0, 1)}
-      mode="date"
-      display="spinner"
-      maximumDate={new Date()}
-      locale="uk-UA"
-      onChange={(event, date) => {
-        setShowDatePicker(false);
-        if (date) setBirthDate(date);
-      }}
-    />
-  )
-)}</View>
-
-        {questions.map((q) => (
-          <View
-            key={q.id}
-            style={[
-              styles.card,
-              {
-                backgroundColor: colors.backgroundCard,
-                borderColor: isDark ? colors.text : colors.primary + "50",
-              },
-            ]}
-          >
-            <Text style={[styles.questionText, { color: colors.primary }]}>
-              {q.id}. {t(q.text)}
-            </Text>
-            <View style={styles.optionsRow}>
-              {q.type === "blood" ? (
-                <View style={{ width: "100%", marginLeft: -20 }}>
-                  <View style={styles.bloodGrid}>
-                    {bloodTypes.map((bt) => {
-                      const active = answers[q.id] === bt;
-                      return (
-                        <TouchableOpacity
-                          key={bt}
-                          onPress={() => setAnswers({ ...answers, [q.id]: bt })}
-                          style={[
-                            styles.bloodOption,
-                            {
-                              borderColor: active
-                                ? colors.primary
-                                : isDark
-                                  ? colors.text
-                                  : colors.primary + "50",
-                              backgroundColor: active
-                                ? colors.primary
-                                : "transparent",
-                            },
-                          ]}
-                        >
-                          <Text
-                            style={[
-                              styles.optionText,
-                              { color: active ? "#FFFFFF" : colors.text },
-                            ]}
-                          >
-                            {bt}
-                          </Text>
-                        </TouchableOpacity>
-                      );
-                    })}
+        <Animated.View style={[styles.answersContainer, { transform: [{ translateX: slideAnim }], opacity: opacityAnim },{marginTop: height < 700 ? 20 : 50,}]}>
+          {/* {currentQ.type === "date" && (
+            <View style={{ alignItems: "center", width: "100%" }}>
+              <TouchableOpacity
+                style={styles.dateInput}
+                onPress={() => setShowDatePicker(true)}
+              >
+                <Text style={{ color: "#DE7272", fontSize: 16, fontWeight: "600" }}>
+                  {birthDate ? birthDate.toLocaleDateString() : "Оберіть дату"}
+                </Text>
+              </TouchableOpacity>
+              
+              {showDatePicker && (
+                Platform.OS === 'web' ? (
+                  <View style={{ marginTop: 10, width: '100%' }}>
+                    <input
+                      type="date"
+                      style={{
+                        width: '100%',
+                        height: 50,
+                        padding: '0 15px',
+                        borderRadius: '25px',
+                        border: '3.5px solid #DE7272',
+                        backgroundColor: "transparent",
+                        color: isDark ? colors.text : "#333",
+                        fontSize: '16px',
+                        fontFamily: 'inherit',
+                        outline: 'none',
+                        boxSizing: 'border-box',
+                      }}
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          const d = new Date(e.target.value);
+                          setBirthDate(d);
+                          setAnswers((prev) => ({ ...prev, [currentQ.id]: checkIsAdult(d) ? "yes" : "no" }));
+                        }
+                      }}
+                      onBlur={() => setShowDatePicker(false)}
+                      autoFocus
+                    />
                   </View>
-                  <TouchableOpacity
-                    onPress={() =>
-                      setAnswers({ ...answers, [q.id]: "unknown" })
-                    }
-                    style={[
-                      styles.unknownOption,
-                      {
-                        borderColor:
-                          answers[q.id] === "unknown"
-                            ? colors.primary
-                            : isDark
-                              ? colors.text
-                              : colors.primary + "50",
-                        backgroundColor:
-                          answers[q.id] === "unknown"
-                            ? colors.primary
-                            : "transparent",
-                      },
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.optionText,
-                        {
-                          color:
-                            answers[q.id] === "unknown"
-                              ? "#FFFFFF"
-                              : colors.text,
-                        },
-                      ]}
-                    >
-                      Я не знаю свою групу крові
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              ) : q.type === "yesno" ? (
-                <>
-                  {renderButton(q.id, "yes", t("yes"))}
-                  {renderButton(q.id, "no", t("no"))}
-                </>
-              ) : (
-                <>
-                  {renderButton(q.id, "have", t("have"))}
-                  {renderButton(q.id, "no", t("dont_have"))}
-                </>
+                ) : (
+                  <DateTimePicker
+                    value={birthDate || new Date(2000, 0, 1)}
+                    mode="date"
+                    display="spinner"
+                    maximumDate={new Date()}
+                    locale="uk-UA"
+                    onChange={(event, date) => {
+                      setShowDatePicker(false);
+                      if (date) {
+                        setBirthDate(date);
+                        setAnswers((prev) => ({ ...prev, [currentQ.id]: checkIsAdult(date) ? "yes" : "no" }));
+                      }
+                    }}
+                  />
+                )
               )}
             </View>
-          </View>
-        ))}
-        {showWarning && !allAnswered && (
-          <Text style={styles.warningText}>{t("answer_All_questions")}</Text>
-        )}
-        <TouchableOpacity
-          style={[
-            styles.continueButton,
-            {
-              backgroundColor: allAnswered
-                ? colors.primary
-                : isDark
-                  ? "#555"
-                  : "#D1D1D1",
-            },
-          ]}
-          onPress={handleFinishTest}
-        >
-          <Text style={styles.continueText}>{t("continue")}</Text>
-        </TouchableOpacity>
-      </ScrollView>
+          )} */}
+
+          {currentQ.type === "yesno" && (
+            <View style={styles.actionRow}>
+              {renderButton(currentQ.id, "yes", t("yes") || "Yes")}
+              {renderButton(currentQ.id, "no", t("no") || "No")}
+            </View>
+          )}
+
+          {/* {currentQ.type === "have" && (
+            <View style={styles.actionRow}>
+              {renderButton(currentQ.id, "have", t("have") || "Yes")}
+              {renderButton(currentQ.id, "no", t("dont_have") || "No")}
+            </View>
+          )} */}
+
+          {currentQ.type === "blood" && (
+            <View style={styles.bloodContentWrapper}>
+              
+              <View style={styles.newBloodGrid}>
+                {bloodTypes.map((bt) => {
+                  const active = answers[currentQ.id] === bt;
+
+                  return (
+                    <TouchableOpacity
+                      key={bt}
+                      onPress={() => setAnswers({ ...answers, [currentQ.id]: bt })}
+                      style={[
+                        styles.newBloodCard,
+                        active && { borderColor: '#DE7272', backgroundColor: '#FFF5F5' }
+                      ]}
+                    >
+                      <Text style={[styles.bloodMainText, active && { color: '#DE7272' }]}>
+                        {t(`${bt}`)}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+
+              <TouchableOpacity 
+                style={[
+                  styles.unknownButton, 
+                  answers[currentQ.id] === 'unknown' && { borderColor: '#DE7272', backgroundColor: '#FFF5F5' }
+                ]}
+                onPress={() => setAnswers({ ...answers, [currentQ.id]: 'unknown' })}
+              >
+                <Text style={styles.unknownButtonText}>{t("blood_type_unknown")}</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={[styles.continueButton, !answers[currentQ.id] && { opacity: 0.5 }]}
+                onPress={handleNext}
+                disabled={!answers[currentQ.id]}
+              >
+                <Text style={styles.continueButtonText}>{t("continue")}</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </Animated.View>
+      </View>
+
+      <View style={[styles.waveContainer,{height: height < 700 ? 210 : 290}, {position: height < 800 ? 'absolute' : 'relative'},{bottom: height < 800 ? 0 : undefined,}]} pointerEvents="none">
+        <Image source={require('../../../images/wave.png')} style={styles.waveImage} resizeMode="cover" />
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+
+  bloodContentWrapper: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  newBloodGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    justifyContent: 'center',
+    width: '100%',
+    marginBottom: 20,
+  },
+  newBloodCard: {
+    width: '45%',
+    padding: 15,
+    borderRadius: 20,
+    borderWidth: 1.5,
+    borderColor: '#F0F0F0',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  bloodMainText: { 
+    fontSize: 18, 
+    fontWeight: 'bold', 
+    color: '#DE7272' 
+  },
+  rhText: { 
+    fontSize: 14, 
+    fontWeight: '600', 
+    marginVertical: 2,
+    color: '#2B2B2B' 
+  },
+  descText: { 
+    fontSize: 10, 
+    color: '#999', 
+    textAlign: 'center' 
+  },
+
+  unknownButton: {
+    width: '92%',
+    height: 55,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#F0F0F0',
+    backgroundColor: '#FFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  unknownButtonText: {
+    fontSize: 16,
+    color: '#2B2B2B',
+    fontWeight: '500',
+  },
+  continueButton: {
+    width: '92%',
+    height: 55,
+    borderRadius: 20,
+    backgroundColor: '#DE7272',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 25,
+    shadowColor: "#DE7272",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 6,
+  },
+  continueButtonText: {
+    color: '#FFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+
   container: {
     flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 40,
+    overflow: "hidden",
+    position: "relative",
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "600",
-    textAlign: "center",
+  // header: {
+  //   paddingTop: 50,
+  //   alignItems: "center",
+  //   marginTop: 50,
+  // },
+  header: {
+    alignItems: "center",
   },
-  subtitle: {
-    fontSize: 14,
-    textAlign: "center",
-    marginBottom: 20,
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    width: '100%',
+  },
+  headerText: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#DE7272', 
+    marginRight: 10,
+  },
+
+  textContainer: {
+    marginRight: 5, 
+  },
+  logo: {
+    width: 45,
+    height: 35,
+    marginLeft: 10,
+  },
+  centerContent: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  carouselWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+    paddingHorizontal: 10,
+  },
+  arrowButton: {
+    padding: 10,
+    width: 50,
+    alignItems: "center",
+  },
+  backButton: {
+    position: 'absolute',
+    top: 10,
+    left: 20,
+    zIndex: 10,
+    padding: 10,
+  },
+  backButtonText: {
+    fontSize: 45,
+    fontWeight: '300',
+    color: '#DE7272',
+    lineHeight: 40,
+  },
+  arrowText: {
+    fontSize: 45,
+    fontWeight: "300",
+    color: "#DE7272",
+  },
+  // cardStack: {
+  //   flex: 1,
+  //   height: 270,
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  //   position: "relative",
+  // },
+  cardStack: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
+  },
+  answersContainer: {
+    width: "100%",
+    alignItems: "center",
+    paddingHorizontal: 40,
+    minHeight: 50,
+  },
+  layeredCard: {
+    position: "absolute",
+    width: "98%",
+    height: "98%",
+    backgroundColor: "#fcf8f8ff",
+    borderColor: "#f7ebebff",
+    borderWidth: 1,
+    borderRadius: 50,
+    top: 7,
+    left: "5%",
     opacity: 0.6,
   },
-  list: {
-    flex: 1,
-  },
-  card: {
+  layeredCard1: {
+    position: "absolute",
+    width: "98%",
+    height: "98%",
+    backgroundColor: "#FCF8F8",
+    borderColor: "#f7ebebff",
     borderWidth: 1,
-    borderRadius: 20,
-    padding: 16,
-    marginBottom: 14,
+    borderRadius: 50,
+    top: 7,
+    right: "5%",
+    opacity: 0.6,
+  },
+  mainCard: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    borderWidth: 1,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 50,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+    shadowColor: "#DE7272",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 3,
+    borderTopWidth: 1.5,
+    borderTopColor: "#F7D4D4",
   },
   questionText: {
-    fontSize: 15,
-    fontWeight: "600",
-    marginBottom: 12,
+    fontSize: 20,
+    fontWeight: "700",
+    textAlign: "center",
   },
-  optionsRow: {
+  progressContainer: {
     flexDirection: "row",
-    gap: 15,
-    marginLeft: 20,
+    marginTop: 35,
+    gap: 6,
+    justifyContent: "center",
   },
-  option: {
-    minWidth: 80,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 20,
-    borderWidth: 1,
+  progressDash: {
+    height: 6,
+    borderRadius: 4,
+    borderWidth: 0.3,
+    borderRightColor: "#DE7272",
+    borderBottomColor: "#DE7272",
+    borderColor: "#ffffffff",
+  },
+  // answersContainer: {
+  //   marginTop: 50,
+  //   width: "100%",
+  //   alignItems: "center",
+  //   paddingHorizontal: 40,
+  //   minHeight: 50,
+  // },
+  actionRow: {
+    flexDirection: "row",
+    gap: 20,
+    justifyContent: "center",
+    width: "100%",
+  },
+  optionButton: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 25,
+    borderWidth: 3.5,
     alignItems: "center",
   },
   optionText: {
-    fontWeight: "500",
+    fontWeight: "700",
+    fontSize: 18,
   },
   dateInput: {
-    borderWidth: 1,
-    borderRadius: 15,
+    width: "100%",
+    borderWidth: 3.5,
+    borderColor: "#DE7272",
+    borderRadius: 25,
     padding: 14,
     alignItems: "center",
-    justifyContent: "center",
-    marginTop: 5,
-  },
-  continueButton: {
-    borderRadius: 30,
-    paddingVertical: 14,
-    alignItems: "center",
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  continueText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  warningText: {
-    textAlign: "center",
-    marginBottom: 8,
-    fontSize: 13,
   },
   bloodGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 10,
     justifyContent: "center",
-    marginTop: 10,
-    paddingHorizontal: 10,
+    width: "90%",
+    marginBottom: 10,
   },
   bloodOption: {
-    width: "21%",
-    paddingVertical: 12,
-    borderRadius: 15,
-    borderWidth: 1,
+    width: "23%",
+    paddingVertical: 10,
+    borderRadius: 20,
+    borderWidth: 3.5,
     alignItems: "center",
+    justifyContent: "center",
   },
   unknownOption: {
-    marginTop: 15,
-    marginHorizontal: 20,
+    width: "100%",
     paddingVertical: 12,
-    borderRadius: 15,
-    borderWidth: 1,
+    borderRadius: 25,
+    borderWidth: 3.5,
     alignItems: "center",
   },
+  // waveContainer: {
+  //   width: "100%",
+  //   height: 290,
+  // },
+  waveContainer: {
+    width: "100%",
+    zIndex: -1, 
+  },
+  waveImage: {
+    width: "100%",
+    height: "100%",
+  },
+
+  statusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent:"center",
+    backgroundColor: '#E8F5E9',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    maxWidth:"80%",
+  },
+  greenDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#4CAF50',
+    marginRight: 8,
+  },
+  statusText: {
+    flex: 1,               
+    textAlign: 'center',
+    color: '#4CAF50',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+
+
 });

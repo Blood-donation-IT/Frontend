@@ -1,0 +1,62 @@
+name: Automation dev
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: automation-dev
+  cancel-in-progress: true
+
+jobs:
+  automation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Sync branch
+        env:
+          TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          REPOSITORY_DEV: ${{ secrets.REPOSITORY_DEV }}
+        run: |
+          set -e
+          if [ -z "$TOKEN" ] || [ -z "$REPOSITORY_DEV" ]; then
+            echo "ACCESS_TOKEN and REPOSITORY_DEV are required."
+            exit 1
+          fi
+          RAW="${REPOSITORY_DEV#"${REPOSITORY_DEV%%[![:space:]]*}"}"
+          RAW="${RAW%"${RAW##*[![:space:]]}"}"
+          RAW="${RAW//$'\r'/}"
+          RAW="${RAW//$'\n'/}"
+          if [[ "$RAW" == *"github.com/"* ]]; then
+            TARGET="${RAW#*github.com/}"
+          else
+            TARGET="$RAW"
+          fi
+          TARGET="${TARGET%.git}"
+          TARGET="${TARGET%/}"
+          TARGET="${TARGET#"${TARGET%%[![:space:]]*}"}"
+          TARGET="${TARGET%"${TARGET##*[![:space:]]}"}"
+          if [[ ! "$TARGET" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]]; then
+            echo "REPOSITORY_DEV must resolve to owner/repo (got invalid value after normalizing)."
+            exit 1
+          fi
+          echo "Pushing to github.com/${TARGET}.git"
+          git remote add automation "https://x-access-token:${TOKEN}@github.com/${TARGET}.git"
+          GIT_TERMINAL_PROMPT=0 git -c credential.helper= push automation HEAD:main
+
+      - name: Trigger deploy
+        env:
+          DEPLOY_HOOK_URL: ${{ secrets.DEPLOY_HOOK_URL }}
+        run: |
+          set -e
+          if [ -z "$DEPLOY_HOOK_URL" ]; then
+            echo "DEPLOY_HOOK_URL is required."
+            exit 1
+          fi
+          curl -fsS -X POST "$DEPLOY_HOOK_URL"

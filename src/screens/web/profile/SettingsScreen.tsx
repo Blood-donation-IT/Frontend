@@ -14,6 +14,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTheme } from "../../../Theme/ThemeContext";
 import CustomHeader from "../../../components/CustomHeader";
 import { useAuthStore } from "../../../stores/useAuthStore";
+
 import { CommonActions } from "@react-navigation/native";
 
 const SettingsScreen = ({ navigation }) => {
@@ -53,6 +54,7 @@ const SettingsScreen = ({ navigation }) => {
   const styles = StyleSheet.create({
     flag: {
       fontSize: 18,
+      color: colors.text,
     },
     container: {
       padding: 20,

@@ -8,11 +8,14 @@ import {
   Animated, 
   TouchableOpacity,
   ScrollView,
+  Image, 
   useWindowDimensions
 } from "react-native";
+// import { StyleSheet, View, Text, Dimensions, TouchableWithoutFeedback, Animated, TouchableOpacity, Image } from "react-native";
 import Svg, { Defs, RadialGradient, Rect, Stop } from "react-native-svg";
 import QRCode from 'react-native-qrcode-svg';
 import { useTheme } from "../../../Theme/ThemeContext";
+import { useAuthStore } from "../../../stores/useAuthStore";
 
 
 
@@ -21,6 +24,9 @@ const BookScreen = () => {
   
   const { width, height } = useWindowDimensions();
   
+
+  const { user } = useAuthStore();
+
   const baseUrl = "https://blood-donation.com/user/profile";
   const [qrValue, setQrValue] = useState(baseUrl);
 
@@ -143,7 +149,17 @@ const BookScreen = () => {
 
               <View style={styles.rowMiddle}>
                 <View style={styles.photoContainer}>
-                  <View style={[styles.photoPlaceholder, { backgroundColor: placeholderColor }]} />
+                  <Image
+                    source={{ uri: user?.avatar }}
+                    style={[
+                      styles.photoPlaceholder,
+                      {
+                        backgroundColor: colors.backgroundCard,
+                        borderColor: colors.text + "20",
+                        borderWidth: 1,
+                      },
+                    ]}
+                  />
                 </View>
                 
                 <View style={styles.detailsContainer}>
@@ -157,16 +173,17 @@ const BookScreen = () => {
                   </View>
                   <View style={styles.infoBlock}>
                     <Text style={[styles.infoLabel, { color: cardTextColor }]}>Type Blood:</Text>
-                    <Text style={[styles.infoValue, { color: cardTextColor, opacity: 0.8 }]}>A(II)Rh+</Text>
+                    <Text style={[styles.infoValue, { color: cardTextColor, opacity: 0.8 }]}>{user?.blood_type}</Text>
                   </View>
                 </View>
               </View>
 
               <View style={styles.rowBottom}>
                 <View>
-                  <Text style={[styles.nameText, { color: cardTextColor }]}>Blue</Text>
+                  {/* <Text style={[styles.nameText, { color: cardTextColor }]}>Blue</Text>
                   <Text style={[styles.nameText, { color: cardTextColor }]}>Jack</Text>
-                  <Text style={[styles.nameText, { color: cardTextColor }]}>Bober</Text>
+                  <Text style={[styles.nameText, { color: cardTextColor }]}>Bober</Text> */}
+                  <Text style={[styles.nameText, { color: cardTextColor }]}>{user?.name}</Text>
                 </View>
                 
                 {/* Кнопка "..." яка відкриває Bottom Sheet */}
@@ -239,11 +256,23 @@ const BookScreen = () => {
 
                   {/* Профіль (Фото + Ім'я) */}
                   <View style={[styles.profileCardSheet, { backgroundColor: colors.backgroundCard }]}>
-                    <View style={[styles.photoPlaceholderSheet, { backgroundColor: placeholderColor }]} />
+                    <Image
+                      source={{ uri: user?.avatar }}
+                      style={[
+                        styles.photoPlaceholderSheet,
+                        {
+                          backgroundColor: colors.backgroundCard,
+                          borderColor: colors.text + "20",
+                          borderWidth: 1,
+                        },
+                      ]}
+                    />
                     <View style={styles.profileInfo}>
-                      <Text style={[styles.profileName, { color: colors.text }]}>Blues</Text>
+                    <Text style={[styles.profileName, { color: cardTextColor }]}>{user?.name}</Text>
+
+                      {/* <Text style={[styles.profileName, { color: colors.text }]}>Blues</Text>
                       <Text style={[styles.profileName, { color: colors.text }]}>Jack</Text>
-                      <Text style={[styles.profileName, { color: colors.text }]}>Boberovuch</Text>
+                      <Text style={[styles.profileName, { color: colors.text }]}>Boberovuch</Text> */}
                       <Text style={[styles.profileDobLabel, { color: colors.text }]}>Date of Birth</Text>
                       <Text style={[styles.profileDob, { color: colors.text }]}>07.07.1999</Text>
                     </View>
@@ -252,7 +281,7 @@ const BookScreen = () => {
                   {/* Інфо картки (кров, дата, локація) */}
                   <View style={[styles.infoBlockSheet, { backgroundColor: colors.backgroundCard }]}>
                     <Text style={[styles.infoLabelSheet, { color: colors.text }]}>Type Blood</Text>
-                    <Text style={[styles.infoValueSheet, { color: colors.text }]}>A(II)Rh+</Text>
+                    <Text style={[styles.infoValueSheet, { color: colors.text }]}>{user?.blood_type}</Text>
                   </View>
 
                   <View style={[styles.infoBlockSheet, { backgroundColor: colors.backgroundCard }]}>
@@ -344,6 +373,14 @@ const styles = StyleSheet.create({
     width: 125,
     height: 160,
     borderRadius: 20,
+  },
+  avatarWrapper: {
+    position: "relative",
+  },
+  avatar: {
+    width: 110,
+    height: 110,
+    // borderRadius: 100,
   },
   detailsContainer: {
     width: "55%",

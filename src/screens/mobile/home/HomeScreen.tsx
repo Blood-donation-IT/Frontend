@@ -6,18 +6,38 @@ import {
   TouchableOpacity,
   ScrollView,
   SafeAreaView,
+  Image
 } from "react-native";
 import { useTheme } from "../../../Theme/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { Ionicons, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
-
+import { format } from "date-fns";
+import { useAuthStore } from "../../../stores/useAuthStore";
 export default function HomeScreen({ navigation }) {
   const { colors } = useTheme();
   const { t } = useTranslation();
+
+  const { user } = useAuthStore();
   
   const [isAppointmentExpanded, setIsAppointmentExpanded] = useState(true);
 
   // Компонент для кнопок Quick Actions з підтримкою теми
+  // const markedDates = useMemo(() => {
+  //   return {
+  //     "2026-08-10": { selected: true, marked: true, dotColor: "#ff4d4d", selectedColor: "transparent", selectedTextColor: "#000", customStyles: { container: { borderWidth: 1, borderColor: "#ff4d4d", borderStyle: "dashed" } } },
+  //     "2026-08-16": { selected: true, selectedColor: "#ff4d4d" },
+  //     "2026-08-17": { selected: true, selectedColor: "#ff4d4d" },
+  //     "2026-08-19": { selected: true, selectedColor: "#ff4d4d" },
+  //     "2026-08-20": { selected: true, selectedColor: "#ff4d4d" },
+  //     "2026-08-22": { selected: true, selectedColor: "#ff6b81", customStyles: { container: { borderRadius: 50 } } },
+  //     "2026-08-30": { selected: true, selectedColor: "#8c52ff" },
+  //   };
+  // }, []);
+
+  const onDayPress = () => {
+    navigation.navigate("Registration", { day: format(new Date(), "yyyy-MM-dd") });//day.dateString
+  };
+
   const QuickActionBtn = ({ icon, title, color, onPress }) => (
     <TouchableOpacity 
       style={[
@@ -49,10 +69,15 @@ export default function HomeScreen({ navigation }) {
         <View style={styles.header}>
           <View>
             <View style={styles.logoRow}>
-              <MaterialCommunityIcons name="water" size={24} color="#ff4d4d" />
+              {/* <MaterialCommunityIcons name="water" size={24} color="#ff4d4d" /> */}
+              <Image 
+                source={require("../../../images/logo.png")} // Шлях до твого файлу
+                style={styles.logo}
+                resizeMode="contain"
+              />
             </View>
             <Text style={[styles.greeting, { color: colors.text }]}>
-              {t("hello", "Hello")}, <Text style={styles.boldText}>Anton</Text> 👋
+              {t("hello", "Hello")}, <Text style={styles.boldText}>{user?.name}</Text> 👋
             </Text>
             <Text style={[styles.subtitle, { color: colors.text, opacity: 0.7 }]}>
               {t("your_blood", "Your Blood")} <Text style={{ color: "#ff4d4d" }}>{t("saves_lives", "Saves Lives!")}</Text>
@@ -103,7 +128,7 @@ export default function HomeScreen({ navigation }) {
           )}
         </TouchableOpacity>
 
-        {/* Quick Actions (Без календаря) */}
+        {/* Quick Actions */}
         <View style={styles.quickActionsSection}>
           <Text style={[styles.sectionTitle, { color: colors.text }]}>
             {t("quick_actions", "Quick Actions")}
@@ -138,8 +163,7 @@ export default function HomeScreen({ navigation }) {
 
       </ScrollView>
 
-      {/* Floating Donate Now Button (Абсолютно позиційована, щоб не падати під меню) */}
-      <TouchableOpacity style={styles.donateFab}>
+      <TouchableOpacity style={styles.donateFab} onPress={() => onDayPress()}>
         <Text style={styles.donateFabText}>{t("donate_now", "Donate Now")} +</Text>
       </TouchableOpacity>
     </SafeAreaView>
@@ -147,6 +171,14 @@ export default function HomeScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  logo: {
+    padding:8,
+    width: 40,
+    height: 25,
+    resizeMode: "contain",
+    // alignSelf: "center",
+    marginBottom: 24,
+  },
   safeArea: {
     flex: 1,
   },
@@ -168,6 +200,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   logoRow: {
+    paddingTop:8,
     marginBottom: 8,
   },
   greeting: {
@@ -289,6 +322,15 @@ const styles = StyleSheet.create({
   actionText: {
     fontSize: 13,
     fontWeight: "600",
+    color: "#333",
+  },
+  
+  /* Нові стилі для флекс-кнопки */
+  bottomContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 150, // Відступ від нижнього меню навігації
+    // paddingTop: 10,
+    alignItems: "flex-end", // Притискає кнопку вправо
   },
   donateFab: {
     position: 'absolute',
