@@ -28,7 +28,7 @@ export default function AppNavigator() {
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName="SplashScreen"
-          screenOptions={{ headerShown: false }}
+          screenOptions={{ title: "Advanced Donor", headerShown: false }}
         >
           <Stack.Screen
             name="SplashScreen"

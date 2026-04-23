@@ -155,8 +155,12 @@ export const useAuthStore = create<AuthState>((set,get) => ({
     if (!firebaseUser || !idToken) return;
 
     try {
-        const { data } = await api.post('/api/v1/auth/google-sync', { 
-            token: idToken 
+      // console.log(firebaseUser)
+        const { data } = await api.post('/api/v1/oauth/google/', { 
+          IdToken: idToken,
+          email: firebaseUser.email,
+          name: firebaseUser.displayName,
+          avatar: firebaseUser.photoURL
         });
 
         if (data.token) {
@@ -168,7 +172,7 @@ export const useAuthStore = create<AuthState>((set,get) => ({
             user: { 
                 ...DEFAULT_USER,
                 id: firebaseUser.id, 
-                name: data.name || firebaseUser.name,
+                name: data.name || firebaseUser.displayName,
                 email: data.email || firebaseUser.email,
                 avatar: data.avatar || firebaseUser.photoURL,
                 blood_type: data.blood_type || "N/A",
