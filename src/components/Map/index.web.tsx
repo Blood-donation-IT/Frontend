@@ -1,9 +1,19 @@
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import 'leaflet/dist/leaflet.css'; // ВАЖЛИВО: Імпорт стилів
+// import 'leaflet/dist/leaflet.css'; // ВАЖЛИВО: Імпорт стилів
 import { View, StyleSheet, Platform } from 'react-native';
 
+
+// динамічно підключаємо CSS для Leaflet в Web-версії, 
+// щоб обійти баг компіляції в Expo/Metro
+if (typeof window !== 'undefined') {
+  const link = window.document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css';
+  link.crossOrigin = '';
+  window.document.head.appendChild(link);
+}
 // Виправляємо баг з іконками Leaflet у Webpack/Metro
 // @ts-ignore
 delete L.Icon.Default.prototype._getIconUrl;
