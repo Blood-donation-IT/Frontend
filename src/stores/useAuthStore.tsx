@@ -45,7 +45,7 @@ export const useAuthStore = create<AuthState>((set,get) => ({
   fetchProfile: async () => {
     try {
       const { data } = await api.get('/api/v1/users/me');
-      
+      console.log("user me : ",data)
       const mergedUser: User = {
         ...DEFAULT_USER,
         ...data,
