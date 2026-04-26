@@ -20,6 +20,8 @@ import ForgetScreen from "../screens/mobile/auth/ForgetScreen";
 import { RootStackParamList } from "./types";
 import ResetPasswordScreen from "../screens/mobile/auth/ResetPasswordScreen";
 import CreateNewPasswordScreen from "../screens/mobile/auth/Createpassword";
+import DonationHistoryScreen from "../screens/web/profile/DonationHistoryScreen";
+import DetailedInformationScreen from "../screens/web/profile/DetailedInformationScreen";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -101,6 +103,16 @@ export default function AppNavigator() {
           <Stack.Screen
             name="EditProfile"
             component={EditProfileScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="DonationHistory"
+            component={DonationHistoryScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="DetailedInformation"
+            component={DetailedInformationScreen}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>

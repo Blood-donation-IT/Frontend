@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Alert,
   SafeAreaView,
+  Modal,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../Theme/ThemeContext";
@@ -22,6 +23,7 @@ export default function EditProfileScreen({ navigation }) {
   const [email, setEmail] = useState(user?.email || "");
   const [avatar, setAvatar] = useState(user?.avatar || "");
   const [phone, setPhone] = useState(user?.phone || "");
+  const [bloodType, setBloodType] = useState<string>(user?.blood_type);
   const { colors } = useTheme();
 
   const handleSave = async () => {
@@ -30,13 +32,32 @@ export default function EditProfileScreen({ navigation }) {
       return;
     }
     try {
-      await updateUserAction({ name, email, avatar });
+      await updateUserAction({ name, blood_type:bloodType, phone });
       Alert.alert("Успіх", "Профіль оновлено!");
       navigation.goBack();
     } catch (_e) {
       Alert.alert("Помилка", "Не вдалося зберегти зміни");
     }
   };
+
+
+
+  const formatPhoneNumber = (text: string) => {
+    const cleaned = ('' + text).replace(/\D/g, '');
+    const match = cleaned.match(/^(\d{2})(\d{3})(\d{3})(\d{2})(\d{2})$/);
+    
+    if (match) {
+      return `+${match[1]} (${match[2]}) ${match[3]}-${match[4]}-${match[5]}`;
+    }
+    
+    return cleaned ? `+${cleaned}` : '';
+  };
+
+
+  const [isBloodModalVisible, setBloodModalVisible] = useState(false);
+  const bloodTypes = ["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"];
+
+
 
   return (
     <>
@@ -86,7 +107,7 @@ export default function EditProfileScreen({ navigation }) {
                 placeholderTextColor={colors.text + "80"}
               />
             </View>
-            <View
+            {/* <View
               style={[
                 styles.inputWrapper,
                 {
@@ -102,7 +123,7 @@ export default function EditProfileScreen({ navigation }) {
                 onChangeText={setEmail}
                 placeholderTextColor={colors.text + "80"}
               />
-            </View>
+            </View> */}
             <View
               style={[
                 styles.inputWrapper,
@@ -114,13 +135,28 @@ export default function EditProfileScreen({ navigation }) {
             >
               <Ionicons name="call-outline" size={20} color={colors.primary} />
               <TextInput
-                style={[styles.input, { color: colors.text }]}
-                placeholderTextColor={colors.text + "80"}
+                keyboardType="phone-pad"
+                maxLength={19}
                 value={phone}
-                onChangeText={setPhone}
+                onChangeText={(text) => setPhone(formatPhoneNumber(text))}
+                placeholder="+38 (0__) ___-__-__"
               />
             </View>
+
+            <TouchableOpacity 
+              onPress={() => setBloodModalVisible(true)}
+              style={[styles.inputWrapper, { backgroundColor: colors.backgroundCard, borderColor: colors.primary }]}
+            >
+              <Ionicons name="water" size={20} color="#E63946" /> 
+              <Text style={[
+                styles.input, 
+                { color: (bloodType && bloodType !== 'unknown') ? colors.text : colors.text + "80" }
+              ]}>
+                {(bloodType && bloodType !== 'unknown') ? t(bloodType) : t("select_blood_type", "Select Blood Type")}
+              </Text>
+            </TouchableOpacity>
           </View>
+          
 
           <TouchableOpacity
             style={[styles.saveBtn, { backgroundColor: colors.primary }]}
@@ -130,6 +166,42 @@ export default function EditProfileScreen({ navigation }) {
           </TouchableOpacity>
         </View>
       </SafeAreaView>
+
+      <Modal
+        visible={isBloodModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setBloodModalVisible(false)}
+      >
+        <TouchableOpacity 
+          style={styles.modalOverlay} 
+          activeOpacity={1} 
+          onPress={() => setBloodModalVisible(false)}
+        >
+          <View style={[styles.modalContent, { backgroundColor: colors.backgroundCard }]}>
+            <Text style={[styles.modalTitle, { color: colors.text }]}>{t("choose_blood_type")}</Text>
+            
+            <View style={styles.bloodGrid}>
+              {bloodTypes.map((bt) => (
+                <TouchableOpacity
+                  key={bt}
+                  onPress={() => {
+                    setBloodType(bt);
+                    setBloodModalVisible(false);
+                  }}
+                  style={[
+                    styles.bloodCard,
+                    bloodType === bt && { borderColor: '#E63946', backgroundColor: '#FFF5F5' }
+                  ]}
+                >
+                  <Text style={[styles.bloodText, bloodType === bt && { color: '#E63946' }]}>{t(`${bt}`)}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+
     </>
   );
 }
@@ -192,5 +264,44 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     fontWeight: "600",
+  },
+
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    width: '100%',
+    borderRadius: 20,
+    padding: 20,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  bloodGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  bloodCard: {
+    width: '22%', // 4 в ряд
+    aspectRatio: 1,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  bloodText: {
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

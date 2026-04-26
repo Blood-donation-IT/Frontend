@@ -16,6 +16,7 @@ import Svg, { Defs, RadialGradient, Rect, Stop } from "react-native-svg";
 import QRCode from 'react-native-qrcode-svg';
 import { useTheme } from "../../../Theme/ThemeContext";
 import { useAuthStore } from "../../../stores/useAuthStore";
+import { t } from "i18next";
 
 
 
@@ -173,7 +174,7 @@ const BookScreen = () => {
                   </View>
                   <View style={styles.infoBlock}>
                     <Text style={[styles.infoLabel, { color: cardTextColor }]}>Type Blood:</Text>
-                    <Text style={[styles.infoValue, { color: cardTextColor, opacity: 0.8 }]}>{user?.blood_type}</Text>
+                    <Text style={[styles.infoValue, { color: cardTextColor, opacity: 0.8 }]}>{t(user?.blood_type)}</Text>
                   </View>
                 </View>
               </View>
@@ -281,7 +282,7 @@ const BookScreen = () => {
                   {/* Інфо картки (кров, дата, локація) */}
                   <View style={[styles.infoBlockSheet, { backgroundColor: colors.backgroundCard }]}>
                     <Text style={[styles.infoLabelSheet, { color: colors.text }]}>Type Blood</Text>
-                    <Text style={[styles.infoValueSheet, { color: colors.text }]}>{user?.blood_type}</Text>
+                    <Text style={[styles.infoValueSheet, { color: colors.text }]}>{t(user?.blood_type)}</Text>
                   </View>
 
                   <View style={[styles.infoBlockSheet, { backgroundColor: colors.backgroundCard }]}>
