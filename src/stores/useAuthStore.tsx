@@ -1,14 +1,15 @@
 import { create } from 'zustand';
 // import * as SecureStore from 'expo-secure-store';
 import api from '../api/api';
-import { UpdateUserPayload, User } from '../interfaces/user';
+import { UpdateUserPayload, User,  } from '../interfaces/user';
+import { Application } from '../interfaces/application';
 import { providerSignOut } from "../services/authSignOut";
 
 interface AuthState {
   user: User | null;
   isAuth: boolean;
   isLoading: boolean;
-  donations: any[];
+  donations: Application[];
   isLoadingDonations: boolean;
   checkAuth: () => Promise<void>;
   fetchProfile: () => Promise<void>;
@@ -18,7 +19,7 @@ interface AuthState {
   syncWithFirebase: (firebaseUser: any, idToken: string | null) => Promise<void>;
   updateUserAction: (newData: UpdateUserPayload) => Promise<void>;
   fetchUserDonations: () => Promise<void>;
-  createDonationAction: (donationData: any) => Promise<any>;
+  createDonationAction: (donationData: any) => Promise<Application>;
 }
 
 const DEFAULT_USER: User = {
@@ -128,6 +129,19 @@ export const useAuthStore = create<AuthState>((set,get) => ({
         params: { user_id }
       });
       console.log(response.data)
+      response.data.applications.push(
+        {
+          application_day: "2026-02-14",
+          application_id: "7453810883081281536",
+          application_time: "H%:00",
+          blood_type: "O+",
+          created_at: "2026-04-25T07:59:01.325642",
+          location_id: "Saint Panteleimon Hospital",
+          slot_index: 4,
+          status: "Successfully",
+          updated_at: null,
+        }
+      )
       set({ donations: response.data.applications, isLoadingDonations: false });
     } catch (error) {
       console.error("Помилка отримання донацій:", error);

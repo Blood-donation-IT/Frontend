@@ -9,13 +9,14 @@
 
   "edit_profile": "Редагувати профіль",
   "last_donation": "Останнє донорство",
-  "donated": "Здано крові",
-  "blood_type": "Група крові",
-  "life_saved": "Врятовано життів",
+  "donated": "Здано",
+  "blood_type": "Група",
+  "life_saved": "Врятовано",
   "donor_status": "Статус донора",
   "home": "Дім",
   "profile":"Профіль",
   "honorary_donor_of_ukraine": "Почесний донор України",
+  "donation_history": "Історія донацій",
 
   "change": "Змінити",
   "your_blood_type": "Ваша група крові",
@@ -187,6 +188,7 @@
   "rush_of_people": "Наплив людей",
   "something_that_might_interest_you": "Те, що може вас зацікавити",
   "which_blood_types_are_needed_most": "Яка кров зараз найбільш потрібна?",
+  "your_appointment": "Ваш запис",
 
   // googleLogin
   "welcome!": "Вітаємо!",
@@ -194,7 +196,39 @@
   "sign_in_with_google": "Увійти за допомогою Google",
   "signing_in": "Виконується вхід...",
 
+
+  "next_donation": "Наступна донація",
+  "available_from": "Доступно з",
+  "next_donation_desc": "Ви можете здавати кров не раніше ніж через 60 днів після останньої донації.",
+
+
+  "detailed_information": "Детальна інформація",
+  "whole_blood": "Цільна кров",
+  "date_and_time": "Дата та час",
+  "place": "Місце",
+  "doctor": "Лікар",
+  "component": "Компонент",
+  "volume": "Об'єм",
+  "well_being": "Самопочуття",
+
+
+  "info_unavailable": "Інформація недоступна",
+  "canceled_donation_msg": "Детальна інформація недоступна, оскільки ця донація була скасована.",
+  "canceled": "Скасовано",
+  "successfully": "Успішно",
+
+
+
+  "go_to_admin": "Панель адміністратора",
+  "faq": "Часті запитання",
+  "about_us": "Про нас",
+  "dark_mode": "Темний режим",
+  "support": "Підтримка",
+  "change_password": "Змінити пароль",
+
   //Registration
   "people_registered_day": "Кількість зареєстрованих на цей день",
-  "total_registered_time": "Всього зареєстровано на цей час:"
+  "total_registered_time": "Всього зареєстровано на цей час:",
+
+  "other":"Інше"
 }

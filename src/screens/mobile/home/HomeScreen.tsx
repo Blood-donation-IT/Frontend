@@ -17,7 +17,9 @@ export default function HomeScreen({ navigation }) {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
-  const { user } = useAuthStore();
+  const { donations, user } = useAuthStore();
+  const pendingAppointment = donations?.find(d => d.status === 'pending');
+
   
   const [isAppointmentExpanded, setIsAppointmentExpanded] = useState(true);
 
@@ -89,7 +91,7 @@ export default function HomeScreen({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        {/* Appointment Banner (Залишається яскравим незалежно від теми) */}
+        {/* Appointment Banner (Залишається яскравим незалежно від теми)
         <TouchableOpacity 
           style={styles.appointmentBanner}
           activeOpacity={0.8}
@@ -126,7 +128,52 @@ export default function HomeScreen({ navigation }) {
               </View>
             </View>
           )}
-        </TouchableOpacity>
+        </TouchableOpacity> */}
+
+        {pendingAppointment ? (
+  /* ЯКЩО Є ЗАПИС */
+  <TouchableOpacity 
+    style={styles.appointmentBanner}
+    activeOpacity={0.8}
+    onPress={() => setIsAppointmentExpanded(!isAppointmentExpanded)}
+  >
+    {isAppointmentExpanded ? (
+      <View>
+        <View style={styles.appointmentHeaderRow}>
+          <View style={styles.row}>
+            <Ionicons name="calendar-outline" size={16} color="#fff" />
+            <Text style={styles.appointmentLabel}> {t("your_appointment")}</Text>
+          </View>
+          <Feather name="chevron-down" size={20} color="#fff" />
+        </View>
+        
+        {/* Використовуємо реальні дані з об'єкта */}
+        <Text style={styles.appointmentDate}>{pendingAppointment.application_day}</Text>
+        <View style={styles.appointmentTimeRow}>
+          <Feather name="clock" size={14} color="#fff" />
+          <Text style={styles.appointmentTime}> {pendingAppointment.application_time}</Text>
+        </View>
+        <Text style={styles.appointmentLocation}>
+          • {pendingAppointment.location_id}
+        </Text>
+      </View>
+    ) : (
+      <View style={styles.appointmentCollapsed}>
+        <View style={styles.row}>
+          <Ionicons name="calendar-outline" size={20} color="#fff" />
+          <Text style={styles.appointmentDateCollapsed}> {pendingAppointment.application_day}</Text>
+        </View>
+        <View style={styles.row}>
+          <Feather name="clock" size={16} color="#fff" />
+          <Text style={styles.appointmentTimeCollapsed}> {pendingAppointment.application_time}</Text>
+          <Feather name="chevron-right" size={20} color="#fff" style={{ marginLeft: 8 }} />
+        </View>
+      </View>
+    )}
+  </TouchableOpacity>
+) : (
+  null
+)}
 
         {/* Quick Actions */}
         <View style={styles.quickActionsSection}>

@@ -17,6 +17,7 @@
   "home": "Home",
   "profile":"Profile",
   "honorary_donor_of_ukraine": "Honorary Donor of Ukraine",
+  "donation_history": "Donation History",
 
   "change": "Change",
   "your_blood_type": "Your Blood Type",
@@ -181,6 +182,7 @@
   "rush_of_people": "Rush of People",
   "something_that_might_interest_you": "Something that might interest you",
   "which_blood_types_are_needed_most": "Which blood types are needed most?",
+  "your_appointment": "Your Appointment",
 
   // googleLogin
   "welcome!": "Welcome!",
@@ -190,6 +192,38 @@
 
   //Registration
   "people_registered_day": "People registered for this day",
-  "total_registered_time": "Total registered for this time:"
+  "total_registered_time": "Total registered for this time:",
+
+  "next_donation": "Next Donation",
+  "available_from": "Available from",
+  "next_donation_desc": "You can donate blood no earlier than 60 days after your last donation.",
+
+
+  "detailed_information": "Detailed Information",
+  "whole_blood": "Whole Blood",
+  "date_and_time": "Date and Time",
+  "place": "Place",
+  "doctor": "Doctor",
+  "component": "Component",
+  "volume": "Volume",
+  "well_being": "Well-Being",
+
+
+  "info_unavailable": "Information Unavailable",
+  "canceled_donation_msg": "Detailed information is not available because this donation was canceled.",
+  "canceled": "Canceled",
+  "successfully": "Successfully",
+
+
+  "go_to_admin": "Go to Admin",
+  "faq": "FAQ",
+  "about_us": "About Us",
+  "dark_mode": "Dark Mode",
+  "support": "Support",
+  "change_password": "Change Password",
+
+  "other":"Other"
+
+
 
 }
