@@ -24,7 +24,15 @@ const ProfileScreen = ({ navigation }) => {
 
   const lastDonationDate = user?.last_donation ? new Date(user.last_donation) : null;
 
-  const formattedDate = lastDonationDate && !isNaN(lastDonationDate)
+  // const formattedDate = lastDonationDate && !isNaN(lastDonationDate)
+
+  const date = new Date("2026-02-14");
+
+  const formattedDate = new Intl.DateTimeFormat(i18n.language === 'uk' ? 'uk-UA' : 'en-US', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  }).format(date);
   // Тимчасові дані для візуалу
   // const mockHistoryData = [
   //   donations?donations[0]:null,
@@ -68,7 +76,7 @@ const ProfileScreen = ({ navigation }) => {
 
   return (
     <ScrollView
-      style={{ backgroundColor: "#f9f9f9ff" }} 
+      style={{ backgroundColor: colors.backgroundMain }} 
       contentContainerStyle={{ paddingBottom: 40 }}
       bounces={false}
       showsVerticalScrollIndicator={false}
@@ -101,13 +109,13 @@ const ProfileScreen = ({ navigation }) => {
             source={{ uri: user?.avatar || "https://via.placeholder.com/150" }}
             style={styles.avatar} 
           />
-          <Text style={styles.name}>{user?.name || "Blue Jack"}</Text>
+          <Text style={[styles.name,{color:colors.text}]}>{user?.name || "Blue Jack"}</Text>
           
           {/* <Text style={styles.lastDonation}>
             {t("last_donation")}: August 25, 2025
           </Text>
           ДАТА : */}
-          <Text style={styles.lastDonation}>
+          <Text style={[styles.lastDonation,{color:colors.text}]}>
             {t("last_donation")}: {formattedDate || "N/A"}
           </Text>
          
@@ -121,33 +129,33 @@ const ProfileScreen = ({ navigation }) => {
         </View>
 
         <View style={styles.statsRow}>
-          <View style={[styles.statBox, { borderColor: "#FFD1D1" }]}>
+          <View style={[styles.statBox, { borderColor: "#FFD1D1" },{backgroundColor:colors.backgroundCard2}]}>
              <Text style={styles.statLabel}>{t("donated") || "Donated"}</Text>
              {/* <Text style={styles.statValue}>03</Text> */}
-             <Text style={styles.statValue}>{user?.donations_count < 10 && user?.donations_count > 0 ? `0${user?.donations_count}` : user?.donations_count || "01"}</Text>
+             <Text style={[styles.statValue,{color:colors.text}]}>{user?.donations_count < 10 && user?.donations_count > 0 ? `0${user?.donations_count}` : user?.donations_count || "01"}</Text>
           </View>
-          <View style={[styles.statBox, { borderColor: "#FFD1D1" }]}>
+          <View style={[styles.statBox, { borderColor: "#FFD1D1" },{backgroundColor:colors.backgroundCard2}]}>
              <Text style={styles.statLabel}>{t("blood_type") || "Blood Type"}</Text>
-             <Text style={styles.statValue}>{user?.blood_type == "unknown" ? "N/A" : t(user?.blood_type) || "N/A"}</Text>
+             <Text style={[styles.statValue,{color:colors.text}]}>{user?.blood_type == "unknown" ? "N/A" : t(user?.blood_type) || "N/A"}</Text>
           </View>
-          <View style={[styles.statBox, { borderColor: "#FFD1D1" }]}>
+          <View style={[styles.statBox, { borderColor: "#FFD1D1" },{backgroundColor:colors.backgroundCard2}]}>
              <Text style={styles.statLabel}>{t("life_saved") || "Life Saved"}</Text>
              {/* <Text style={styles.statValue}>02</Text> */}
-             <Text style={styles.statValue}>{user?.lives_saved_count < 10 && user?.lives_saved_count > 0 ? `0${user?.lives_saved_count}` : user?.lives_saved_count || "02"}</Text>
+             <Text style={[styles.statValue,{color:colors.text}]}>{user?.lives_saved_count < 10 && user?.lives_saved_count > 0 ? `0${user?.lives_saved_count}` : user?.lives_saved_count || "02"}</Text>
           </View>
         </View>
 
-        <View style={[styles.statusCard, { borderColor: "#FFD1D1" }]}>
+        <View style={[styles.statusCard, { borderColor: "#FFD1D1" },{backgroundColor:colors.backgroundCard2}]}>
           <Text style={styles.statusLabel}>{t("donor_status") || "Donor Status"}</Text>
           {/* <Text style={styles.statusValue}>Honorary Donor of Ukraine</Text> */}
-          <Text style={styles.statusValue}>{user?.donor_status || t("honorary_donor_of_ukraine")}</Text>
+          <Text style={[styles.statusValue,{color:colors.text}]}>{t("honorary_donor_of_ukraine")}</Text>{/* user?.donor_status ||  */}
         </View>
 
         <View style={styles.historySection}>
           <View style={styles.historyHeader}>
-            <Text style={styles.historyTitle}>{t("donation_history") || "Donation history"}</Text>
+            <Text style={[styles.historyTitle,{color:colors.text}]}>{t("donation_history") || "Donation history"}</Text>
             <TouchableOpacity onPress={() => navigation.navigate("DonationHistory")}>
-              <Text style={{ color: colors.primary || "#F86E6E", fontWeight: '600' }}>All ➔</Text>
+              <Text style={{ color: colors.primary || "#F86E6E", fontWeight: '600' }}>{t("view_all")} ➔</Text>
             </TouchableOpacity>
           </View>
 
@@ -157,11 +165,11 @@ const ProfileScreen = ({ navigation }) => {
             const statusStyle = getStatusStyle(item.status);
             
             return (
-              <View key={item.application_id || index} style={styles.donationItem}>
+              <View key={item.application_id || index} style={[styles.donationItem,{backgroundColor:colors.backgroundCard2}]}>
                 <Text style={{ fontSize: 24, marginRight: 15 }}>🩸</Text>
                 
                 <View style={styles.donationInfo}>
-                  <Text style={styles.donationType}>{"Whole blood"}</Text>{/*item.type   */}
+                  <Text style={[styles.donationType,{color:colors.text}]}>{t("whole_blood")}</Text>{/*item.type   */}
                   <Text style={styles.donationDate}>{item.application_day}</Text>{/*date*/}
                   <Text style={styles.hospitalText}>• {item.location_id}</Text>{/*hospital*/}
                 </View>
@@ -169,10 +177,10 @@ const ProfileScreen = ({ navigation }) => {
                 <View style={styles.donationResult}>
                   <View style={[styles.statusBadge, { backgroundColor: statusStyle.bg }]}>
                     <Text style={[styles.donationStatus, { color: statusStyle.text }]}>
-                      {item.status}
+                      {t(`status_${item.status}`)}
                     </Text>
                   </View>
-                  <Text style={styles.volumeText}>{"450 ml"}</Text>{/* item.amount */}
+                  <Text style={styles.volumeText}>{item.status == "pending" ? null : "450 ml"}</Text>{/* item.amount */}
                 </View>
                  
               </View>
@@ -215,7 +223,7 @@ const ProfileScreen = ({ navigation }) => {
           )}
           */}
 
-          <View style={styles.bottomSpacer} />
+          <View style={[styles.bottomSpacer,{backgroundColor:colors.backgroundMain}]} />
 
         </View>
       </View>

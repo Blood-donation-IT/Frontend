@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../Theme/ThemeContext";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Application } from "../../../interfaces/application";
+import CustomHeader from "../../../components/CustomHeader";
 
 const DetailedInformationScreen = ({ route, navigation }) => {
   const { colors } = useTheme();
@@ -29,84 +30,94 @@ const DetailedInformationScreen = ({ route, navigation }) => {
   );
 
   return (
-    <View style={[styles.mainContainer, { backgroundColor: "#f9f9f9ff" }]}>
+    <>
+      <CustomHeader title={t("detailed_information")} navigation={navigation} />
       
-      <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Image
-            source={require("../../../images/arrow-left.png")}
-            style={styles.backImg}
-          />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>{t("detailed_information") || "Detailed information"}</Text>
-        <View style={{ width: 24 }} /> 
+
+      <View style={[styles.mainContainer, { backgroundColor: colors.backgroundMain }]}>
+        
+        {/* <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
+          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+            <Image
+              source={require("../../../images/arrow-left.png")}
+              style={styles.backImg}
+            />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>{t("detailed_information") || "Detailed information"}</Text>
+          <View style={{ width: 24 }} /> 
+        </View> */}
+
+        <ScrollView 
+          contentContainerStyle={[styles.scrollContent,{paddingTop:50}]}
+          showsVerticalScrollIndicator={false}
+        >
+          
+          <View style={[styles.redCard, { backgroundColor: colors.primary || "#F86E6E" }]}>
+            
+            <View style={styles.dropIconContainer}>
+              <Text style={styles.dropIcon}>🩸</Text>
+            </View>
+
+            <Text style={styles.cardTitle}>{t("whole_blood")}</Text>
+            <Text style={styles.cardSubtitle}>
+              {donationData?.application_day || "August 25, 2025"} • {donationData?.application_time}
+            </Text>
+
+            
+            <View style={styles.pillsRow}>
+              <View style={styles.pill}>
+                <Text style={styles.pillText}>{donationData?.status == "Successfully" ? "450" : "  0  "}</Text>
+                  <Text style={styles.pillSubText}>ml</Text>
+              </View>
+              <View style={styles.pill}>
+                <Text style={styles.pillText}>{t(donationData?.blood_type)}</Text>
+                <Text style={styles.pillSubText}>{t("blood_type_label")}</Text>
+              </View>
+              <View style={styles.pill}>
+                <Text style={styles.pillText}>{donationData?.status == "pending" ? 0 : 2}</Text>
+                <Text style={styles.pillSubText}>{t("life_saved")}</Text>
+              </View>
+            </View>
+          </View>
+
+          
+          <View style={[styles.detailsContainer,{backgroundColor:colors.backgroundCard2}]}>
+            <DetailRow 
+              label={t("date_and_time") || "Date and time"} 
+              valueColor={colors.text}
+              value={`${donationData?.application_day || "Aug 25, 2025"}\n ${donationData?.application_time}`} 
+            />
+            <DetailRow 
+              label={t("place") || "Place"} 
+              value={donationData?.location_id || "Saint Panteleimon Hospital"} 
+              valueColor={colors.text}
+            />
+            <DetailRow 
+              label={t("doctor") || "Doctor"} 
+              value={donationData?.status == "pending" ? "-" : "Ivanenko O.V." }
+              valueColor={colors.text}
+            />
+            <DetailRow 
+              label={t("component") || "Component"} 
+              value={donationData.type || t("whole_blood")} 
+              valueColor={colors.primary || "#F86E6E"} 
+              valueColor={colors.brand}
+            />
+            <DetailRow 
+              label={t("volume") || "Volume"} 
+              value={`${donationData?.status == "pending" ? "0 ml" : "450 ml" } `} //${donationData.unit || "ml"}
+              valueColor={colors.text}
+            />
+            <DetailRow 
+              label={t("well_being") || "Well-being"} 
+              value={donationData?.status == "Successfully" ? "Okay ✓" : "-" }
+              valueColor="#4CAF50" 
+              isLast={true} 
+            />
+          </View>
+        </ScrollView>
       </View>
-
-      <ScrollView 
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        
-        <View style={[styles.redCard, { backgroundColor: colors.primary || "#F86E6E" }]}>
-          
-          <View style={styles.dropIconContainer}>
-            <Text style={styles.dropIcon}>🩸</Text>
-          </View>
-
-          <Text style={styles.cardTitle}>{"Whole Blood"}</Text>
-          <Text style={styles.cardSubtitle}>
-            {donationData?.application_day || "August 25, 2025"} • {donationData?.application_time}
-          </Text>
-
-          
-          <View style={styles.pillsRow}>
-            <View style={styles.pill}>
-              <Text style={styles.pillText}>{donationData?.status == "Successfully" ? "450" : "  0  "}</Text>
-                <Text style={styles.pillSubText}>ml</Text>
-            </View>
-            <View style={styles.pill}>
-              <Text style={styles.pillText}>{t(donationData?.blood_type)}</Text>
-              <Text style={styles.pillSubText}>b type</Text>
-            </View>
-            <View style={styles.pill}>
-              <Text style={styles.pillText}>{donationData?.status == "pending" ? 0 : 2}</Text>
-              <Text style={styles.pillSubText}>saved</Text>
-            </View>
-          </View>
-        </View>
-
-        
-        <View style={styles.detailsContainer}>
-          <DetailRow 
-            label={t("date_and_time") || "Date and time"} 
-            value={`${donationData?.application_day || "Aug 25, 2025"}\n ${donationData?.application_time}`} 
-          />
-          <DetailRow 
-            label={t("place") || "Place"} 
-            value={donationData?.location_id || "Saint Panteleimon Hospital"} 
-          />
-          <DetailRow 
-            label={t("doctor") || "Doctor"} 
-            value={donationData?.status == "pending" ? "-" : "Ivanenko O.V." }
-          />
-          <DetailRow 
-            label={t("component") || "Component"} 
-            value={donationData.type || "Whole blood"} 
-            valueColor={colors.primary || "#F86E6E"} 
-          />
-          <DetailRow 
-            label={t("volume") || "Volume"} 
-            value={`${donationData?.status == "pending" ? "0 ml" : "450 ml" } `} //${donationData.unit || "ml"}
-          />
-          <DetailRow 
-            label={t("well_being") || "Well-being"} 
-            value={donationData?.status == "Successfully" ? "Okay ✓" : "-" }
-            valueColor="#4CAF50" 
-            isLast={true} 
-          />
-        </View>
-      </ScrollView>
-    </View>
+    </>
   );
 };
 
@@ -188,6 +199,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 22,
     borderRadius: 18,
+    width:"40%"
   },
   pillText: {
     color: "#FFFFFF",

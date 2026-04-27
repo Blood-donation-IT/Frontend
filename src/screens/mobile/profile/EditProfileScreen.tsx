@@ -9,6 +9,7 @@ import {
   Alert,
   SafeAreaView,
   Modal,
+  Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../Theme/ThemeContext";
@@ -135,6 +136,7 @@ export default function EditProfileScreen({ navigation }) {
             >
               <Ionicons name="call-outline" size={20} color={colors.primary} />
               <TextInput
+                style={{color:colors.text}}
                 keyboardType="phone-pad"
                 maxLength={19}
                 value={phone}
@@ -194,7 +196,7 @@ export default function EditProfileScreen({ navigation }) {
                     bloodType === bt && { borderColor: '#E63946', backgroundColor: '#FFF5F5' }
                   ]}
                 >
-                  <Text style={[styles.bloodText, bloodType === bt && { color: '#E63946' }]}>{t(`${bt}`)}</Text>
+                  <Text style={[styles.bloodText, {color:colors.text}, bloodType === bt && { color: '#E63946' }]}>{t(`${bt}`)}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -272,6 +274,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+
+    ...Platform.select({
+      web: {
+        alignSelf: 'center',
+        width: '100%',
+        maxWidth: 440,
+      }
+    })
   },
   modalContent: {
     width: '100%',

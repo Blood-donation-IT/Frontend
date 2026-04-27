@@ -42,13 +42,13 @@ export default function RegistrationScreen({ navigation, route }) {
 
   const { width } = useWindowDimensions();
 
-  const { createDonationAction, user } = useAuthStore();
+  const { createDonationAction, user, donations } = useAuthStore();
 
   const { t } = useTranslation();
   const [time, setTime] = useState<string | null>(null);
   const [location, setLocation] = useState("");
   const [alertVisible, setAlertVisible] = useState(false);
-  const [alertType, setAlertType] = useState<'success' | 'error'>('success');
+  const [alertType, setAlertType] = useState<'success' | 'error' | 'already_exists'>('success');
   const [isModalVisible, setModalVisible] = useState(true);
   const [selectedLocation, setSelectedLocation] = useState({
     latitude: 49.8419,
@@ -232,6 +232,12 @@ export default function RegistrationScreen({ navigation, route }) {
   const handleRegister = async () => {
     if (validate()) {
       try {
+        if (donations.some(item => item.status === "pending")) {
+          setAlertType('already_exists');
+          setAlertVisible(true);
+          return;
+        }
+
         const triggerDate = buildDateFromDayAndTime(current, time);
         
         const applicationData = {
@@ -324,12 +330,30 @@ export default function RegistrationScreen({ navigation, route }) {
   }, [current, dates]); 
 
 
-  const flatListRef = useRef(null);
+  // const flatListRef = useRef(null);
 
+
+  const flatListRef = useRef<FlatList>(null);
+
+  const scrollOffset = useRef(0); // Створюємо реф для збереження поточної позиції
+
+  const scroll = (direction: 'left' | 'right') => {
+    const step = 150; // На скільки пікселів прокручувати за один клік
+    const newOffset = direction === 'left' 
+      ? Math.max(0, scrollOffset.current - step) 
+      : scrollOffset.current + step;
+
+    flatListRef.current?.scrollToOffset({
+      offset: newOffset,
+      animated: true,
+    });
+    
+    scrollOffset.current = newOffset; // Оновлюємо поточне значення
+  };
 
   return (
     <>
-      <CustomHeader title={"Registration"} navigation={navigation} />
+      <CustomHeader title={t("registration_title")} navigation={navigation} />
 
         <KeyboardAwareScrollView
           contentContainerStyle={[
@@ -508,13 +532,67 @@ export default function RegistrationScreen({ navigation, route }) {
         
 
         <Text style={styles.sectionTitle}>{t("time")}</Text>
-          <View style={styles.optionsRow}>
+        <View style={styles.sectionContainer}>
+  {/* <Text style={styles.sectionTitle}>{t("time")}</Text> */}
+  
+  <View style={styles.rowWithArrows}>
+    {/* Ліва стрілка */}
+    <TouchableOpacity 
+      onPress={() => scroll('left')} 
+      style={styles.arrowButton}
+    >
+      <Text style={{ color: colors.text, fontSize:24 }}>{"‹"}</Text>
+    </TouchableOpacity>
+
+    <FlatList 
+      ref={flatListRef}
+      data={times}
+      onScroll={(e) => {
+        scrollOffset.current = e.nativeEvent.contentOffset.x;
+      }}
+      scrollEventThrottle={16}
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      keyExtractor={(item) => item}
+      contentContainerStyle={{ gap: 10, paddingHorizontal: 10, }}
+      renderItem={({ item }) => {
+        const isSelected = time === item;
+        return (
+          <TouchableOpacity
+            style={[
+              styles.option,
+              isSelected && styles.optionSelected,
+              errors.time && !time ? styles.optionError : null,
+            ]}
+            onPress={() => {
+              setTime(item);
+              setErrors({ ...errors, time: "" });
+            }}
+          >
+            <Text style={{ color: isSelected ? "#fff" : colors.text }}>
+              {item}
+            </Text>
+          </TouchableOpacity>
+        );
+      }}
+    />
+
+    {/* Права стрілка */}
+    <TouchableOpacity 
+      onPress={() => scroll('right')} 
+      style={styles.arrowButton}
+    >
+      <Text style={{ color: colors.text, fontSize:24 }}>{"›"}</Text>
+    </TouchableOpacity>
+  </View>
+</View>
+          {/* <View style={styles.optionsRow}>
             <FlatList 
               data={times}
               horizontal // Вмикаємо горизонтальний скрол
               showsHorizontalScrollIndicator={false} // Прибираємо смугу прокрутки
               keyExtractor={(item) => item}
-              contentContainerStyle={{ alignSelf:"center",paddingRight: "38.5%", gap: "2%" }} // Відступи між елементами
+              contentContainerStyle={{ alignSelf:"center",paddingRight: "38.5%", gap: "2.6%" }} // Відступи між елементами
               renderItem={({ item }) => {
                 const isSelected = time === item;
                 return (
@@ -538,7 +616,12 @@ export default function RegistrationScreen({ navigation, route }) {
                 );
               }}
             />
-          </View>
+          </View> */}
+
+
+
+
+
           {/* {times.map((timen) => (
             <TouchableOpacity
               key={timen}
@@ -707,29 +790,38 @@ export default function RegistrationScreen({ navigation, route }) {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <Text style={styles.modalTitle}>
-              {alertType === 'success' ? 'Вітаємо! 🎉' : 'Помилка ⚠️'}
+              {alertType === 'success' && t('modal_success_title')}
+              {alertType === 'error' && t('modal_error_title')}
+              {alertType === 'already_exists' && t('modal_already_title')}
             </Text>
-            
+
             <Text style={styles.modalMessage}>
-              {alertType === 'success' 
-                ? 'Запис успішно зроблений!' 
-                : 'Сталася помилка при створенні запису. Спробуйте ще раз.'}
+              {alertType === 'success' && t('modal_success_message')}
+              {alertType === 'error' && t('modal_error_message')}
+              {alertType === 'already_exists' && t('modal_already_message')}
             </Text>
 
             <TouchableOpacity 
               style={[
                 styles.modalButton, 
-                { backgroundColor: alertType === 'success' ? '#E57373' : '#666' }
+                { 
+                  backgroundColor: 
+                    alertType === 'success' ? '#E57373' : 
+                    alertType === 'already_exists' ? '#FFB74D' : '#666' 
+                }
               ]} 
               onPress={() => {
                 setAlertVisible(false);
+                // Якщо успіх — повертаємося назад, в інших випадках просто закриваємо
                 if (alertType === 'success') {
                   navigation.goBack();
                 }
               }}
             >
               <Text style={styles.modalButtonText}>
-                {alertType === 'success' ? 'Перейти' : 'Закрити'}
+                {alertType === 'success' && t('modal_button_go')}
+                {alertType === 'error' && t('modal_button_close')}
+                {alertType === 'already_exists' && t('modal_button_ok')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -853,7 +945,7 @@ const styles = StyleSheet.create({
   xAxis: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginLeft: 31, // Відступ як у yAxis + padding
+    marginLeft: 21,
     marginTop: 8,
     paddingHorizontal: 5,
   },
@@ -1240,4 +1332,30 @@ option: {
     borderBottomWidth: 1,
     borderBottomColor: "#E66A6A1A",
   },
+
+  rowWithArrows: {
+    flexDirection: 'row',
+    // alignItems: 'center',
+    justifyContent: 'space-between',
+    alignItems: "baseline"
+  },
+  arrowButton: {
+    padding: 10,
+    zIndex: 1, // Щоб стрілки були поверх скролу, якщо треба
+    
+  },
+  sectionContainer: {
+    marginVertical: 15,
+  },
+  // option: {
+  //   paddingVertical: 10,
+  //   paddingHorizontal: 20,
+  //   borderRadius: 20,
+  //   borderWidth: 1,
+  //   borderColor: '#ddd',
+  // },
+  // optionSelected: {
+  //   backgroundColor: '#f06060ff', // Твій колір
+  //   borderColor: '#f06060ff',
+  // },
 });

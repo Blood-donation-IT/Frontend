@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../Theme/ThemeContext";
 import { useAuthStore } from "../../../stores/useAuthStore";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import CustomHeader from "../../../components/CustomHeader";
 
 const DonationHistoryScreen = ({ navigation }) => {
   const { colors } = useTheme();
@@ -61,6 +62,14 @@ const DonationHistoryScreen = ({ navigation }) => {
     }
   };
 
+  const date = new Date("2026-04-14");
+
+  const formattedDate = new Intl.DateTimeFormat(i18n.language === 'uk' ? 'uk-UA' : 'en-US', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  }).format(date);
+
   
   const handleDonationPress = (item) => {
     if (item.status === "Canceled") {
@@ -71,8 +80,11 @@ const DonationHistoryScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={[styles.mainContainer, { backgroundColor: "#f9f9f9ff" }]}>
-      <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
+  <>
+    <CustomHeader title={t("donation_history")} navigation={navigation} />
+    
+    <View style={[styles.mainContainer, { backgroundColor: colors.backgroundMain }]}>
+      {/* <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Image
             source={require("../../../images/arrow-left.png")}
@@ -81,10 +93,12 @@ const DonationHistoryScreen = ({ navigation }) => {
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{t("donation_history") || "Donation history"}</Text>
         <View style={{ width: 24 }} />
-      </View>
+      </View> */}
+      
+
 
       <ScrollView 
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent,{paddingTop:50}]}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.topStatsRow}>
@@ -95,7 +109,7 @@ const DonationHistoryScreen = ({ navigation }) => {
 
           <View style={[styles.topStatBadge, { backgroundColor: "#daffddff" }]}>
             <Text style={[styles.topStatLabel, { color: "#2f5e31ff" }]}>{t("delivered") || "Delivered"}</Text>
-            <Text style={[styles.topStatValue, { color: "#2f5e31ff" }]}>450</Text>
+            <Text style={[styles.topStatValue, { color: "#2f5e31ff" }]}>450 ml</Text>
           </View>
 
           <View style={[styles.topStatBadge, { backgroundColor: "#E3F2FD" }]}>
@@ -108,7 +122,7 @@ const DonationHistoryScreen = ({ navigation }) => {
           <View >
             <View style={styles.yearDividerContainer}>
               <View style={styles.yearLine} />
-              <Text style={styles.yearText}>{"2026"}</Text>
+              <Text style={[styles.yearText,{color:colors.text}]}>{"2026"}</Text>
               <View style={styles.yearLine} />
             </View>
             
@@ -118,14 +132,14 @@ const DonationHistoryScreen = ({ navigation }) => {
               return (
                 <TouchableOpacity 
                   key={item.application_id || index} 
-                  style={styles.donationItem}
+                  style={[styles.donationItem,{backgroundColor:colors.backgroundCard2}]}
                   
                   onPress={() => handleDonationPress(item)}
                 >
                   <Text style={{ fontSize: 24, marginRight: 15 }}>🩸</Text>
                   
                   <View style={styles.donationInfo}>
-                    <Text style={styles.donationType}>{"Whole blood"}</Text>{/*item.type   */}
+                    <Text style={[styles.donationType,{color:colors.text}]}>{t("whole_blood")}</Text>{/*item.type   */}
                     <Text style={styles.donationDate}>{item.application_day}</Text>{/*date*/}
                     <Text style={styles.hospitalText}>• {item.location_id}</Text>{/*hospital*/}
                   </View>
@@ -133,7 +147,7 @@ const DonationHistoryScreen = ({ navigation }) => {
                   <View style={styles.donationResult}>
                     <View style={[styles.statusBadge, { backgroundColor: statusStyle.bg }]}>
                       <Text style={[styles.donationStatus, { color: statusStyle.text }]}>
-                        {item.status}
+                        {t(`status_${item.status}`)}
                       </Text>
                     </View>
                     <Text style={styles.volumeText}>{item?.status == "pending" ? null : "450 ml"}</Text> {/*{} {item.unit}*/}
@@ -144,13 +158,13 @@ const DonationHistoryScreen = ({ navigation }) => {
           </View>
         
 
-        <View style={styles.nextDonationCard}>
+        <View style={[styles.nextDonationCard,{backgroundColor:colors.backgroundCard2}]}>
           <Text style={styles.nextDonationTitle}>{t("next_donation") || "Next donation"}</Text>
-          <Text style={styles.nextDonationText}>
+          <Text style={[styles.nextDonationText,{color:colors.text}]}>
             {t("next_donation_desc") || "You can donate blood no earlier than 60 days after your last donation."}
           </Text>
           <Text style={styles.nextDonationDate}>
-            {t("available_from") || "Available from:"} <Text style={{fontWeight: 'bold'}}>April 14, 2026</Text>
+            {t("available_from") || "Available from:"} <Text style={{fontWeight: 'bold'}}>{formattedDate}</Text>
           </Text>
         </View>
 
@@ -192,6 +206,7 @@ const DonationHistoryScreen = ({ navigation }) => {
       </Modal>
 
     </View>
+    </>
   );
 };
 

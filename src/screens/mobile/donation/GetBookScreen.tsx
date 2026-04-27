@@ -48,14 +48,14 @@ const GetBookScreen = () => {
           </Text>
         </TouchableOpacity>
 
-        <Text style={[styles.statusTitle, { color: colors.text }]}>
+        {/* <Text style={[styles.statusTitle, { color: colors.text }]}>
           {isReady ? t("completed", "Completed") : t("days_left", "3 days left")}
         </Text>
         <Text style={[styles.statusSubtitle, { color: colors.text }]}>
           {isReady
             ? t("now_you_have_book", "now you have a donor book")
             : t("to_receive_book", "to receive the donor's book")}
-        </Text>
+        </Text> */}
       </View>
 
       {/* Інформаційні картки */}
@@ -75,7 +75,7 @@ const GetBookScreen = () => {
         {!isReady && (
           <View style={[styles.infoCard, { backgroundColor: colors.backgroundCard, borderColor: "#D1D5DB" }]}>
             <Text style={[styles.cardText, { color: colors.text }]}>
-              {t("to_receive_need_5", "To receive the book, you need to make")} <Text style={styles.highlightText}>5 donations</Text>.
+              {t("to_receive_need_5", "To receive the book, you need to make")} <Text style={styles.highlightText}>5 {t("donations_label", "donations")}</Text>.
             </Text>
             <Text style={[styles.cardText, { color: colors.text, marginTop: 10 }]}>
               {t("already_donated", "You have already donated blood")} <Text style={styles.boldText}>{donations}</Text> {t("times", "times")} - {t("only", "only")} <Text style={styles.highlightText}>{remainingDonations} {t("donations_left", "donations left!")}</Text>
@@ -94,6 +94,7 @@ const GetBookScreen = () => {
           disabled={!isReady} // Кнопка не працює, поки немає 5 донацій
           onPress={() => {
             if (isReady) {
+              localStorage.setItem("isDonorBook","true");
               navigation.navigate("BookScreen");
             }
           }}
@@ -112,7 +113,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: 20,
     paddingTop: 40,
-    paddingBottom: 120, // Відступ знизу, щоб меню не перекривало контент
+    paddingBottom: 140, // Відступ знизу, щоб меню не перекривало контент
     alignItems: "center",
   },
   mainTitle: {

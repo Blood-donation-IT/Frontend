@@ -19,6 +19,12 @@
   "honorary_donor_of_ukraine": "Honorary Donor of Ukraine",
   "donation_history": "Donation History",
 
+  "delivered": "Delivered",
+  "donations_count": "times",
+  "lives_count": "lives",
+
+  "blood_type_label": "b type",
+
   "change": "Change",
   "your_blood_type": "Your Blood Type",
   "time": "Time",
@@ -116,6 +122,8 @@
 
 // NotificationScreen
 
+  "no_notifications_yet": "You have no notifications yet.",
+
   "notifications": "Notifications",
   "today": "Today",
   "yesterday": "Yesterday",
@@ -141,12 +149,19 @@
   "get_started": "Get Started",
 
   // BookScreen
-  "series_number": "Series№{{number}}",
   "date_of_issue": "Date of Issue:",
   "location_dots": "Location:",
-  "type_of_blood": "Blood Type:",
   "reg_lviv": "Lviv Region",
-  "Scan_for_details": "Scan for details",
+
+  "donor_book_title": "Donor Book",
+  "series_no": "Series №{{number}}",
+  "location_label": "Location",
+  "type_blood": "Blood Type",
+  "scan_details": "Scan for details",
+  "full_information": "Full Information",
+  "done": "Done",
+  "date_of_birth": "Date of Birth",
+
   
   // GetBookScreen
   "n_days_left_one": "{{count}} day left to receive the donor's book",
@@ -157,6 +172,23 @@
   "to_get_your_donor_book_other": "To receive the donor's book, you need to make {{count}} more donations",
   "get_donors_book": "Get Donor's Book",
   "donations_success": "You have successfully made 5 donations!",
+
+  
+  "donor_id_title": "Donor ID",
+  "donations_label": "donations",
+  "completed": "Completed",
+  "days_left": "3 days left",
+  "now_you_have_book": "now you have a donor book",
+  "to_receive_book": "to receive the donor's book",
+  "what_is_donor_book": "What is donor book?",
+  "donor_book_desc": "A donor card is an official document confirming your status as a blood donor. It entitles you to benefits, free examinations, and priority medical care.",
+  "to_receive_need_5": "To receive the book, you need to make",
+  "already_donated": "You have already donated blood",
+  "times": "times",
+  "only": "only",
+  "donations_left": "donations left!",
+  "get_donor_id": "Get Donor ID",
+
 
   // ForgetScreen
   "enter_the_email_associated_with_your_account": "Enter the email associated with your account and we’ll send an email with the code to reset your password.",
@@ -174,6 +206,8 @@
 
   // EditProfileScreen
 
+  "choose_blood_type": "Choose blood type",
+
   // "edit_profile": "Edit Profile",
   "save_changes": "Save Changes",
 
@@ -182,7 +216,16 @@
   "rush_of_people": "Rush of People",
   "something_that_might_interest_you": "Something that might interest you",
   "which_blood_types_are_needed_most": "Which blood types are needed most?",
+
+  "your_blood": "Your Blood",
+  "saves_lives": "Saves Lives!",
   "your_appointment": "Your Appointment",
+  "quick_actions": "Quick Actions",
+  "find_donors": "Find Donors",
+  "hospitals_nearby": "Hospitals Nearby",
+  "activity": "Activity",
+  "blog": "Blog",
+  "donate_now": "Donate Now",
 
   // googleLogin
   "welcome!": "Welcome!",
@@ -191,6 +234,12 @@
   "signing_in": "Signing in...",
 
   //Registration
+
+  "registration_title": "Registration",
+  "modal_already_title": "Already Booked! 📅",
+  "modal_already_message": "You already have an active appointment. Please wait for your current date or cancel the previous one.",
+  "modal_button_ok": "Got it",
+
   "people_registered_day": "People registered for this day",
   "total_registered_time": "Total registered for this time:",
 
@@ -207,6 +256,10 @@
   "component": "Component",
   "volume": "Volume",
   "well_being": "Well-Being",
+  "status_pending": "pending",
+  "status_Successfully": "Successfully",
+  "status_cancelled": "Cancelled",
+  "view_all": "All",
 
 
   "info_unavailable": "Information Unavailable",
@@ -221,6 +274,13 @@
   "dark_mode": "Dark Mode",
   "support": "Support",
   "change_password": "Change Password",
+
+  "modal_success_title": "Congratulations! 🎉",
+  "modal_error_title": "Error ⚠️",
+  "modal_success_message": "Appointment successfully created!",
+  "modal_error_message": "There was an error creating the appointment. Please try again.",
+  "modal_button_go": "Go to",
+  "modal_button_close": "Close",
 
   "other":"Other"
 

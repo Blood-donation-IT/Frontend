@@ -144,8 +144,8 @@ const BookScreen = () => {
             <View style={styles.contentWrapper}>
               
               <View style={styles.rowTop}>
-                <Text style={[styles.headerTitle, { color: cardTextColor }]}>Donor Book</Text>
-                <Text style={[styles.headerSeries, { color: cardTextColor }]}>Series №0203</Text>
+                <Text style={[styles.headerTitle, { color: cardTextColor }]}>{t("donor_book_title")}</Text>
+                <Text style={[styles.headerSeries, { color: cardTextColor }]}>{t("series_no", { number: "0203" })}</Text>
               </View>
 
               <View style={styles.rowMiddle}>
@@ -165,15 +165,15 @@ const BookScreen = () => {
                 
                 <View style={styles.detailsContainer}>
                   <View style={styles.infoBlock}>
-                    <Text style={[styles.infoLabel, { color: cardTextColor }]}>Date Of Issue:</Text>
-                    <Text style={[styles.infoValue, { color: cardTextColor, opacity: 0.8 }]}>24 June 2025</Text>
+                    <Text style={[styles.infoLabel, { color: cardTextColor }]}>{t("date_of_issue")}:</Text>
+                    <Text style={[styles.infoValue, { color: cardTextColor, opacity: 0.8 }]}>28 June 2025</Text>
                   </View>
                   <View style={styles.infoBlock}>
-                    <Text style={[styles.infoLabel, { color: cardTextColor }]}>Location:</Text>
+                    <Text style={[styles.infoLabel, { color: cardTextColor }]}>{t("location_label")}:</Text>
                     <Text style={[styles.infoValue, { color: cardTextColor, opacity: 0.8 }]}>NNI JHP Lviv Region</Text>
                   </View>
                   <View style={styles.infoBlock}>
-                    <Text style={[styles.infoLabel, { color: cardTextColor }]}>Type Blood:</Text>
+                    <Text style={[styles.infoLabel, { color: cardTextColor }]}>{t("type_blood")}:</Text>
                     <Text style={[styles.infoValue, { color: cardTextColor, opacity: 0.8 }]}>{t(user?.blood_type)}</Text>
                   </View>
                 </View>
@@ -218,7 +218,7 @@ const BookScreen = () => {
                  />
               </View>
 
-              <Text style={[styles.qrText, { color: cardTextColor }]}>Scan for details</Text>
+              <Text style={[styles.qrText, { color: cardTextColor }]}>{t("scan_details")}</Text>
             </View>
           </Animated.View>
 
@@ -243,17 +243,17 @@ const BookScreen = () => {
                 <View style={styles.sheetHeader}>
                   <View style={{ width: 40 }} /> 
                   <Text style={[styles.sheetTitle, { color: colors.text }]}>
-                    Full Information
+                    {t("full_information")}
                   </Text>
                   <TouchableOpacity onPress={closeSheet} hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}>
-                    <Text style={styles.closeBtn}>Done</Text>
+                    <Text style={styles.closeBtn}>{t("done")}</Text>
                   </TouchableOpacity>
                 </View>
 
                 {/* Вміст, який можна скролити */}
-                {/* <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}> */}
-                  <View>
-                  <Text style={[styles.sheetSeries, { color: colors.text }]}>Series №0203</Text>
+                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: "35%" }}>
+                  {/* <View> */}
+                  <Text style={[styles.sheetSeries, { color: colors.text }]}>{t("series_no", { number: "0203" })}</Text>
 
                   {/* Профіль (Фото + Ім'я) */}
                   <View style={[styles.profileCardSheet, { backgroundColor: colors.backgroundCard }]}>
@@ -274,7 +274,7 @@ const BookScreen = () => {
                       {/* <Text style={[styles.profileName, { color: colors.text }]}>Blues</Text>
                       <Text style={[styles.profileName, { color: colors.text }]}>Jack</Text>
                       <Text style={[styles.profileName, { color: colors.text }]}>Boberovuch</Text> */}
-                      <Text style={[styles.profileDobLabel, { color: colors.text }]}>Date of Birth</Text>
+                      <Text style={[styles.profileDobLabel, { color: colors.text }]}>{t("date_of_birth")}</Text>
                       <Text style={[styles.profileDob, { color: colors.text }]}>07.07.1999</Text>
                     </View>
                   </View>
@@ -287,15 +287,15 @@ const BookScreen = () => {
 
                   <View style={[styles.infoBlockSheet, { backgroundColor: colors.backgroundCard }]}>
                     <Text style={[styles.infoLabelSheet, { color: colors.text }]}>Date Of Issue</Text>
-                    <Text style={[styles.infoValueSheet, { color: colors.text }]}>24 June 2025</Text>
+                    <Text style={[styles.infoValueSheet, { color: colors.text }]}>28 June 2025</Text>
                   </View>
 
                   <View style={[styles.infoBlockSheet, { backgroundColor: colors.backgroundCard }]}>
                     <Text style={[styles.infoLabelSheet, { color: colors.text }]}>Location</Text>
                     <Text style={[styles.infoValueSheet, { color: colors.text }]}>NNI JHP Lviv Region</Text>
                   </View>
-                {/* </ScrollView> */}
-                </View>
+                </ScrollView>
+                {/* </View> */}
 
               </Animated.View>
             </TouchableWithoutFeedback>
@@ -313,6 +313,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    paddingBottom:"30%",
   },
   cardContainer: {
     width: 323,
@@ -443,7 +444,7 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   bottomSheet: {
-    height: "95%", // 85% екрану, щоб влізла вся Full Information
+    height: "85%", // 85% екрану, щоб влізла вся Full Information
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     padding: 25,

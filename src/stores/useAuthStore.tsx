@@ -174,7 +174,7 @@ export const useAuthStore = create<AuthState>((set,get) => ({
           IdToken: idToken,
           email: firebaseUser.email,
           name: firebaseUser.displayName,
-          avatar: firebaseUser.photoURL
+          avatar: firebaseUser.photoURL,
         });
 
         if (data.token) {

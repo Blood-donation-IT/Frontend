@@ -18,6 +18,15 @@
   "honorary_donor_of_ukraine": "Почесний донор України",
   "donation_history": "Історія донацій",
 
+  "testDate": "14 лютого, 2026",
+
+  "delivered": "Доставлено",
+  "donations_count": "разів",
+  "lives_count": "життів",
+
+
+  "blood_type_label": "група",
+
   "change": "Змінити",
   "your_blood_type": "Ваша група крові",
   "time": "Час",
@@ -117,6 +126,8 @@
 
   // NotificationScreen
   
+  "no_notifications_yet": "У вас ще немає сповіщень.",
+
   "notifications": "Сповіщення",
   "today": "Сьогодні",
   "yesterday": "Вчора",
@@ -144,12 +155,19 @@
   "get_started": "Розпочати",
 
   // BookScreen
-  "series_number": "Серія №{{number}}",
-  "date_of_issue": "Дата видачі:",
   "location_dots": "Локація:",
-  "type_of_blood": "Група крові:",
   "reg_lviv": "Львівська область",
-  "Scan_for_details": "Скануйте для деталей",
+
+  "donor_book_title": "Книга донора",
+  "series_no": "Серія №{{number}}",
+  "date_of_issue": "Дата видачі",
+  "location_label": "Місце видачі",
+  "type_blood": "Група крові",
+  "scan_details": "Скануйте для деталей",
+  "full_information": "Повна інформація",
+  "done": "Готово",
+  "date_of_birth": "Дата народження",
+
 
   // GetBookScreen
   "n_days_left_one": "Залишився {{count}} день, щоб отримати книгу донора",
@@ -163,6 +181,23 @@
 
   "get_donors_book": "Отримати книгу донора",
   "donations_success": "Ви успішно зробили 5 донацій!",
+
+  
+  "donor_id_title": "ID Донора",
+  "donations_label": "донацій",
+  "completed": "Виконано",
+  "days_left": "Залишилось 3 дні",
+  "now_you_have_book": "тепер у вас є книжка донора",
+  "to_receive_book": "щоб отримати книжку донора",
+  "what_is_donor_book": "Що таке книжка донора?",
+  "donor_book_desc": "Книжка донора — це офіційний документ, що підтверджує ваш статус. Вона дає право на пільги, безкоштовні обстеження та пріоритетне медичне обслуговування.",
+  "to_receive_need_5": "Для отримання книжки потрібно зробити",
+  "already_donated": "Ви вже здали кров",
+  "times": "разів",
+  "only": "лише",
+  "donations_left": "залишилось донацій!",
+  "get_donor_id": "Отримати ID Донора",
+
 
 // ForgetScreen
  "enter_the_email_associated_with_your_account": "Введіть свій email, пов'язаний з вашим аккаунтом, і ми надішлемо вам лист з кодом для скидання пароля.",
@@ -180,6 +215,8 @@
 
   // EditProfileScreen
 
+  "choose_blood_type": "Оберіть групу крові",
+
   // "edit_profile": "Редагувати профіль",
   "save_changes": "Зберегти зміни",
 
@@ -188,7 +225,16 @@
   "rush_of_people": "Наплив людей",
   "something_that_might_interest_you": "Те, що може вас зацікавити",
   "which_blood_types_are_needed_most": "Яка кров зараз найбільш потрібна?",
+
+  "your_blood": "Твоя кров",
+  "saves_lives": "рятує життя!",
   "your_appointment": "Ваш запис",
+  "quick_actions": "Швидкі дії",
+  "find_donors": "Знайти донорів",
+  "hospitals_nearby": "Лікарні поруч",
+  "activity": "Активність",
+  "blog": "Блог",
+  "donate_now": "Здати кров",
 
   // googleLogin
   "welcome!": "Вітаємо!",
@@ -210,7 +256,10 @@
   "component": "Компонент",
   "volume": "Об'єм",
   "well_being": "Самопочуття",
-
+  "status_pending": "очікується",
+  "status_Successfully": "успішно",
+  "status_cancelled": "скасовано",
+  "view_all": "Всі",
 
   "info_unavailable": "Інформація недоступна",
   "canceled_donation_msg": "Детальна інформація недоступна, оскільки ця донація була скасована.",
@@ -227,8 +276,21 @@
   "change_password": "Змінити пароль",
 
   //Registration
+
+  "registration_title": "Реєстрація",
+  "modal_already_title": "У вас вже є запис! 📅",
+  "modal_already_message": "Ви вже записані на донацію. Будь ласка, дочекайтеся поточної дати або скасуйте попередній запис.",
+  "modal_button_ok": "Зрозуміло",
+
   "people_registered_day": "Кількість зареєстрованих на цей день",
   "total_registered_time": "Всього зареєстровано на цей час:",
+
+  "modal_success_title": "Вітаємо! 🎉",
+  "modal_error_title": "Помилка ⚠️",
+  "modal_success_message": "Запис успішно зроблений!",
+  "modal_error_message": "Сталася помилка при створенні запису. Спробуйте ще раз.",
+  "modal_button_go": "Перейти",
+  "modal_button_close": "Закрити",
 
   "other":"Інше"
 }
