@@ -17,7 +17,7 @@ function CustomTabBar({ state, navigation }) {
     ProfileTab: { label: t("profile"), active: require("../images/profile-active.png"), inactive: require("../images/profile.png") },
   };
 
-  const isDonorBook = false;
+  const isDonorBook = localStorage.getItem("isDonorBook") == "true";
 
   return (
     <View style={styles.tabBar}>

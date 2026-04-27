@@ -14,7 +14,7 @@ import { Ionicons, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { format } from "date-fns";
 import { useAuthStore } from "../../../stores/useAuthStore";
 export default function HomeScreen({ navigation }) {
-  const { colors } = useTheme();
+  const {isLight, colors } = useTheme();
   const { t } = useTranslation();
 
   const { donations, user } = useAuthStore();
@@ -73,16 +73,20 @@ export default function HomeScreen({ navigation }) {
             <View style={styles.logoRow}>
               {/* <MaterialCommunityIcons name="water" size={24} color="#ff4d4d" /> */}
               <Image 
-                source={require("../../../images/logo.png")} // Шлях до твого файлу
+                source={
+                  isLight
+                  ? require("../../../images/logo.png") 
+                  : require("../../../images/logo-white.png")
+                } // Шлях до твого файлу
                 style={styles.logo}
                 resizeMode="contain"
               />
             </View>
             <Text style={[styles.greeting, { color: colors.text }]}>
-              {t("hello", "Hello")}, <Text style={styles.boldText}>{user?.name}</Text> 👋
+              {t("hello")}, <Text style={styles.boldText}>{user?.name}</Text> 👋
             </Text>
             <Text style={[styles.subtitle, { color: colors.text, opacity: 0.7 }]}>
-              {t("your_blood", "Your Blood")} <Text style={{ color: "#ff4d4d" }}>{t("saves_lives", "Saves Lives!")}</Text>
+              {t("your_blood")} <Text style={{ color: "#ff4d4d" }}>{t("saves_lives", "Saves Lives!")}</Text>
             </Text>
           </View>
           <TouchableOpacity onPress={() => navigation.navigate("NotificationScreen")} style={styles.bellBtn}>
@@ -234,7 +238,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 20,
-    paddingBottom: 40, 
+    paddingBottom: 200, 
   },
   row: {
     flexDirection: "row",
