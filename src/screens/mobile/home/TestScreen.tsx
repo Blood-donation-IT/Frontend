@@ -56,6 +56,8 @@ export default function TestScreen() {
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
 
+  const { createDonationAction, user, donations } = useAuthStore();
+
   const { height, width } = useWindowDimensions();
   const allQuestions = [
     { id: 1,  type: "yesno" },
@@ -115,10 +117,10 @@ export default function TestScreen() {
     try {
       const bloodQuestion = allQuestions.find(q => q.type === "blood");
       const selectedBloodType = answers[bloodQuestion?.id];
-
-      await updateUserAction({
-        blood_type: selectedBloodType
-      });
+      user.blood_type = selectedBloodType
+      // await updateUserAction({
+      //   blood_type: selectedBloodType
+      // });
       
     } catch (error) {
       console.log("Error updating blood type:", error);

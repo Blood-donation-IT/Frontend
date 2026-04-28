@@ -18,9 +18,9 @@ const ProfileScreen = ({ navigation }) => {
   const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
 
-  useEffect(() => {
-    fetchUserDonations();
-  }, []);
+  // useEffect(() => {
+  //   fetchUserDonations();
+  // }, []);
 
   const lastDonationDate = user?.last_donation ? new Date(user.last_donation) : null;
 
@@ -132,7 +132,7 @@ const ProfileScreen = ({ navigation }) => {
           <View style={[styles.statBox, { borderColor: "#FFD1D1" },{backgroundColor:colors.backgroundCard2}]}>
              <Text style={styles.statLabel}>{t("donated") || "Donated"}</Text>
              {/* <Text style={styles.statValue}>03</Text> */}
-             <Text style={[styles.statValue,{color:colors.text}]}>{user?.donations_count < 10 && user?.donations_count > 0 ? `0${user?.donations_count}` : user?.donations_count || "01"}</Text>
+             <Text style={[styles.statValue,{color:colors.text}]}>{user?.donations_count < 10 && user?.donations_count > 0 ? `0${user?.donations_count}` : user?.donations_count || "0"}</Text>
           </View>
           <View style={[styles.statBox, { borderColor: "#FFD1D1" },{backgroundColor:colors.backgroundCard2}]}>
              <Text style={styles.statLabel}>{t("blood_type") || "Blood Type"}</Text>
@@ -141,7 +141,7 @@ const ProfileScreen = ({ navigation }) => {
           <View style={[styles.statBox, { borderColor: "#FFD1D1" },{backgroundColor:colors.backgroundCard2}]}>
              <Text style={styles.statLabel}>{t("life_saved") || "Life Saved"}</Text>
              {/* <Text style={styles.statValue}>02</Text> */}
-             <Text style={[styles.statValue,{color:colors.text}]}>{user?.lives_saved_count < 10 && user?.lives_saved_count > 0 ? `0${user?.lives_saved_count}` : user?.lives_saved_count || "02"}</Text>
+             <Text style={[styles.statValue,{color:colors.text}]}>{user?.lives_saved_count < 10 && user?.lives_saved_count > 0 ? `0${user?.lives_saved_count}` : user?.lives_saved_count || "0"}</Text>
           </View>
         </View>
 
