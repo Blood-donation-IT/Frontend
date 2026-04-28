@@ -22,14 +22,14 @@ import { LanguageSwitcher } from "../../../components/LanguageSwitcher";
 export default function LogInScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
-  const { colors, isDark } = useTheme();
+  const { colors, isLight } = useTheme();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const loginAction = useAuthStore((state) => state.loginAction);
 
   const handleLogIn = async () => {
     try {
-      const data = await loginAction({ email, password });
+      const data = await loginAction({ email, password });//
       if (data.access_token) {
         navigation.navigate("Home"); 
       }
@@ -38,9 +38,6 @@ export default function LogInScreen() {
     }
   };
 
-  const logoSource = isDark
-    ? require("../../../images/logo-white.png")
-    : require("../../../images/logo.png");
 
   return (
     <ScrollView
@@ -51,7 +48,14 @@ export default function LogInScreen() {
       keyboardShouldPersistTaps="handled"
     >
       <LanguageSwitcher />
-      <Image source={logoSource} style={styles.logo} />
+      <Image 
+        source={
+          isLight
+          ? require("../../../images/logo.png") 
+          : require("../../../images/logo-white.png")
+        } 
+        style={styles.logo} 
+      />
       <View style={styles.boxOfInputs}>
         <TextInput
           style={[
@@ -84,7 +88,7 @@ export default function LogInScreen() {
           value={password}
           onChangeText={setPassword}
         />
-        <TouchableOpacity onPress={() => navigation.navigate("ForgetScreen")}>
+        {/* <TouchableOpacity onPress={() => navigation.navigate("ForgetScreen")}>
           <Text
             style={{
               color: colors.primary,
@@ -95,7 +99,7 @@ export default function LogInScreen() {
           >
             {t("forgot_password")}
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       <TouchableOpacity

@@ -43,6 +43,13 @@ export const useAuthStore = create<AuthState>((set,get) => ({
   donations: [],
   isLoadingDonations: false,
 
+  addDonation: (newDonation: Application) => {
+    set((state) => ({
+      // Створюємо НОВИЙ масив: нова донація + всі старі
+      donations: [newDonation, ...state.donations]
+    }));
+  },
+
   fetchProfile: async () => {
     try {
       const { data } = await api.get('/api/v1/users/me');

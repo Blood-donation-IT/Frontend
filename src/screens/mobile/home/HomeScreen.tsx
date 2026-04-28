@@ -91,7 +91,7 @@ export default function HomeScreen({ navigation }) {
           </View>
           <TouchableOpacity onPress={() => navigation.navigate("NotificationScreen")} style={styles.bellBtn}>
             <Feather name="bell" size={24} color="#ff4d4d" />
-            <View style={styles.notificationDot} />
+            {/* <View style={styles.notificationDot} /> */}
           </TouchableOpacity>
         </View>
 

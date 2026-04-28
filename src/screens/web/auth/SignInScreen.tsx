@@ -22,7 +22,7 @@ import { LanguageSwitcher } from "../../../components/LanguageSwitcher";
 export default function SignInScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation();
-  const { colors, isDark } = useTheme();
+  const { colors, isLight } = useTheme();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -63,10 +63,6 @@ export default function SignInScreen() {
     }
   };
 
-  const logoSource = isDark
-    ? require("../../../images/logo-white.png")
-    : require("../../../images/logo.png");
-
   return (
     <ScrollView
       contentContainerStyle={[
@@ -76,7 +72,14 @@ export default function SignInScreen() {
       keyboardShouldPersistTaps="handled"
     >
       <LanguageSwitcher />
-      <Image source={logoSource} style={styles.logo} />
+      <Image 
+        source={
+          isLight
+          ? require("../../../images/logo.png") 
+          : require("../../../images/logo-white.png")
+        } 
+        style={styles.logo} 
+      />
 
       <View style={styles.boxOfInputs}>
         <TextInput

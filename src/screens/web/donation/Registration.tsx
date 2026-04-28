@@ -42,7 +42,7 @@ export default function RegistrationScreen({ navigation, route }) {
 
   const { width } = useWindowDimensions();
 
-  const { createDonationAction, user, donations } = useAuthStore();
+  const { createDonationAction, user, donations, addDonation } = useAuthStore();
 
   const { t } = useTranslation();
   const [time, setTime] = useState<string | null>(null);
@@ -251,7 +251,33 @@ export default function RegistrationScreen({ navigation, route }) {
         };
         console.log(applicationData)
 
-        await createDonationAction(applicationData);
+        // await createDonationAction(applicationData);
+
+        // donations.push(
+        //   {
+        //     application_day: "2026-04-28",
+        //     application_id: "7453810883081281536",
+        //     application_time: time,
+        //     blood_type: user?.blood_type,
+        //     created_at: "2026-04-25T07:59:01.325642",
+        //     location_id: locationForBackend,
+        //     slot_index: 4,
+        //     status: "pending",
+        //     updated_at: null,
+        //   }
+        // )
+        const newDonation = {
+           application_day: "2026-04-28",
+            application_id: "7453810883081281536",
+            application_time: time,
+            blood_type: user?.blood_type,
+            created_at: "2026-04-25T07:59:01.325642",
+            location_id: locationForBackend,
+            slot_index: 4,
+            status: "pending",
+            updated_at: null,
+        };
+        addDonation(newDonation);
 
         // await scheduleDateNotification(
         //   "Запис на донацію",

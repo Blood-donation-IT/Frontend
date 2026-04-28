@@ -104,17 +104,17 @@ const DonationHistoryScreen = ({ navigation }) => {
         <View style={styles.topStatsRow}>
           <View style={[styles.topStatBadge, { backgroundColor: "#fde3e8ff" }]}>
             <Text style={[styles.topStatLabel, { color: "#f06060ff" }]}>{t("donated") || "Donated"}</Text>
-            <Text style={[styles.topStatValue, { color: "#f06060ff" }]}>01</Text>
+            <Text style={[styles.topStatValue, { color: "#f06060ff" }]}>0</Text>
           </View>
 
           <View style={[styles.topStatBadge, { backgroundColor: "#daffddff" }]}>
             <Text style={[styles.topStatLabel, { color: "#2f5e31ff" }]}>{t("delivered") || "Delivered"}</Text>
-            <Text style={[styles.topStatValue, { color: "#2f5e31ff" }]}>450 ml</Text>
+            <Text style={[styles.topStatValue, { color: "#2f5e31ff" }]}>0 ml</Text>
           </View>
 
           <View style={[styles.topStatBadge, { backgroundColor: "#E3F2FD" }]}>
             <Text style={[styles.topStatLabel, { color: "#1d7bc8ff" }]}>{t("life_saved") || "Life Saved"}</Text>
-            <Text style={[styles.topStatValue, { color: "#1d7bc8ff" }]}>02</Text>
+            <Text style={[styles.topStatValue, { color: "#1d7bc8ff" }]}>0</Text>
           </View>
         </View>
 
