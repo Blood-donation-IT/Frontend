@@ -178,7 +178,7 @@ export const useAuthStore = create<AuthState>((set,get) => ({
     try {
       // console.log(firebaseUser)
         const { data } = await api.post('/api/v1/oauth/google/', { 
-          IdToken: idToken,
+          id_token: idToken,
           email: firebaseUser.email,
           name: firebaseUser.displayName,
           avatar: firebaseUser.photoURL,
