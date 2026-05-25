@@ -25,6 +25,7 @@ import Svg, {
 import { LanguageSwitcher } from "../../../components/LanguageSwitcher";
 const screenWidth = Dimensions.get('window').width;
 import { useWindowDimensions } from 'react-native';
+import { User } from "../../../interfaces/user";
 
 // --- 1. КОМПОНЕНТ ФОНУ ---
 const BackgroundCircles = ({ width, height }) => {
@@ -78,10 +79,13 @@ export default function TestScreen() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [answers, setAnswers] = useState({});
 
+  const [selectedBloodType, setSelectedBloodType] = useState<User['blood_type'] | null>(null);
+
   const slideAnim = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(1)).current;
 
   const updateUserAction = useAuthStore((state) => state.updateUserAction);
+   const { saveHealthTest } = useAuthStore.getState();
 
   const totalSteps = allQuestions.length;
   const currentQ = allQuestions[currentIndex];
@@ -113,19 +117,30 @@ export default function TestScreen() {
   };
 
 
+  // const handleSaveInfo = async () => {
+  //   try {
+  //     const bloodQuestion = allQuestions.find(q => q.type === "blood");
+  //     const selectedBloodType = answers[bloodQuestion?.id];
+  //     // await updateUserAction({
+  //     //   blood_type: selectedBloodType
+  //     // });
+      
+  //   } catch (error) {
+  //     console.log("Error updating blood type:", error);
+  //   }
+  // }
+
   const handleSaveInfo = async () => {
     try {
-      const bloodQuestion = allQuestions.find(q => q.type === "blood");
-      const selectedBloodType = answers[bloodQuestion?.id];
-      user.blood_type = selectedBloodType
-      // await updateUserAction({
-      //   blood_type: selectedBloodType
-      // });
-      
+      // const bloodQuestion = allQuestions.find(q => q.type === "blood");
+      // const selectedBloodType = answers[bloodQuestion?.id] || "N/A";
+
+      await saveHealthTest(answers, selectedBloodType);
+
     } catch (error) {
-      console.log("Error updating blood type:", error);
+      console.log("Error in handleSaveInfo:", error);
     }
-  }
+  };
 
 
 
@@ -396,8 +411,8 @@ export default function TestScreen() {
 
           {currentQ.type === "yesno" && (
             <View style={styles.actionRow}>
-              {renderButton(currentQ.id, "yes", t("yes") || "Yes")}
-              {renderButton(currentQ.id, "no", t("no") || "No")}
+              {renderButton(currentQ.id, "true", t("yes") || "Yes")}
+              {renderButton(currentQ.id, "false", t("no") || "No")}
             </View>
           )}
 
@@ -413,12 +428,14 @@ export default function TestScreen() {
               
               <View style={styles.newBloodGrid}>
                 {bloodTypes.map((bt) => {
-                  const active = answers[currentQ.id] === bt;
+                  // 1. Тепер active залежить від selectedBloodType
+                  const active = selectedBloodType === bt;
 
                   return (
                     <TouchableOpacity
                       key={bt}
-                      onPress={() => setAnswers({ ...answers, [currentQ.id]: bt })}
+                      // 2. Оновлюємо саме selectedBloodType
+                      onPress={() => setSelectedBloodType(bt)}
                       style={[
                         styles.newBloodCard,
                         active && { borderColor: '#DE7272', backgroundColor: '#FFF5F5' }
@@ -435,17 +452,23 @@ export default function TestScreen() {
               <TouchableOpacity 
                 style={[
                   styles.unknownButton, 
-                  answers[currentQ.id] === 'unknown' && { borderColor: '#DE7272', backgroundColor: '#FFF5F5' }
+                  // 3. Перевірка для кнопки "Не знаю"
+                  selectedBloodType === 'N/A' && { borderColor: '#DE7272', backgroundColor: '#FFF5F5' }
                 ]}
-                onPress={() => setAnswers({ ...answers, [currentQ.id]: 'unknown' })}
+                // 4. Встановлюємо значення за замовчуванням
+                onPress={() => setSelectedBloodType('N/A')}
               >
                 <Text style={styles.unknownButtonText}>{t("blood_type_unknown")}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity 
-                style={[styles.continueButton, !answers[currentQ.id] && { opacity: 0.5 }]}
+                style={[
+                  styles.continueButton, 
+                  // 5. Кнопка активна, якщо щось вибрано (наприклад, не пустий рядок)
+                  !selectedBloodType && { opacity: 0.5 }
+                ]}
                 onPress={handleNext}
-                disabled={!answers[currentQ.id]}
+                disabled={!selectedBloodType}
               >
                 <Text style={styles.continueButtonText}>{t("continue")}</Text>
               </TouchableOpacity>
@@ -454,7 +477,7 @@ export default function TestScreen() {
         </Animated.View>
       </View>
 
-      <View style={[styles.waveContainer,{height: height < 700 ? 210 : 290}, {position: height < 800 ? 'absolute' : 'relative'},{bottom: height < 800 ? 0 : undefined,}]} pointerEvents="none">
+      <View style={[styles.waveContainer,{height: height < 700 ? 215 : 220}, {position: height < 800 ? 'absolute' : 'relative'},{bottom: height < 800 ? 0 : undefined,}]} pointerEvents="none">
         <Image source={require('../../../images/wave.png')} style={styles.waveImage} resizeMode="cover" />
       </View>
     </View>

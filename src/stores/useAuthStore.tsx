@@ -20,6 +20,7 @@ interface AuthState {
   updateUserAction: (newData: UpdateUserPayload) => Promise<void>;
   fetchUserDonations: () => Promise<void>;
   createDonationAction: (donationData: any) => Promise<Application>;
+  saveHealthTest: (answersData: any, bloodType: User["blood_type"]) => Promise<void>;
 }
 
 const DEFAULT_USER: User = {
@@ -176,9 +177,9 @@ export const useAuthStore = create<AuthState>((set,get) => ({
     if (!firebaseUser || !idToken) return;
 
     try {
-      // console.log(firebaseUser)
+      console.log(firebaseUser)
         const { data } = await api.post('/api/v1/oauth/google/', { 
-          IdToken: idToken,
+          id_token: idToken,
           email: firebaseUser.email,
           name: firebaseUser.displayName,
           avatar: firebaseUser.photoURL,
@@ -188,11 +189,12 @@ export const useAuthStore = create<AuthState>((set,get) => ({
           localStorage.setItem('accessToken', data.token)
           //await SecureStore.setItemAsync('accessToken', data.token);
         }
+        console.log(data)
 
         set({ 
             user: { 
                 ...DEFAULT_USER,
-                id: firebaseUser.id, 
+                id: data.user_id,
                 name: data.name || firebaseUser.displayName,
                 email: data.email || firebaseUser.email,
                 avatar: data.avatar || firebaseUser.photoURL,
@@ -204,12 +206,12 @@ export const useAuthStore = create<AuthState>((set,get) => ({
 
     } catch (error) {
         console.error("Помилка синхронізації з бекендом:", error);
-        console.log(firebaseUser)
+        
 
         set({ 
             user: {
                 ...DEFAULT_USER,
-                id: firebaseUser.id, 
+                id: "0",
                 name: firebaseUser.displayName,
                 email: firebaseUser.email,
                 avatar: firebaseUser.photoURL,
@@ -230,7 +232,43 @@ export const useAuthStore = create<AuthState>((set,get) => ({
         console.error("Update failed", error);
         throw error;
     }
-    },
+  },
+
+  saveHealthTest: async (answersData: any, bloodType: User["blood_type"]) => {
+    try {
+      const formattedAnswers = Object.keys(answersData).map(id => ({
+        questionId: parseInt(id),
+        value: answersData[id] === "true"
+      }));
+
+      console.log(answersData)
+
+      const requestBody = {
+        userId: get().user?.id || 0,
+        completedAt: new Date().toISOString(),
+        answers: formattedAnswers,
+        bloodType: bloodType
+      };
+
+      console.log(requestBody)
+
+      await api.post('/api/v1/users/post_test', requestBody);
+
+      set((state) => ({
+        user: state.user ? { ...state.user, blood_type: bloodType } : null
+      }));
+
+      const currentUser = get().user;
+      if (currentUser) {
+        localStorage.setItem('user_profile', JSON.stringify(currentUser));
+      }
+
+    } catch (error) {
+      console.error("Store: Error posting health test", error);
+
+      throw error;
+    }
+  },
 
   logout: async () => {
     try {
