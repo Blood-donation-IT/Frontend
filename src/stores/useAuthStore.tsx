@@ -4,6 +4,7 @@ import api from '../api/api';
 import { UpdateUserPayload, User,  } from '../interfaces/user';
 import { Application } from '../interfaces/application';
 import { providerSignOut } from "../services/authSignOut";
+import { da } from 'date-fns/locale';
 
 interface AuthState {
   user: User | null;
@@ -16,11 +17,12 @@ interface AuthState {
   loginAction: (credentials: any) => Promise<any>;
   registerAction: (data: any) => Promise<any>;
   logout: () => Promise<void>;
-  syncWithFirebase: (firebaseUser: any, idToken: string | null) => Promise<void>;
+  syncWithFirebase: (firebaseUser: any, idToken: string | null) => User;
   updateUserAction: (newData: UpdateUserPayload) => Promise<void>;
   fetchUserDonations: () => Promise<void>;
   createDonationAction: (donationData: any) => Promise<Application>;
   saveHealthTest: (answersData: any, bloodType: User["blood_type"]) => Promise<void>;
+  cancelDonationAction: (applicationId: string) => Promise<void>;
 }
 
 const DEFAULT_USER: User = {
@@ -35,6 +37,7 @@ const DEFAULT_USER: User = {
   last_donation: null,
   donor_status: 'Новачок',
   lives_saved_count: '0',
+  test_is_done: true,
 };
 
 export const useAuthStore = create<AuthState>((set,get) => ({
@@ -49,6 +52,25 @@ export const useAuthStore = create<AuthState>((set,get) => ({
       // Створюємо НОВИЙ масив: нова донація + всі старі
       donations: [newDonation, ...state.donations]
     }));
+  },
+
+  cancelDonationAction: async (applicationId: string) => {
+    try {
+      const response = await api.patch(`/api/v1/donations/cancel_application/${applicationId}`);
+
+      if (response.status === 200 || response.status === 204) {
+        set((state) => ({
+          donations: state.donations.map((donation) =>
+            donation.application_id === applicationId
+              ? { ...donation, status: 'Canceled' }
+              : donation
+          ),
+        }));
+      }
+    } catch (error) {
+      console.error("Помилка скасування заявки:", error);
+      throw error; // Викидаємо помилку далі, щоб компонент міг показати Alert
+    }
   },
 
   fetchProfile: async () => {
@@ -146,7 +168,7 @@ export const useAuthStore = create<AuthState>((set,get) => ({
           created_at: "2026-04-25T07:59:01.325642",
           location_id: "Saint Panteleimon Hospital",
           slot_index: 4,
-          status: "Successfully",
+          status: "pending",//Successfully
           updated_at: null,
         }
       )
@@ -178,31 +200,34 @@ export const useAuthStore = create<AuthState>((set,get) => ({
 
     try {
       console.log(firebaseUser)
-        const { data } = await api.post('/api/v1/oauth/google/', { 
-          id_token: idToken,
-          email: firebaseUser.email,
-          name: firebaseUser.displayName,
-          avatar: firebaseUser.photoURL,
-        });
+      const { data } = await api.post('/api/v1/oauth/google/', { 
+        id_token: idToken,
+        email: firebaseUser.email,
+        name: firebaseUser.displayName,
+        avatar: firebaseUser.photoURL,
+      });
 
-        if (data.token) {
-          localStorage.setItem('accessToken', data.token)
-          //await SecureStore.setItemAsync('accessToken', data.token);
-        }
-        console.log(data)
+      if (data.access_token) {
+        localStorage.setItem('accessToken', data.access_token)
+        //await SecureStore.setItemAsync('accessToken', data.token);
+      }
+      console.log(data)
 
-        set({ 
-            user: { 
-                ...DEFAULT_USER,
-                id: data.user_id,
-                name: data.name || firebaseUser.displayName,
-                email: data.email || firebaseUser.email,
-                avatar: data.avatar || firebaseUser.photoURL,
-                blood_type: data.blood_type || "N/A",
-                donations_count: data.donations_count || 0,
-            } as User, 
-            isAuth: true 
-        });
+      set({ 
+          user: { 
+              ...DEFAULT_USER,
+              id: data.user_id,
+              name: data.name || firebaseUser.displayName,
+              email: data.email || firebaseUser.email,
+              avatar: data.avatar || firebaseUser.photoURL,
+              blood_type: data.blood_type || "N/A",
+              donations_count: data.donations_count || 0,
+              test_is_done: data.is_new_user,
+          } as User, 
+          isAuth: true 
+      });
+
+      return data
 
     } catch (error) {
         console.error("Помилка синхронізації з бекендом:", error);

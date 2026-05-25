@@ -825,8 +825,8 @@ export default function RegistrationScreen({ navigation, route }) {
             </Text>
 
             <Text style={styles.modalMessage}>
-              {alertType === 'success' && t('modal_success_message')}
-              {alertType === 'error' && t('modal_error_message')}
+              {alertType === 'success' && t('creating_modal_success_message')}
+              {alertType === 'error' && t('creating_modal_error_message')}
               {alertType === 'already_exists' && t('modal_already_message')}
             </Text>
 
