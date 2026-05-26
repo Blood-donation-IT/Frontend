@@ -277,12 +277,19 @@
 
   "modal_success_title": "Congratulations! 🎉",
   "modal_error_title": "Error ⚠️",
-  "modal_success_message": "Appointment successfully created!",
-  "modal_error_message": "There was an error creating the appointment. Please try again.",
+  "creating_modal_success_message": "Appointment successfully created!",
+  "creating_modal_error_message": "There was an error creating the appointment. Please try again.",
+  "cancel_modal_success_message": "Appointment successfully canceled.",
+  "cancel_modal_error_message": "There was an error canceling the appointment. Please try again.",
+  
   "modal_button_go": "Go to",
   "modal_button_close": "Close",
 
-  "other":"Other"
+  "other":"Other",
+
+  "logout_dialog_title": "Log Out",
+  "logout_dialog_message": "Are you sure you want to log out of the application?",
+  "modal_button_logout": "Log out"
 
 
 

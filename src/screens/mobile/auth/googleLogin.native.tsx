@@ -40,6 +40,7 @@ function getGoogleSigninApi() {
 
 export default function GoogleLogin() {
   const navigation = useNavigation();
+  const { user } = useAuthStore();
   const { colors } = useTheme();
   const [initializing, setInitializing] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -91,7 +92,7 @@ export default function GoogleLogin() {
         signInResult.data?.user,
         signInResult.data?.idToken,
       );
-      navigation.navigate("Test");
+      user.is_new_user ? navigation.navigate("Test") : navigation.navigate("Home")
     } catch (error: any) {
       if (
         error.code !== statusCodes.SIGN_IN_CANCELLED &&

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,8 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  Modal,
+  Platform,
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../Theme/ThemeContext";
@@ -15,6 +17,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 const ProfileScreen = ({ navigation }) => {
   const { colors } = useTheme();
   const { user, donations, fetchUserDonations } = useAuthStore();
+  const cancelDonation = useAuthStore((state) => state.cancelDonationAction);
   const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
 
@@ -23,6 +26,25 @@ const ProfileScreen = ({ navigation }) => {
   // }, []);
 
   const lastDonationDate = user?.last_donation ? new Date(user.last_donation) : null;
+
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertType, setAlertType] = useState<'success' | 'error' | 'already_exists' | 'confirm_cancel'>('success');
+  const [onConfirmAction, setOnConfirmAction] = useState<(() => Promise<void>) | null>(null);
+
+  const triggerCancelModal = (applicationId: string) => {
+    setAlertType('confirm_cancel');
+    setOnConfirmAction(() => async () => {
+      try {
+        await cancelDonation(applicationId);
+        // setAlertType('success');
+        // setAlertVisible(true);
+      } catch (err) {
+        setAlertType('error');
+        setAlertVisible(true);
+      }
+    });
+    setAlertVisible(true);
+  };
 
   // const formattedDate = lastDonationDate && !isNaN(lastDonationDate)
 
@@ -159,19 +181,19 @@ const ProfileScreen = ({ navigation }) => {
             </TouchableOpacity>
           </View>
 
-          {/* фейковий візуал донацій */}
+
+
           {donations.map((item, index) => {
-            // if (!item) return
             const statusStyle = getStatusStyle(item.status);
             
             return (
-              <View key={item.application_id || index} style={[styles.donationItem,{backgroundColor:colors.backgroundCard2}]}>
+              <View key={item.application_id || index} style={[styles.donationItem, { backgroundColor: colors.backgroundCard2 }]}>
                 <Text style={{ fontSize: 24, marginRight: 15 }}>🩸</Text>
                 
                 <View style={styles.donationInfo}>
-                  <Text style={[styles.donationType,{color:colors.text}]}>{t("whole_blood")}</Text>{/*item.type   */}
-                  <Text style={styles.donationDate}>{item.application_day}</Text>{/*date*/}
-                  <Text style={styles.hospitalText}>• {item.location_id}</Text>{/*hospital*/}
+                  <Text style={[styles.donationType, { color: colors.text }]}>{t("whole_blood")}</Text>
+                  <Text style={styles.donationDate}>{item.application_day}</Text>
+                  <Text style={styles.hospitalText} numberOfLines={1}>• {item.location_id}</Text>
                 </View>
 
                 <View style={styles.donationResult}>
@@ -180,12 +202,135 @@ const ProfileScreen = ({ navigation }) => {
                       {t(`status_${item.status}`)}
                     </Text>
                   </View>
-                  <Text style={styles.volumeText}>{item.status == "pending" ? null : "450 ml"}</Text>{/* item.amount */}
+                  
+                  {/* Якщо статус pending — відкриваємо НАШУ кастомну модалку */}
+                  {item.status === "pending" ? (
+                    <TouchableOpacity 
+                      onPress={() => triggerCancelModal(item.application_id)} // Передаємо ID сюди
+                      style={styles.cancelButton}
+                      activeOpacity={0.7}
+                    >
+                      <Text style={styles.cancelButtonText}>{t("cancel_action") || "Скасувати"}</Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <Text style={styles.volumeText}>{item.status === "Canceled" ? null : "450 ml"}</Text>
+                  )}
+                </View>
+              </View>
+            );
+          })}
+
+
+          <Modal
+            visible={alertVisible}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setAlertVisible(false)}
+          >
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalContainer}>
+                
+                {/* 1. Заголовки модалки */}
+                <Text style={styles.modalTitle}>
+                  {alertType === 'success' && t('modal_success_title')}
+                  {alertType === 'error' && t('modal_error_title')}
+                  {alertType === 'already_exists' && t('modal_already_title')}
+                  {alertType === 'confirm_cancel' && t('cancel_dialog_title')}
+                </Text>
+
+                {/* 2. Повідомлення */}
+                <Text style={styles.modalMessage}>
+                  {alertType === 'success' && t('cansel_modal_success_message')}
+                  {alertType === 'error' && t('cancel_modal_error_message')}
+                  {alertType === 'already_exists' && t('modal_already_message')}
+                  {alertType === 'confirm_cancel' && t('cancel_dialog_message')}
+                </Text>
+
+                {/* 3. Кнопки дій */}
+                {alertType === 'confirm_cancel' ? (
+                  // Якщо це підтвердження скасування — рендеримо ДВІ кнопки в ряд
+                  <View style={styles.modalRowButtons}>
+                    <TouchableOpacity 
+                      style={[styles.modalButton, styles.cancelSecondaryButton]} 
+                      onPress={() => setAlertVisible(false)}
+                    >
+                      <Text style={[styles.modalButtonText, styles.cancelSecondaryButtonText]}>
+                        {t('no')}
+                      </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity 
+                      style={[styles.modalButton, styles.cancelDestructiveButton]} 
+                      onPress={async () => {
+                        setAlertVisible(false);
+                        if (onConfirmAction) {
+                          await onConfirmAction(); // Цю функцію передамо при кліку
+                        }
+                      }}
+                    >
+                      <Text style={styles.modalButtonText}>
+                        {t('yes_cancel')}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  // Для звичайних алертів (success/error/already_exists) залишається ОДНА кнопка
+                  <TouchableOpacity 
+                    style={[
+                      styles.modalButton, 
+                      { 
+                        backgroundColor: 
+                          alertType === 'success' ? '#E57373' : 
+                          alertType === 'already_exists' ? '#FFB74D' : '#666' 
+                      }
+                    ]} 
+                    onPress={() => {
+                      setAlertVisible(false);
+                      if (alertType === 'success') {
+                        navigation.goBack();
+                      }
+                    }}
+                  >
+                    <Text style={styles.modalButtonText}>
+                      {alertType === 'success' && t('modal_button_go')}
+                      {alertType === 'error' && t('modal_button_close')}
+                      {alertType === 'already_exists' && t('modal_button_ok')}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+
+              </View>
+            </View>
+          </Modal>
+
+          
+
+          {/* {donations.map((item, index) => {
+            // if (!item) return
+            const statusStyle = getStatusStyle(item.status);
+            
+            return (
+              <View key={item.application_id || index} style={[styles.donationItem,{backgroundColor:colors.backgroundCard2}]}>
+                <Text style={{ fontSize: 24, marginRight: 15 }}>🩸</Text>
+                
+                <View style={styles.donationInfo}>
+                  <Text style={[styles.donationType,{color:colors.text}]}>{t("whole_blood")}</Text>
+                  <Text style={styles.donationDate}>{item.application_day}</Text>
+                  <Text style={styles.hospitalText}>• {item.location_id}</Text>
+                </View>
+
+                <View style={styles.donationResult}>
+                  <View style={[styles.statusBadge, { backgroundColor: statusStyle.bg }]}>
+                    <Text style={[styles.donationStatus, { color: statusStyle.text }]}>
+                      {t(`status_${item.status}`)}
+                    </Text>
+                  </View>
+                  <Text style={styles.volumeText}>{item.status == "pending" ? null : "450 ml"}</Text>
                 </View>
                  
               </View>
             );
-          })}
+          })} */}
 
           {/* для реальних даних юзати замість mockDonations
           {donations && donations.length > 0 ? (
@@ -232,6 +377,96 @@ const ProfileScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+
+  cancelButton: {
+    marginTop: 8,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#DE7272',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cancelButtonText: {
+    color: '#DE7272',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+
+  
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)', 
+    justifyContent: 'center',
+    alignItems: 'center',
+
+    ...Platform.select({
+      web: {
+        alignSelf: 'center',
+        width: '100%',
+        maxWidth: 440,
+      }
+    })
+  },
+  modalContainer: {
+    width: '85%',
+    backgroundColor: '#FFF5F5', 
+    borderRadius: 30,
+    padding: 30,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    color: '#000',
+  },
+  modalMessage: {
+    fontSize: 16,
+    textAlign: 'center',
+    color: '#555',
+    marginBottom: 25,
+    lineHeight: 22,
+  },
+  modalButton: {
+    width: '100%',
+    paddingVertical: 14,
+    borderRadius: 25,
+    alignItems: 'center',
+  },
+  modalButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  modalRowButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    gap: 12, // Відступ між кнопками
+    marginTop: 15,
+  },
+  cancelSecondaryButton: {
+    flex: 1,
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    marginTop: 0,
+  },
+  cancelSecondaryButtonText: {
+    color: '#666',
+  },
+  cancelDestructiveButton: {
+    flex: 1,
+    backgroundColor: '#DE7272',
+    marginTop: 0,
+  },
   
   headerContainer: {
     height: 220, 
@@ -376,7 +611,8 @@ const styles = StyleSheet.create({
     color: "#888888",
   },
   donationResult: {
-    alignItems: 'flex-end',
+    alignItems: 'center',
+
   },
   
   statusBadge: {

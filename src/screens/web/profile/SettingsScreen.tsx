@@ -7,6 +7,8 @@ import {
   Switch,
   ScrollView,
   Image,
+  Modal,
+  Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import i18n from "../../../i18n";
@@ -24,6 +26,12 @@ const SettingsScreen = ({ navigation }) => {
   const { logout } = useAuthStore();
   const [language, setLanguage] = useState("en");
   const insets = useSafeAreaInsets();
+
+
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertType, setAlertType] = useState<'success' | 'error' | 'already_exists' | 'confirm_cancel' | 'confirm_logout'>('success');
+  const [onConfirmAction, setOnConfirmAction] = useState<(() => Promise<void>) | null>(null);
+
 
   const languages = [
     { code: "en", label: "English", flag: "🇺🇸" },
@@ -51,6 +59,21 @@ const SettingsScreen = ({ navigation }) => {
     navigation.dispatch(
       CommonActions.reset({ index: 0, routes: [{ name: "LogIn" }] }),
     );
+  };
+
+  const triggerLogoutModal = () => {
+    setAlertType('confirm_logout');
+    
+    setOnConfirmAction(() => async () => {
+      try {
+        await handleLogout();
+      } catch (err) {
+        setAlertType('error');
+        setAlertVisible(true);
+      }
+    });
+
+    setAlertVisible(true);
   };
 
   const blockBackgroundColor = isLight ? "#fbfbfbff" : "#1a1a1aff";
@@ -171,7 +194,7 @@ const SettingsScreen = ({ navigation }) => {
             <Text style={[styles.adminButtonText, { color: adminBtnTextColor }]}>{t("go_to_admin") || "Go to Admin"}</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={handleLogout} style={styles.deleteOption}>
+          <TouchableOpacity onPress={triggerLogoutModal} style={styles.deleteOption}>
             <Ionicons name="log-out-outline" size={22} color={colors.primary || "#F86E6E"} />
             <Text style={[styles.deleteText, { color: colors.primary || "#F86E6E" }]}>
               {t("logout") || "Log out"}
@@ -185,12 +208,163 @@ const SettingsScreen = ({ navigation }) => {
             </Text>
           </TouchableOpacity>
         </View>
+
+        <Modal
+          visible={alertVisible}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setAlertVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              
+              {/* 1. Заголовок і текст підтягуються з локалізації */}
+              <Text style={styles.modalTitle}>
+                {alertType === 'confirm_logout' && t('logout_dialog_title')} {/* "Вихід з акаунту" */}
+              </Text>
+
+              <Text style={styles.modalMessage}>
+                {alertType === 'confirm_logout' && t('logout_dialog_message')} {/* "Ви дійсно хочете вийти?" */}
+              </Text>
+
+              {/* 2. Рендериться рядок з двома кнопками */}
+              {(alertType === 'confirm_cancel' || alertType === 'confirm_logout') && (
+                <View style={styles.modalRowButtons}>
+                  {/* Кнопка "Ні" — просто закриває вікно */}
+                  <TouchableOpacity 
+                    style={[styles.modalButton, styles.cancelSecondaryButton]} 
+                    onPress={() => setAlertVisible(false)}
+                  >
+                    <Text style={[styles.modalButtonText, styles.cancelSecondaryButtonText]}>
+                      {t('no') || "Ні"}
+                    </Text>
+                  </TouchableOpacity>
+
+                  {/* Кнопка "Вийти" — закриває модалку і запускає handleLogout */}
+                  <TouchableOpacity 
+                    style={[styles.modalButton, styles.cancelDestructiveButton]} 
+                    onPress={async () => {
+                      setAlertVisible(false); // Закриваємо вікно
+                      if (onConfirmAction) {
+                        await onConfirmAction(); // Викликається handleLogout()
+                      }
+                    }}
+                  >
+                    <Text style={styles.modalButtonText}>
+                      {t('modal_button_logout') || "Вийти"}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+
+            </View>
+          </View>
+        </Modal>
+
       </ScrollView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+
+
+  deleteOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    marginTop: 20,
+    borderRadius: 12,
+  },
+  deleteText: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 10,
+  },
+
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)', 
+    justifyContent: 'center',
+    alignItems: 'center',
+
+    ...Platform.select({
+      web: {
+        alignSelf: 'center',
+        width: '100%',
+        maxWidth: 440,
+      }
+    })
+  },
+
+  // --- Контейнер самої модалки (біла картка) ---
+  modalContainer: {
+    width: '90%',
+    backgroundColor: '#FFF',
+    borderRadius: 16,
+    padding: 24,
+    alignItems: 'center',
+    elevation: 5, // Тінь для Android
+    shadowColor: '#000', // Тіні для iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+
+  // --- Тексти в модалці ---
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  modalMessage: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 24,
+    lineHeight: 20,
+  },
+
+  // --- Базовий стиль для кнопок ---
+  modalButton: {
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalButtonText: {
+    color: '#FFF',
+    fontSize: 15,
+    fontWeight: '600',
+  },
+
+  // --- Контейнер для розташування ДВОХ кнопок в один ряд ---
+  modalRowButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    gap: 12, // Відступ між кнопками "Ні" та "Вийти"
+  },
+
+  // --- Кнопка "Ні" (Сіра, контурна) ---
+  cancelSecondaryButton: {
+    flex: 1, // Займає рівно половину доступного місця
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#D1D1D6',
+  },
+  cancelSecondaryButtonText: {
+    color: '#666',
+  },
+
+  // --- Кнопка "Вийти" (Червона/Коралова, деструктивна) ---
+  cancelDestructiveButton: {
+    flex: 1, // Займає другу половину місця
+    backgroundColor: '#DE7272', // Твій колір для скасування/вихіду
+  },
+
   mainContainer: {
     flex: 1,
   },

@@ -63,8 +63,8 @@ export default function GoogleLogin() {
         
         // Отримуємо токен для синхронізації зі стором
         const idToken = await result.user.getIdToken();
-        await syncWithFirebase(result.user, idToken);
-        navigation.navigate("Test");
+        let user = await syncWithFirebase(result.user, idToken);
+        user.is_new_user ? navigation.navigate("Test") : navigation.navigate("Home")
 
       } else {
         const { GoogleSignin } = require("@react-native-google-signin/google-signin");
@@ -80,8 +80,9 @@ export default function GoogleLogin() {
         const googleCredential = GoogleAuthProvider.credential(idToken);
         await signInWithCredential(authInstance, googleCredential);
         
-        await syncWithFirebase(signInResult.data?.user, idToken);
-        navigation.navigate("Test");
+        let user = await syncWithFirebase(signInResult.data?.user, idToken);
+        user.is_new_user ? navigation.navigate("Test") : navigation.navigate("Home")
+
       }
     } catch (error: any) {
       console.error(error);

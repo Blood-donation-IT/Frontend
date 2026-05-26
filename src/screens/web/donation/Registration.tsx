@@ -244,18 +244,17 @@ export default function RegistrationScreen({ navigation, route }) {
           // user_id: user?.id, 
           blood_type: user?.blood_type,//"A+",
           slot_index: selectedIndex,
-          // application_time: triggerDate.toISOString(),
+          application_time: triggerDate.toISOString(),
           application_day:   triggerDate.toISOString(),//"2026-04-23T12:49:08.442Z",
           location_id: locationForBackend,
           status: "pending"
         };
         console.log(applicationData)
 
-        // await createDonationAction(applicationData);
+        await createDonationAction(applicationData);
 
-        // donations.push(
-        //   {
-        //     application_day: "2026-04-28",
+        // const newDonation = {
+        //    application_day: "2026-04-28",
         //     application_id: "7453810883081281536",
         //     application_time: time,
         //     blood_type: user?.blood_type,
@@ -264,20 +263,8 @@ export default function RegistrationScreen({ navigation, route }) {
         //     slot_index: 4,
         //     status: "pending",
         //     updated_at: null,
-        //   }
-        // )
-        const newDonation = {
-           application_day: "2026-04-28",
-            application_id: "7453810883081281536",
-            application_time: time,
-            blood_type: user?.blood_type,
-            created_at: "2026-04-25T07:59:01.325642",
-            location_id: locationForBackend,
-            slot_index: 4,
-            status: "pending",
-            updated_at: null,
-        };
-        addDonation(newDonation);
+        // };
+        // addDonation(newDonation);
 
         // await scheduleDateNotification(
         //   "Запис на донацію",
@@ -347,7 +334,7 @@ export default function RegistrationScreen({ navigation, route }) {
     const index = dates.findIndex(d => d.full === current);
     
     if (index !== -1 && flatListRef.current) {
-      flatListRef.current.scrollToIndex({
+      timeFlatListRef.current.scrollToIndex({
         index,
         animated: true,
         viewPosition: 0.5,
@@ -356,10 +343,10 @@ export default function RegistrationScreen({ navigation, route }) {
   }, [current, dates]); 
 
 
-  // const flatListRef = useRef(null);
+  const flatListRef = useRef(null);
 
 
-  const flatListRef = useRef<FlatList>(null);
+  const timeFlatListRef = useRef<FlatList>(null);
 
   const scrollOffset = useRef(0); // Створюємо реф для збереження поточної позиції
 
@@ -369,7 +356,7 @@ export default function RegistrationScreen({ navigation, route }) {
       ? Math.max(0, scrollOffset.current - step) 
       : scrollOffset.current + step;
 
-    flatListRef.current?.scrollToOffset({
+    timeFlatListRef.current?.scrollToOffset({
       offset: newOffset,
       animated: true,
     });
@@ -454,13 +441,29 @@ export default function RegistrationScreen({ navigation, route }) {
               textDayFontSize: 14,
             }}
             dayComponent={({ date, state, marking }) => {
+              // if (!date) return <View style={styles.dayPill} />;
+
+              // const dayOfWeek = new Date(date.dateString).getDay();
+              // const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+
+              // const isDisabled = state === "disabled" || isWeekend;
+              // const isSelected = date?.dateString == current
+
               if (!date) return <View style={styles.dayPill} />;
 
+              // 1. Отримуємо сьогоднішню дату в форматі YYYY-MM-DD
+              const todayString = new Date().toISOString().split('T')[0];
+
+              // 2. Перевіряємо день тижня (вихідні)
               const dayOfWeek = new Date(date.dateString).getDay();
               const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
-              const isDisabled = state === "disabled" || isWeekend;
-              const isSelected = date?.dateString == current
+              // 3. ПЕРЕВІРКА НА МИНУЛИЙ ДЕНЬ: якщо дата менша за сьогоднішню
+              const isPastDay = date.dateString < todayString;
+
+              // 4. Комбінуємо всі правила відключення дня
+              const isDisabled = state === "disabled" || isWeekend || isPastDay;
+              const isSelected = date?.dateString === current;
 
               return (
                 <TouchableOpacity
@@ -571,7 +574,7 @@ export default function RegistrationScreen({ navigation, route }) {
     </TouchableOpacity>
 
     <FlatList 
-      ref={flatListRef}
+      ref={timeFlatListRef}
       data={times}
       onScroll={(e) => {
         scrollOffset.current = e.nativeEvent.contentOffset.x;
@@ -822,8 +825,8 @@ export default function RegistrationScreen({ navigation, route }) {
             </Text>
 
             <Text style={styles.modalMessage}>
-              {alertType === 'success' && t('modal_success_message')}
-              {alertType === 'error' && t('modal_error_message')}
+              {alertType === 'success' && t('creating_modal_success_message')}
+              {alertType === 'error' && t('creating_modal_error_message')}
               {alertType === 'already_exists' && t('modal_already_message')}
             </Text>
 

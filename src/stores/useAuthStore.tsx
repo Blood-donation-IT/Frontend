@@ -4,6 +4,7 @@ import api from '../api/api';
 import { UpdateUserPayload, User,  } from '../interfaces/user';
 import { Application } from '../interfaces/application';
 import { providerSignOut } from "../services/authSignOut";
+import { da } from 'date-fns/locale';
 
 interface AuthState {
   user: User | null;
@@ -16,10 +17,12 @@ interface AuthState {
   loginAction: (credentials: any) => Promise<any>;
   registerAction: (data: any) => Promise<any>;
   logout: () => Promise<void>;
-  syncWithFirebase: (firebaseUser: any, idToken: string | null) => Promise<void>;
+  syncWithFirebase: (firebaseUser: any, idToken: string | null) => User;
   updateUserAction: (newData: UpdateUserPayload) => Promise<void>;
   fetchUserDonations: () => Promise<void>;
   createDonationAction: (donationData: any) => Promise<Application>;
+  saveHealthTest: (answersData: any, bloodType: User["blood_type"]) => Promise<void>;
+  cancelDonationAction: (applicationId: string) => Promise<void>;
 }
 
 const DEFAULT_USER: User = {
@@ -34,6 +37,7 @@ const DEFAULT_USER: User = {
   last_donation: null,
   donor_status: 'Новачок',
   lives_saved_count: '0',
+  test_is_done: true,
 };
 
 export const useAuthStore = create<AuthState>((set,get) => ({
@@ -48,6 +52,25 @@ export const useAuthStore = create<AuthState>((set,get) => ({
       // Створюємо НОВИЙ масив: нова донація + всі старі
       donations: [newDonation, ...state.donations]
     }));
+  },
+
+  cancelDonationAction: async (applicationId: string) => {
+    try {
+      const response = await api.patch(`/api/v1/donations/cancel_application/${applicationId}`);
+
+      if (response.status === 200 || response.status === 204) {
+        set((state) => ({
+          donations: state.donations.map((donation) =>
+            donation.application_id === applicationId
+              ? { ...donation, status: 'Canceled' }
+              : donation
+          ),
+        }));
+      }
+    } catch (error) {
+      console.error("Помилка скасування заявки:", error);
+      throw error; // Викидаємо помилку далі, щоб компонент міг показати Alert
+    }
   },
 
   fetchProfile: async () => {
@@ -145,7 +168,7 @@ export const useAuthStore = create<AuthState>((set,get) => ({
           created_at: "2026-04-25T07:59:01.325642",
           location_id: "Saint Panteleimon Hospital",
           slot_index: 4,
-          status: "Successfully",
+          status: "pending",//Successfully
           updated_at: null,
         }
       )
@@ -184,32 +207,36 @@ export const useAuthStore = create<AuthState>((set,get) => ({
           avatar: firebaseUser.photoURL,
         });
 
-        if (data.token) {
-          localStorage.setItem('accessToken', data.token)
-          //await SecureStore.setItemAsync('accessToken', data.token);
-        }
+      if (data.access_token) {
+        localStorage.setItem('accessToken', data.access_token)
+        //await SecureStore.setItemAsync('accessToken', data.token);
+      }
+      console.log(data)
 
-        set({ 
-            user: { 
-                ...DEFAULT_USER,
-                id: firebaseUser.id, 
-                name: data.name || firebaseUser.displayName,
-                email: data.email || firebaseUser.email,
-                avatar: data.avatar || firebaseUser.photoURL,
-                blood_type: data.blood_type || "N/A",
-                donations_count: data.donations_count || 0,
-            } as User, 
-            isAuth: true 
-        });
+      set({ 
+          user: { 
+              ...DEFAULT_USER,
+              id: data.user_id,
+              name: data.name || firebaseUser.displayName,
+              email: data.email || firebaseUser.email,
+              avatar: data.avatar || firebaseUser.photoURL,
+              blood_type: data.blood_type || "N/A",
+              donations_count: data.donations_count || 0,
+              test_is_done: data.is_new_user,
+          } as User, 
+          isAuth: true 
+      });
+
+      return data
 
     } catch (error) {
         console.error("Помилка синхронізації з бекендом:", error);
-        console.log(firebaseUser)
+        
 
         set({ 
             user: {
                 ...DEFAULT_USER,
-                id: firebaseUser.id, 
+                id: "0",
                 name: firebaseUser.displayName,
                 email: firebaseUser.email,
                 avatar: firebaseUser.photoURL,
@@ -230,7 +257,43 @@ export const useAuthStore = create<AuthState>((set,get) => ({
         console.error("Update failed", error);
         throw error;
     }
-    },
+  },
+
+  saveHealthTest: async (answersData: any, bloodType: User["blood_type"]) => {
+    try {
+      const formattedAnswers = Object.keys(answersData).map(id => ({
+        questionId: parseInt(id),
+        value: answersData[id] === "true"
+      }));
+
+      console.log(answersData)
+
+      const requestBody = {
+        userId: get().user?.id || 0,
+        completedAt: new Date().toISOString(),
+        answers: formattedAnswers,
+        bloodType: bloodType
+      };
+
+      console.log(requestBody)
+
+      await api.post('/api/v1/users/post_test', requestBody);
+
+      set((state) => ({
+        user: state.user ? { ...state.user, blood_type: bloodType } : null
+      }));
+
+      const currentUser = get().user;
+      if (currentUser) {
+        localStorage.setItem('user_profile', JSON.stringify(currentUser));
+      }
+
+    } catch (error) {
+      console.error("Store: Error posting health test", error);
+
+      throw error;
+    }
+  },
 
   logout: async () => {
     try {

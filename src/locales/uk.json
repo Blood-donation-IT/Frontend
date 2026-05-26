@@ -287,10 +287,24 @@
 
   "modal_success_title": "Вітаємо! 🎉",
   "modal_error_title": "Помилка ⚠️",
-  "modal_success_message": "Запис успішно зроблений!",
-  "modal_error_message": "Сталася помилка при створенні запису. Спробуйте ще раз.",
+  "creating_modal_success_message": "Запис успішно зроблений!",
+  "creating_modal_error_message": "Сталася помилка при створенні запису. Спробуйте ще раз.",
+  "cancel_modal_success_message": "Запис на донацію успішно скасовано.",
+  "cancel_modal_error_message": "Не вдалося скасувати запис. Будь ласка, спробуйте пізніше.",
   "modal_button_go": "Перейти",
   "modal_button_close": "Закрити",
 
-  "other":"Інше"
+  "other":"Інше",
+
+  
+  "cancel_action": "Скасувати",
+  "cancel_dialog_title": "Скасування запису",
+  "cancel_dialog_message": "Ви впевнені, що хочете скасувати цей запис на донацію?",
+  "status_Canceled": "Скасовано",
+  "yes_cancel": "Так, скасувати",
+
+  "logout_dialog_title": "Вихід з акаунту",
+  "logout_dialog_message": "Ви дійсно хочете вийти з додатка?",
+  "modal_button_logout": "Вийти"
+
 }
