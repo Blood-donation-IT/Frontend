@@ -2,6 +2,7 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 import { ThemeProvider } from "../Theme/ThemeContext";
+import { useAuthStore } from "../stores/useAuthStore"; 
 
 import SplashScreen from "../screens/web/home/SplashScreen";
 import IntroScreen from "../screens/web/home/IntroScreen";
@@ -9,6 +10,7 @@ import SignInScreen from "../screens/web/auth/SignInScreen";
 import LogInScreen from "../screens/web/auth/LogInScreen";
 import Registration from "../screens/web/donation/Registration";
 import BottomTabNavigator from "./BottomTabNavigator";
+import AdminBottomTabNavigator from "./AdminBottomTabNavigator"; 
 import NotificationScreen from "../screens/web/home/NotificationScreen";
 
 import SettingsScreen from "../screens/web/profile/SettingsScreen";
@@ -23,6 +25,13 @@ import DonationHistoryScreen from "../screens/web/profile/DonationHistoryScreen"
 import DetailedInformationScreen from "../screens/web/profile/DetailedInformationScreen";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+
+
+const MainTabsWrapper = () => {
+  const { isAdminMode } = useAuthStore();
+  
+  return isAdminMode ? <AdminBottomTabNavigator /> : <BottomTabNavigator />;
+};
 
 export default function AppNavigator() {
   return (
@@ -77,11 +86,14 @@ export default function AppNavigator() {
             component={Registration}
             options={{ headerShown: false }}
           />
+          
+          
           <Stack.Screen
             name="Home"
-            component={BottomTabNavigator}
+            component={MainTabsWrapper}
             options={{ headerShown: false }}
           />
+          
           <Stack.Screen
             name="Settings"
             component={SettingsScreen}

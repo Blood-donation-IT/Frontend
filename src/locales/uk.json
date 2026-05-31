@@ -292,5 +292,17 @@
   "modal_button_go": "Перейти",
   "modal_button_close": "Закрити",
 
-  "other":"Інше"
+  "other":"Інше",
+
+
+  "go_to_user": "Панель користувача",
+  "registered": "Зареєстровано",
+  "list_of_registered": "Список зареєстрованих користувачів",
+  "search": "Пошук",
+  "donation_entries": "Записи на донацію",
+  "now": "Зараз",
+  "waiting": "Очікують",
+  "in_the_room": "У кімнаті",
+  "donating": "Здають кров"
+
 }

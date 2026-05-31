@@ -282,8 +282,17 @@
   "modal_button_go": "Go to",
   "modal_button_close": "Close",
 
-  "other":"Other"
+  "other":"Other",
 
 
+  "go_to_user": "Go to User",
+  "registered": "Registered",
+  "list_of_registered": "List of Registered Users",
+  "search": "Search",
+  "donation_entries": "Donation Entries",
+  "now": "Now",
+  "waiting": "Waiting",
+  "in_the_room": "In the Room",
+  "donating": "Donating"
 
 }

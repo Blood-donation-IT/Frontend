@@ -21,7 +21,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 const SettingsScreen = ({ navigation }) => {
   const { t } = useTranslation();
   const { isLight, colors, toggleTheme } = useTheme();
-  const { logout } = useAuthStore();
+  
+  const { logout, isAdminMode, toggleAdminMode } = useAuthStore();
+  
   const [language, setLanguage] = useState("en");
   const insets = useSafeAreaInsets();
 
@@ -53,10 +55,14 @@ const SettingsScreen = ({ navigation }) => {
     );
   };
 
-  const blockBackgroundColor = isLight ? "#fbfbfbff" : "#1a1a1aff";
   
+  const handleToggleMode = () => {
+    toggleAdminMode();
+    navigation.navigate("Home");
+  };
+
+  const blockBackgroundColor = isLight ? "#fbfbfbff" : "#1a1a1aff";
   const dividerColor = isLight ? "#fbfbfbff" : "#1a1a1aff";
- 
   const adminBtnTextColor = isLight ? "#fbfbfbff" : "#1a1a1aff";
 
   return (
@@ -105,7 +111,6 @@ const SettingsScreen = ({ navigation }) => {
           </View>
         </View>
 
-        
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.primary || "#F86E6E" }]}>
             {t("system") || "System"}
@@ -126,7 +131,6 @@ const SettingsScreen = ({ navigation }) => {
           </View>
         </View>
 
-        
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.primary || "#F86E6E" }]}>
             {t("password") || "Password"}
@@ -140,7 +144,6 @@ const SettingsScreen = ({ navigation }) => {
           </View>
         </View>
 
-        
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.primary || "#F86E6E" }]}>
             {t("other") || "Other"}
@@ -164,11 +167,22 @@ const SettingsScreen = ({ navigation }) => {
           </View>
         </View>
 
-        
         <View style={styles.actionsContainer}>
-          <TouchableOpacity style={[styles.adminButton, { backgroundColor: colors.primary || "#F86E6E" }]}>
-            <Ionicons name="person-outline" size={18} color={adminBtnTextColor} style={styles.actionIcon} />
-            <Text style={[styles.adminButtonText, { color: adminBtnTextColor }]}>{t("go_to_admin") || "Go to Admin"}</Text>
+          
+          
+          <TouchableOpacity 
+            style={[styles.adminButton, { backgroundColor: colors.primary || "#F86E6E" }]}
+            onPress={handleToggleMode}
+          >
+            <Ionicons 
+              name={isAdminMode ? "person-outline" : "shield-checkmark-outline"}
+              size={18} 
+              color={adminBtnTextColor} 
+              style={styles.actionIcon} 
+            />
+            <Text style={[styles.adminButtonText, { color: adminBtnTextColor }]}>
+              {isAdminMode ? (t("go_to_user") || "Go to User") : (t("go_to_admin") || "Go to Admin")}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity onPress={handleLogout} style={styles.deleteOption}>
@@ -177,7 +191,7 @@ const SettingsScreen = ({ navigation }) => {
               {t("logout") || "Log out"}
             </Text>
           </TouchableOpacity>
-
+          
           <TouchableOpacity style={styles.deleteOption}>
             <Ionicons name="trash-outline" size={22} color={colors.primary || "#F86E6E"} />
             <Text style={[styles.deleteText, { color: colors.primary || "#F86E6E" }]}>
@@ -191,9 +205,7 @@ const SettingsScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-  },
+  mainContainer: { flex: 1 },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -201,29 +213,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 20,
   },
-  backButton: {
-    padding: 5,
-  },
+  backButton: { padding: 5 },
   backImg: {
     width: 24,
     height: 24,
     resizeMode: "contain",
     marginTop: 40,
-    
   },
   headerTitle: {
     fontSize: 16,
     fontWeight: "bold",
     marginTop: 40,
     paddingTop: 10,
-    
   },
-  scrollContent: {
-    paddingBottom: 50,
-  },
-  section: {
-    marginBottom: 25,
-  },
+  scrollContent: { paddingBottom: 50 },
+  section: { marginBottom: 25 },
   sectionTitle: {
     fontSize: 13,
     marginBottom: 8,
@@ -242,12 +246,8 @@ const styles = StyleSheet.create({
     paddingVertical: 14, 
     paddingHorizontal: 20,
   },
-  optionText: {
-    fontSize: 16,
-  },
-  flag: {
-    fontSize: 20,
-  },
+  optionText: { fontSize: 16 },
+  flag: { fontSize: 20 },
   actionsContainer: {
     marginTop: 10,
     paddingHorizontal: 20,
@@ -276,9 +276,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 12,
   },
-  actionIcon: {
-    marginTop: -2,
-  }
+  actionIcon: { marginTop: -2 }
 });
 
 export default SettingsScreen;

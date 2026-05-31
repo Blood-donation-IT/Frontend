@@ -11,6 +11,8 @@ interface AuthState {
   isLoading: boolean;
   donations: Application[];
   isLoadingDonations: boolean;
+  isAdminMode: boolean;
+  toggleAdminMode: () => void;
   checkAuth: () => Promise<void>;
   fetchProfile: () => Promise<void>;
   loginAction: (credentials: any) => Promise<any>;
@@ -42,10 +44,13 @@ export const useAuthStore = create<AuthState>((set,get) => ({
   isLoading: true,
   donations: [],
   isLoadingDonations: false,
+  isAdminMode: false,
+
+  toggleAdminMode: () => set((state) => ({ isAdminMode: !state.isAdminMode })),
 
   addDonation: (newDonation: Application) => {
     set((state) => ({
-      // Створюємо НОВИЙ масив: нова донація + всі старі
+      
       donations: [newDonation, ...state.donations]
     }));
   },
@@ -244,6 +249,7 @@ export const useAuthStore = create<AuthState>((set,get) => ({
     // await SecureStore.deleteItemAsync('accessToken');
     // await SecureStore.deleteItemAsync('refreshToken');
 
-    set({ user: null, isAuth: false });
+    
+    set({ user: null, isAuth: false, isAdminMode: false });
   }
 }));
