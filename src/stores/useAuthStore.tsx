@@ -199,13 +199,13 @@ export const useAuthStore = create<AuthState>((set,get) => ({
     if (!firebaseUser || !idToken) return;
 
     try {
-      console.log(firebaseUser)
-      const { data } = await api.post('/api/v1/oauth/google/', { 
-        id_token: idToken,
-        email: firebaseUser.email,
-        name: firebaseUser.displayName,
-        avatar: firebaseUser.photoURL,
-      });
+      // console.log(firebaseUser)
+        const { data } = await api.post('/api/v1/oauth/google/', { 
+          id_token: idToken,
+          email: firebaseUser.email,
+          name: firebaseUser.displayName,
+          avatar: firebaseUser.photoURL,
+        });
 
       if (data.access_token) {
         localStorage.setItem('accessToken', data.access_token)
