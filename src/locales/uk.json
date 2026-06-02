@@ -1,0 +1,310 @@
+{
+  "hello": "Привіт",
+  "welcome": "Ласкаво просимо",
+  "settings": "Налаштування",
+  "language": "Мова",
+  "system": "Система",
+  "delete_account": "Видалити акаунт",
+  "light_mode": "Світлий режим",
+
+  "edit_profile": "Редагувати профіль",
+  "last_donation": "Останнє донорство",
+  "donated": "Здано",
+  "blood_type": "Група",
+  "life_saved": "Врятовано",
+  "donor_status": "Статус донора",
+  "home": "Дім",
+  "profile":"Профіль",
+  "honorary_donor_of_ukraine": "Почесний донор України",
+  "donation_history": "Історія донацій",
+
+  "testDate": "14 лютого, 2026",
+
+  "delivered": "Доставлено",
+  "donations_count": "разів",
+  "lives_count": "життів",
+
+
+  "blood_type_label": "група",
+
+  "change": "Змінити",
+  "your_blood_type": "Ваша група крові",
+  "time": "Час",
+  "location": "Локація",
+  "your_name": "Ваше ім'я",
+  "your_age": "Ваш вік",
+  "register": "Зареєструватися",
+  "please_select_blood": "Будь ласка, оберіть групу крові",
+  "please_select_time": "Будь ласка, оберіть час",
+  "location_required": "Локація обов'язкова",
+  "name_required": "Ім'я обов'язкове",
+  "age_required": "Вік обов'язковий",
+  "main_square": "Площа Ринок",
+  "opera_theater": "Оперний театр",
+  "university": "Університет",
+  "select_location": "Оберіть локацію",
+  "enter_location_name": "Введіть назву локації",
+  "selected": "Вибрано",
+  "tap_marker": "Торкніться маркера для вибору",
+  "save": "Зберегти",
+  "cancel": "Скасувати",
+
+  "email": "Електронна пошта",
+  "password": "Пароль",
+  "log_in": "Увійти",
+  "dont_have_account": "Не маєте акаунту?",
+  "sign_up": "Зареєструватися",
+
+  "your_year": "Ваш рік",
+  "confirm_password": "Підтвердіть пароль",
+  "already_have_account": "Вже маєте акаунт?",
+  "error": "Помилка",
+  "fill_all_fields": "Будь ласка, заповніть усі поля",
+  "passwords_do_not_match": "Паролі не співпадають",
+  "invalid_email": "Невірна адреса електронної пошти",
+
+  "or_sign_in_with": "Або увійти через",
+
+  "logout":"Вийти з акаунта",
+
+  "blood_needed_title": "Яка кров зараз найбільш потрібна?",
+  "thursday": "четвер",
+
+  "my_donations": "Мої донації",
+  "no_donations_yet": "Донацій ще не було",
+
+  "donors_book": "Книга донора",
+  "forgot_password": "Забули пароль?",
+
+  // ShortTestScreen
+  "question_1": "Вам уже виповнилося 18 років?",
+  "question_2": "Ваша вага перевищує 50 кг?",
+  "question_3": "Чи маєте ви серйозні хронічні або інфекційні захворювання (наприклад, ВІЛ, гепатит, сифіліс)?",
+  "question_4": "Чи робили ви операції, татуювання або пірсинг протягом останніх 6 місяців?",
+  "question_5": "Чи відповідають ваші рівень гемоглобіну та показники крові нормі?",
+  "question_6": "Чи оцінюєте ви свій загальний стан здоров'я як добрий?",
+  "question_7": "Яка у вас група крові?",
+   
+   "question_8": "Ви не маєте захворювань крові або порушень згортання?",
+   "question_9": "Ви не маєте онкологічних захворювань?",
+   "question_10": "Ви не маєте гепатиту B, C або жовтяниці в анамнезі?",
+
+   "O+": "I+",
+   "O-": "I-",
+   "A+": "II+",
+   "A-": "II-",
+   "B+": "III+",
+   "B-": "III-",
+   "AB+": "IV+",
+   "AB-": "IV-",
+
+  "almost_done": "Майже готово! Останнє запитання",
+  "please_indicate_blood": "Будь ласка, вкажіть вашу групу крові для підбору донацій.",
+
+  "short_test_title": "Швидкий тест",
+  "blood_type_title": "Група крові",
+
+   "blood_type_unknown": "Я не знаю свою групу крові",
+   "yes": "Так",
+   "no": "Ні",
+   "have": "Маю",
+   "dont_have": "Не маю",
+   "answer_All_questions": "Дайте відповіді на ВСІ запитання",
+   "continue": "Продовжити",
+   "short_test": "Короткий тест",
+   "necessary_for_donation": "Це необхідно для того, щоб стати донором",
+
+  // ResetPasswordScreen
+   "reset_password": "Скинути пароль",
+   "enter_code_sent_to": "Введіть код, надісланий на",
+   "enter_5_digit_code": "Введіть 5-значний код",
+   "verify": "Підтвердити",
+   "didnt_receive_code": "Не отримали код?",
+   "send_again": "Надіслати знову",
+   "success": "Успіх",
+   "code has been sent again to your email.": "Код було надіслано знову на вашу електронну адресу.",
+
+  // NotificationScreen
+  
+  "no_notifications_yet": "У вас ще немає сповіщень.",
+
+  "notifications": "Сповіщення",
+  "today": "Сьогодні",
+  "yesterday": "Вчора",
+
+  "daysAgo_one": "{{count}} день тому",
+  "daysAgo_few": "{{count}} дні тому",
+  "daysAgo_many": "{{count}} днів тому",
+
+  "weeksAgo_one": "{{count}} тиждень тому",
+  "weeksAgo_few": "{{count}} тижні тому",
+  "weeksAgo_many": "{{count}} тижнів тому",
+
+  "yearsAgo_one": "{{count}} рік тому",
+  "yearsAgo_few": "{{count}} роки тому",
+  "yearsAgo_many": "{{count}} років тому",
+
+  "donation_reminder_title": "Не забудь!",
+  "donation_reminder": "Ти зареєстрований на донацію о {{time}} у {{day}}.",
+  "account_setup_success": "Обліковий запис успішно налаштований",
+
+  // IntroScreen
+  "the_step": "Той самий крок,",
+  "that_gives_hope": "Що дарує надію",
+  "thank_you_for_joining_us": "Дякуємо, що приєднуєтесь до нас",
+  "get_started": "Розпочати",
+
+  // BookScreen
+  "location_dots": "Локація:",
+  "reg_lviv": "Львівська область",
+
+  "donor_book_title": "Книга донора",
+  "series_no": "Серія №{{number}}",
+  "date_of_issue": "Дата видачі",
+  "location_label": "Місце видачі",
+  "type_blood": "Група крові",
+  "scan_details": "Скануйте для деталей",
+  "full_information": "Повна інформація",
+  "done": "Готово",
+  "date_of_birth": "Дата народження",
+
+
+  // GetBookScreen
+  "n_days_left_one": "Залишився {{count}} день, щоб отримати книгу донора",
+  "n_days_left_few": "Залишилось {{count}} дні, щоб отримати книгу донора",
+  "n_days_left_many": "Залишилось {{count}} днів, щоб отримати книгу донора",
+  "make_a_donation": "Зробити донацію",
+
+  "to_get_your_donor_book_one": "Щоб отримати книгу донора, необхідно зробити ще {{count}} донацію",
+  "to_get_your_donor_book_few": "Щоб отримати книгу донора, необхідно зробити ще {{count}} донації",
+  "to_get_your_donor_book_many": "Щоб отримати книгу донора, необхідно зробити ще {{count}} донацій",
+
+  "get_donors_book": "Отримати книгу донора",
+  "donations_success": "Ви успішно зробили 5 донацій!",
+
+  
+  "donor_id_title": "ID Донора",
+  "donations_label": "донацій",
+  "completed": "Виконано",
+  "days_left": "Залишилось 3 дні",
+  "now_you_have_book": "тепер у вас є книжка донора",
+  "to_receive_book": "щоб отримати книжку донора",
+  "what_is_donor_book": "Що таке книжка донора?",
+  "donor_book_desc": "Книжка донора — це офіційний документ, що підтверджує ваш статус. Вона дає право на пільги, безкоштовні обстеження та пріоритетне медичне обслуговування.",
+  "to_receive_need_5": "Для отримання книжки потрібно зробити",
+  "already_donated": "Ви вже здали кров",
+  "times": "разів",
+  "only": "лише",
+  "donations_left": "залишилось донацій!",
+  "get_donor_id": "Отримати ID Донора",
+
+
+// ForgetScreen
+ "enter_the_email_associated_with_your_account": "Введіть свій email, пов'язаний з вашим аккаунтом, і ми надішлемо вам лист з кодом для скидання пароля.",
+ "send_code": "Відправити код",
+  "ok": "Гаразд",
+
+  // CreatepasswordScreen
+
+  "create_new_password": "Створити новий пароль",
+  "enter_new_password": "Введіть новий пароль",
+  "confirm_new_password": "Підтвердіть новий пароль",
+  "new_password": "Новий пароль",
+  "your_new_password_must_be_different": "Ваш новий пароль повинен відрізнятися від попереднього.",
+  "remember_and_save_my_password": "Запам'ятати та зберегти мій пароль",
+
+  // EditProfileScreen
+
+  "choose_blood_type": "Оберіть групу крові",
+
+  // "edit_profile": "Редагувати профіль",
+  "save_changes": "Зберегти зміни",
+
+  // HomeScreen
+
+  "rush_of_people": "Наплив людей",
+  "something_that_might_interest_you": "Те, що може вас зацікавити",
+  "which_blood_types_are_needed_most": "Яка кров зараз найбільш потрібна?",
+
+  "your_blood": "Твоя кров",
+  "saves_lives": "рятує життя!",
+  "your_appointment": "Ваш запис",
+  "quick_actions": "Швидкі дії",
+  "find_donors": "Знайти донорів",
+  "hospitals_nearby": "Лікарні поруч",
+  "activity": "Активність",
+  "blog": "Блог",
+  "donate_now": "Здати кров",
+
+  // googleLogin
+  "welcome!": "Вітаємо!",
+  "sign_in_to_continue": "Увійдіть, щоб продовжити",
+  "sign_in_with_google": "Увійти за допомогою Google",
+  "signing_in": "Виконується вхід...",
+
+
+  "next_donation": "Наступна донація",
+  "available_from": "Доступно з",
+  "next_donation_desc": "Ви можете здавати кров не раніше ніж через 60 днів після останньої донації.",
+
+
+  "detailed_information": "Детальна інформація",
+  "whole_blood": "Цільна кров",
+  "date_and_time": "Дата та час",
+  "place": "Місце",
+  "doctor": "Лікар",
+  "component": "Компонент",
+  "volume": "Об'єм",
+  "well_being": "Самопочуття",
+  "status_pending": "очікується",
+  "status_Successfully": "успішно",
+  "status_cancelled": "скасовано",
+  "view_all": "Всі",
+
+  "info_unavailable": "Інформація недоступна",
+  "canceled_donation_msg": "Детальна інформація недоступна, оскільки ця донація була скасована.",
+  "canceled": "Скасовано",
+  "successfully": "Успішно",
+
+
+
+  "go_to_admin": "Панель адміністратора",
+  "faq": "Часті запитання",
+  "about_us": "Про нас",
+  "dark_mode": "Темний режим",
+  "support": "Підтримка",
+  "change_password": "Змінити пароль",
+
+  //Registration
+
+  "registration_title": "Реєстрація",
+  "modal_already_title": "У вас вже є запис! 📅",
+  "modal_already_message": "Ви вже записані на донацію. Будь ласка, дочекайтеся поточної дати або скасуйте попередній запис.",
+  "modal_button_ok": "Зрозуміло",
+
+  "people_registered_day": "Кількість зареєстрованих на цей день",
+  "total_registered_time": "Всього зареєстровано на цей час:",
+
+  "modal_success_title": "Вітаємо! 🎉",
+  "modal_error_title": "Помилка ⚠️",
+  "creating_modal_success_message": "Запис успішно зроблений!",
+  "creating_modal_error_message": "Сталася помилка при створенні запису. Спробуйте ще раз.",
+  "cancel_modal_success_message": "Запис на донацію успішно скасовано.",
+  "cancel_modal_error_message": "Не вдалося скасувати запис. Будь ласка, спробуйте пізніше.",
+  "modal_button_go": "Перейти",
+  "modal_button_close": "Закрити",
+
+  "other":"Інше",
+
+  
+  "cancel_action": "Скасувати",
+  "cancel_dialog_title": "Скасування запису",
+  "cancel_dialog_message": "Ви впевнені, що хочете скасувати цей запис на донацію?",
+  "status_Canceled": "Скасовано",
+  "yes_cancel": "Так, скасувати",
+
+  "logout_dialog_title": "Вихід з акаунту",
+  "logout_dialog_message": "Ви дійсно хочете вийти з додатка?",
+  "modal_button_logout": "Вийти"
+
+}
