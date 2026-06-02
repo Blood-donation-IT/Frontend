@@ -82,6 +82,34 @@ const SettingsScreen = ({ navigation }) => {
  
   const adminBtnTextColor = isLight ? "#fbfbfbff" : "#1a1a1aff";
 
+  const OtherRow = ({
+    label,
+    onPress,
+    isLast = false,
+  }: {
+    label: string;
+    onPress: () => void;
+    isLast?: boolean;
+  }) => (
+    <TouchableOpacity
+      style={[
+        styles.option,
+        !isLast && { borderBottomWidth: 1, borderBottomColor: dividerColor },
+      ]}
+      onPress={onPress}
+      activeOpacity={0.7}
+    >
+      <Text style={[styles.optionText, { color: colors.text || "#000000" }]}>
+        {label}
+      </Text>
+      <Ionicons
+        name="chevron-forward"
+        size={18}
+        color={isLight ? "#aaaaaa" : "#555555"}
+      />
+    </TouchableOpacity>
+  );
+
   return (
     <View style={[styles.mainContainer, { backgroundColor: colors.backgroundMain || "#f9f9f9ff" }]}>
       
@@ -164,7 +192,7 @@ const SettingsScreen = ({ navigation }) => {
         </View>
 
         
-        <View style={styles.section}>
+        {/* <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.primary || "#F86E6E" }]}>
             {t("other") || "Other"}
           </Text>
@@ -184,6 +212,27 @@ const SettingsScreen = ({ navigation }) => {
                 {t("support") || "Support"}
               </Text>
             </TouchableOpacity>
+          </View>
+        </View> */}
+
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: colors.primary || "#F86E6E" }]}>
+            {t("other") || "Other"}
+          </Text>
+          <View style={[styles.blockContainer, { backgroundColor: blockBackgroundColor }]}>
+            <OtherRow
+              label={t("faq") || "FAQ"}
+              onPress={() => navigation.navigate("FAQ")}
+            />
+            <OtherRow
+              label={t("about_us") || "About Us"}
+              onPress={() => navigation.navigate("AboutUs")}
+            />
+            <OtherRow
+              label={t("support") || "Support"}
+              onPress={() => navigation.navigate("Support")}
+              isLast
+            />
           </View>
         </View>
 
