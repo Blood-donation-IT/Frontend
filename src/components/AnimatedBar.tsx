@@ -22,8 +22,9 @@ export default function AnimatedBar({ value, isSelected, index }) {
           styles.bar,
           {
             height: animatedHeight.interpolate({
-              inputRange: [0, 100],
+              inputRange: [0, 5],
               outputRange: ['0%', '100%'],
+              extrapolate: 'clamp',
             }),
             backgroundColor: isSelected 
               ? '#A784FF'
