@@ -287,6 +287,13 @@
 
   "other":"Other",
 
+  
+  "cancel_action": "Cancel",
+  "cancel_dialog_title": "Cancel Appointment",
+  "cancel_dialog_message": "Are you sure you want to cancel this donation appointment?",
+  "status_Canceled": "Canceled",
+  "yes_cancel": "Yes, cancel",
+
   "logout_dialog_title": "Log Out",
   "logout_dialog_message": "Are you sure you want to log out of the application?",
   "modal_button_logout": "Log out",
