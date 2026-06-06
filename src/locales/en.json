@@ -287,10 +287,75 @@
 
   "other":"Other",
 
+  
+  "cancel_action": "Cancel",
+  "cancel_dialog_title": "Cancel Appointment",
+  "cancel_dialog_message": "Are you sure you want to cancel this donation appointment?",
+  "status_Canceled": "Canceled",
+  "yes_cancel": "Yes, cancel",
+
   "logout_dialog_title": "Log Out",
   "logout_dialog_message": "Are you sure you want to log out of the application?",
-  "modal_button_logout": "Log out"
+  "modal_button_logout": "Log out",
 
+  //faq
 
+  "faq_hero_title": "Frequently Asked Questions",
+  "faq_hero_subtitle": "Everything you need to know about blood donation",
+  "faq_footer": "Still have questions? Visit our Support section.",
+  
+  "faq_q1": "How often can I donate blood?",
+  "faq_a1": "Whole blood donors can give every 56 days (8 weeks). Platelet donors can give every 7 days, up to 24 times per year. Double red cell donors must wait 112 days between donations. Always confirm with your donation center for personalized guidance.",
+  
+  "faq_q2": "Is blood donation safe?",
+  "faq_a2": "Yes. Donating blood is completely safe. A new, sterile needle is used for each donor and discarded afterward. You cannot get any infection from donating blood. The process is supervised by trained medical staff throughout.",
+  
+  "faq_q3": "How should I prepare before donating?",
+  "faq_a3": "Drink plenty of water and eat a healthy, iron-rich meal before your appointment. Avoid fatty foods, alcohol, and smoking for at least 24 hours prior. Wear comfortable clothing with sleeves that roll up easily. Bring a valid photo ID.",
+  
+  "faq_q4": "Who can donate blood?",
+  "faq_a4": "Most healthy adults aged 18–65 who weigh at least 50 kg (110 lbs) are eligible. You must not have donated blood in the past 56 days and must be free of infectious diseases. Certain medications and travel history may temporarily defer eligibility.",
+  
+  "faq_q5": "How long does the donation process take?",
+  "faq_a5": "The actual blood draw takes only 8–10 minutes. Including registration, health screening, and a brief rest period with refreshments, the entire visit typically takes 45–60 minutes. Platelet donation takes longer — approximately 1.5 to 2.5 hours.",
+  
+  "faq_q6": "Will I feel weak after donating?",
+  "faq_a6": "Most people feel perfectly fine after donating. Some may experience mild lightheadedness. To minimize this, stay hydrated, avoid heavy exercise for the rest of the day, and enjoy the snacks provided at the donation center. Your body replenishes the donated blood volume within 24 hours.", 
+  //about us
+
+  "about_tagline": "Connecting donors and saving lives — one drop at a time.",
+  "stat_donors": "Active Donors",
+  "stat_satisfaction": "Satisfaction",
+  "stat_lives": "Lives Saved",
+  "our_mission_title": "Our Mission",
+  "our_mission_body": "Advanced Donor was built to make blood donation accessible, organized, and impactful. We bridge the gap between donors and hospitals by providing real-time donation tracking, eligibility reminders, and a network of verified donation centers.",
+  "why_it_matters_title": "Why It Matters",
+  "why_it_matters_body": "Every 2 seconds, someone needs blood. A single donation can save up to 3 lives. Despite this critical need, many donation centers struggle with supply. By connecting willing donors with those in need, Advanced Donor is building a resilient, community-driven blood supply network.",
+  "safe_secure_title": "Safe & Secure",
+  "safe_secure_body": "Your privacy and health data are protected with industry-standard encryption. We never share personal information with third parties without explicit consent. Our platform adheres to all applicable health data regulations.",
+  "all_rights_reserved": "All rights reserved.",
+  "footer_made_with": "Made with",
+
+  //support
+
+  "support_hero_heading": "How can we help?",
+  "support_hero_sub": "Our team is here for you. Reach out via email or Telegram and we'll respond as quickly as possible.",
+  "avg_response": "Avg. response time: under 4 hours",
+  "contact_channels": "Contact Channels",
+  "email_support": "Email Support",
+  "telegram_chat": "Telegram Chat",
+  "telegram_sub": "Fast replies, file sharing & more",
+  "tips_for_faster": "Tips for Faster Resolution",
+  "support_tip_1": "Include your registered email address and device model.",
+  "support_tip_2": "Describe the issue with as much detail as possible.",
+  "support_tip_3": "Attach a screenshot if the issue is visual.",
+  "support_hours_title": "Support Hours",
+  "support_hours_body": "Monday – Friday, 9:00 AM – 6:00 PM",
+  "no_email_client": "No Email Client",
+  "contact_directly": "Please contact us directly at",
+  "telegram_not_found": "Telegram Not Found",
+  "install_telegram": "Please install Telegram to use this feature.",
+  "could_not_open_email": "Could not open email client.",
+  "could_not_open_telegram": "Could not open Telegram."
 
 }

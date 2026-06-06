@@ -21,6 +21,9 @@ import ResetPasswordScreen from "../screens/web/auth/ResetPasswordScreen";
 import CreateNewPasswordScreen from "../screens/web/auth/Createpassword";
 import DonationHistoryScreen from "../screens/web/profile/DonationHistoryScreen";
 import DetailedInformationScreen from "../screens/web/profile/DetailedInformationScreen";
+import FAQScreen from "../screens/web/profile/FAQScreen";
+import AboutUsScreen from "../screens/web/profile/AboutUsScreen";
+import SupportScreen from "../screens/web/profile/SupportScreen";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -110,6 +113,21 @@ export default function AppNavigator() {
           <Stack.Screen
             name="DetailedInformation"
             component={DetailedInformationScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="FAQ"
+            component={FAQScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="AboutUs"
+            component={AboutUsScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Support"
+            component={SupportScreen}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>

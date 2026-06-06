@@ -119,6 +119,7 @@ export default function RegistrationScreen({ navigation, route }) {
 
   const handleDateSelect = (date) => {
     setCurrent(date.dateString);
+
   };
 
   const [viewDate, setViewDate] = useState(current);
@@ -128,12 +129,13 @@ export default function RegistrationScreen({ navigation, route }) {
   const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
   const getMockedAnalytics = async (date: string) => {
-    await sleep(600);
+    await sleep(600);   
+    setTime(null);
     
     const dayNumber = parseInt(date.split('-')[2]) || 1;
 
     const generatedData = Array.from({ length: 10 }).map((_, i) => {
-      const val = (dayNumber + i * 3) % 11; 
+      const val = (dayNumber + i * 3) % 6; 
       return val;
     });
 
@@ -204,6 +206,8 @@ export default function RegistrationScreen({ navigation, route }) {
     return ["8", "8:30", "9", "9:30", "10", "10:30", "11", "11:30", "12", "12:30"];//, "13"
   }, [apiData, width]);
 
+  const MAX_CHART_VALUE = 5;
+
   const dataForChart = useMemo(() => {
     if (apiData) return apiData.data;
 
@@ -214,6 +218,23 @@ export default function RegistrationScreen({ navigation, route }) {
     return locationData[time] || extendedMockData.default;
   }, [current, location, time, apiData]);
 
+  const isPastSlot = (slotTime: string) => {
+    if (current !== todayStr) return false;
+    const now = new Date();
+    const [slotHour, slotMinute] = slotTime.split(":").map(Number);
+    const slotDate = new Date(now);
+    slotDate.setHours(slotHour, slotMinute, 0, 0);
+    return slotDate <= now;
+  };
+
+  const isSlotFull = (index: number) => {
+    const slotValue = dataForChart[index];
+    return typeof slotValue === 'number' && slotValue >= MAX_CHART_VALUE;
+  };
+
+  const isSlotDisabled = (slotTime: string, index: number) => {
+    return isSlotFull(index) || isPastSlot(slotTime);
+  };
 
   const totalRegistered = dataForChart[selectedIndex]//registrationData.reduce((acc, val) => acc + val, 0);
 
@@ -222,7 +243,14 @@ export default function RegistrationScreen({ navigation, route }) {
 
   const validate = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!time) newErrors.time = t("please_select_time");
+    if (!time) {
+      newErrors.time = t("please_select_time");
+    } else {
+      const idx = times.indexOf(time);
+      if (idx !== -1 && isSlotDisabled(time, idx)) {
+        newErrors.time = t("please_select_time");
+      }
+    }
     if (!location.trim()) newErrors.location = t("location_required");
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -584,21 +612,26 @@ export default function RegistrationScreen({ navigation, route }) {
       showsHorizontalScrollIndicator={false}
       keyExtractor={(item) => item}
       contentContainerStyle={{ gap: 10, paddingHorizontal: 10, }}
-      renderItem={({ item }) => {
+      renderItem={({ item, index }) => {
         const isSelected = time === item;
+        const disabledSlot = isSlotDisabled(item, index);
         return (
           <TouchableOpacity
             style={[
               styles.option,
               isSelected && styles.optionSelected,
+              disabledSlot && styles.optionDisabled,
               errors.time && !time ? styles.optionError : null,
             ]}
+            activeOpacity={disabledSlot ? 1 : 0.7}
+            disabled={disabledSlot}
             onPress={() => {
+              if (disabledSlot) return;
               setTime(item);
               setErrors({ ...errors, time: "" });
             }}
           >
-            <Text style={{ color: isSelected ? "#fff" : colors.text }}>
+            <Text style={{ color: isSelected ? "#fff" : disabledSlot ? "#999" : colors.text }}>
               {item}
             </Text>
           </TouchableOpacity>
@@ -680,7 +713,7 @@ export default function RegistrationScreen({ navigation, route }) {
           <View style={styles.mainChartArea}>
             {/* ЛІВА ЧАСТИНА: Вісь Y (числа) */}
             <View style={styles.yAxis}>
-              {[10, 8, 6, 4, 2, 0].map((val) => (
+              {[5, 4, 3, 2, 1, 0].map((val) => (
                 <Text key={val} style={styles.yLabel}>{val}</Text>
               ))}
             </View>
@@ -688,9 +721,9 @@ export default function RegistrationScreen({ navigation, route }) {
             <View style={styles.rightPart}>
           {/* Контейнер з суцільним нижнім бордером */}
           <View style={styles.gridContainer}>
-            {/* Малюємо пунктир тільки для рівнів 20, 40, 60, 80, 100 */}
-            {[20, 40, 60, 80, 100].map((val) => (
-              <View key={val} style={[styles.gridLine, { bottom: `${val}%`}]} />
+            {/* Малюємо пунктир для рівнів 1,2,3,4 з урахуванням максимуму 5 */}
+            {[1, 2, 3, 4, 5].map((val) => (
+              <View key={val} style={[styles.gridLine, { bottom: `${(val / MAX_CHART_VALUE) * 100}%`}]} />
             ))}
           </View>
 
@@ -703,13 +736,14 @@ export default function RegistrationScreen({ navigation, route }) {
             ))} */}
             {dataForChart.map((val, idx) => {
             const isSelectedBar = idx === selectedIndex;
+            const chartValue = Math.min(val, MAX_CHART_VALUE);
 
             return (
               <AnimatedBar 
                 key={idx}
                 index={idx} 
-                value={val*10} 
-                isSelected={idx === selectedIndex} 
+                value={chartValue} 
+                isSelected={isSelectedBar} 
               />
             );
           })}
@@ -1143,6 +1177,11 @@ option: {
     backgroundColor: "#E66A6A",
     borderWidth: 2,
     borderColor: "#F5EDEB66",
+  },
+  optionDisabled: {
+    backgroundColor: "#F5F5F5",
+    borderColor: "#DDDDDD",
+    opacity: 0.55,
   },
   optionError: {
     borderColor: "#FF0000",

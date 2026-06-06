@@ -56,7 +56,7 @@ export const useAuthStore = create<AuthState>((set,get) => ({
 
   cancelDonationAction: async (applicationId: string) => {
     try {
-      const response = await api.patch(`/api/v1/donations/cancel_application/${applicationId}`);
+      const response = await api.post(`/api/v1/donations/${applicationId}/cancel`);
 
       if (response.status === 200 || response.status === 204) {
         set((state) => ({
@@ -69,7 +69,7 @@ export const useAuthStore = create<AuthState>((set,get) => ({
       }
     } catch (error) {
       console.error("Помилка скасування заявки:", error);
-      throw error; // Викидаємо помилку далі, щоб компонент міг показати Alert
+      throw error;
     }
   },
 
