@@ -28,7 +28,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
   const waveMid = useRef(new Animated.Value(width)).current;
   const waveBot = useRef(new Animated.Value(-width)).current;
 
-  // const { checkAuth } = useAuthStore();
+  const { checkAuth } = useAuthStore();
 
   const { colors, isLight } = useTheme();
 
@@ -54,7 +54,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
     const bootstrap = async () => {
       const startTime = Date.now();
       
-      // await checkAuth();
+      await checkAuth();
       
       const isAuth = useAuthStore.getState().isAuth;
 

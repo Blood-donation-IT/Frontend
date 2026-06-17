@@ -16,6 +16,7 @@ import { useTheme } from "../../../Theme/ThemeContext";
 import CustomHeader from "../../../components/CustomHeader";
 import { useAuthStore } from "../../../stores/useAuthStore";
 import { t } from "i18next";
+import { UpdateUserPayload } from "../../../interfaces/user"; 
 
 export default function EditProfileScreen({ navigation }) {
   const user = useAuthStore((state) => state.user);
@@ -24,7 +25,7 @@ export default function EditProfileScreen({ navigation }) {
   const [email, setEmail] = useState(user?.email || "");
   const [avatar, setAvatar] = useState(user?.avatar || "");
   const [phone, setPhone] = useState(user?.phone || "");
-  const [bloodType, setBloodType] = useState<string>(user?.blood_type);
+  const [bloodType, setBloodType] = useState<UpdateUserPayload["bloodType"]>(user?.blood_type);
   const { colors } = useTheme();
 
   const handleSave = async () => {
@@ -33,7 +34,7 @@ export default function EditProfileScreen({ navigation }) {
       return;
     }
     try {
-      await updateUserAction({ name, blood_type:bloodType, phone });
+      await updateUserAction({ name, bloodType: });
       Alert.alert("Успіх", "Профіль оновлено!");
       navigation.goBack();
     } catch (_e) {

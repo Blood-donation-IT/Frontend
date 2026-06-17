@@ -119,7 +119,6 @@ export default function RegistrationScreen({ navigation, route }) {
 
   const handleDateSelect = (date) => {
     setCurrent(date.dateString);
-
   };
 
   const [viewDate, setViewDate] = useState(current);
@@ -268,31 +267,31 @@ export default function RegistrationScreen({ navigation, route }) {
 
         const triggerDate = buildDateFromDayAndTime(current, time);
         
-        const applicationData = {
-          // user_id: user?.id, 
-          blood_type: user?.blood_type,//"A+",
-          slot_index: selectedIndex,
-          application_time: triggerDate.toISOString(),
-          application_day:   triggerDate.toISOString(),//"2026-04-23T12:49:08.442Z",
-          location_id: locationForBackend,
-          status: "pending"
-        };
-        console.log(applicationData)
-
-        await createDonationAction(applicationData);
-
-        // const newDonation = {
-        //    application_day: "2026-04-28",
-        //     application_id: "7453810883081281536",
-        //     application_time: time,
-        //     blood_type: user?.blood_type,
-        //     created_at: "2026-04-25T07:59:01.325642",
-        //     location_id: locationForBackend,
-        //     slot_index: 4,
-        //     status: "pending",
-        //     updated_at: null,
+        // const applicationData = {
+        //   // user_id: user?.id, 
+        //   blood_type: user?.blood_type,//"A+",
+        //   slot_index: selectedIndex,
+        //   application_time: triggerDate.toISOString(),
+        //   application_day:   triggerDate.toISOString(),//"2026-04-23T12:49:08.442Z",
+        //   location_id: locationForBackend,
+        //   status: "pending"
         // };
-        // addDonation(newDonation);
+        // console.log(applicationData)
+
+        // await createDonationAction(applicationData);
+
+        const newDonation = {
+           application_day:  current,//"2026-04-28",
+            application_id: "7453810883081281536",
+            application_time: time,
+            blood_type: user?.blood_type,
+            created_at: "2026-04-25T07:59:01.325642",
+            location_id: locationForBackend,
+            slot_index: 4,
+            status: "pending",
+            updated_at: null,
+        };
+        addDonation(newDonation);
 
         // await scheduleDateNotification(
         //   "Запис на донацію",

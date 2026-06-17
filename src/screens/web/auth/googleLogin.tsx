@@ -59,6 +59,11 @@ export default function GoogleLogin() {
       if (Platform.OS === 'web') {
         const { GoogleAuthProvider, signInWithPopup } = require("firebase/auth");
         const provider = new GoogleAuthProvider();
+
+        provider.setCustomParameters({
+          prompt: 'select_account'
+        });
+
         const result = await signInWithPopup(webAuth, provider);
         
         // Отримуємо токен для синхронізації зі стором
@@ -136,11 +141,24 @@ export async function signOut() {
     } else {
       const { getAuth, signOut: nativeSignOut } = require("@react-native-firebase/auth");
       const { GoogleSignin } = require("@react-native-google-signin/google-signin");
+      
+      // 1. Спочатку розлогінюємо з Firebase
       await nativeSignOut(getAuth());
+      
+      // 2. Відкликаємо доступ у Google (це змусить його знову запитувати вибір акаунта)
+      try {
+        await GoogleSignin.revokeAccess();
+      } catch (revokeError) {
+        // Іноді revokeAccess може кинути помилку, якщо сесія вже застаріла,
+        // тому обгортаємо в try/catch, щоб вона не блокувала загальний вихід
+        console.log("Revoke access error (safe to ignore usually):", revokeError);
+      }
+
+      // 3. Додатково очищаємо сесію в Google
       await GoogleSignin.signOut();
     }
   } catch (error) {
-    console.error(error);
+    console.error("Помилка під час виходу з акаунта:", error);
   }
 }
 
