@@ -48,17 +48,16 @@ export const useAuthStore = create<AuthState>((set,get) => ({
   isLoadingDonations: false,
 
   addDonation: (newDonation: Application) => {
-    set((state) => ({
-      // Створюємо НОВИЙ масив: нова донація + всі старі
-      donations: [newDonation, ...state.donations]
-    }));
+    const updatedDonations = [newDonation, ...get().donations];
+    set({ donations: updatedDonations });
+    localStorage.setItem('applications', JSON.stringify(updatedDonations));
   },
 
   cancelDonationAction: async (applicationId: string) => {
     try {
-      const response = await api.post(`/api/v1/donations/${applicationId}/cancel`);
+      // const response = await api.post(`/api/v1/donations/${applicationId}/cancel`);
 
-      if (response.status === 200 || response.status === 204) {
+      if (true){//(response.status === 200 || response.status === 204) {
         set((state) => ({
           donations: state.donations.map((donation) =>
             donation.application_id === applicationId
@@ -66,6 +65,7 @@ export const useAuthStore = create<AuthState>((set,get) => ({
               : donation
           ),
         }));
+        localStorage.setItem('applications', JSON.stringify(get().donations));
       }
     } catch (error) {
       console.error("Помилка скасування заявки:", error);
@@ -97,6 +97,8 @@ export const useAuthStore = create<AuthState>((set,get) => ({
       
       if (token) {
         await get().fetchProfile();
+        const applications = JSON.parse(localStorage.getItem('applications') || '[]');
+        set({ donations: applications, isLoadingDonations: false });
       } else {
         set({ isAuth: false, user: null });
       }
@@ -159,19 +161,19 @@ export const useAuthStore = create<AuthState>((set,get) => ({
         params: { user_id }
       });
       console.log(response.data)
-      response.data.applications.push(
-        {
-          application_day: "2026-02-14",
-          application_id: "7453810883081281536",
-          application_time: "H%:00",
-          blood_type: "O+",
-          created_at: "2026-04-25T07:59:01.325642",
-          location_id: "Saint Panteleimon Hospital",
-          slot_index: 4,
-          status: "pending",//Successfully
-          updated_at: null,
-        }
-      )
+      // response.data.applications.push(
+      //   {
+      //     application_day: "2026-02-14",
+      //     application_id: "7453810883081281536",
+      //     application_time: "H%:00",
+      //     blood_type: "O+",
+      //     created_at: "2026-04-25T07:59:01.325642",
+      //     location_id: "Saint Panteleimon Hospital",
+      //     slot_index: 4,
+      //     status: "pending",//Successfully
+      //     updated_at: null,
+      //   }
+      // )
       set({ donations: response.data.applications, isLoadingDonations: false });
     } catch (error) {
       console.error("Помилка отримання донацій:", error);
@@ -249,7 +251,7 @@ export const useAuthStore = create<AuthState>((set,get) => ({
   updateUserAction: async (newData) => {
     try {
         const { data } = await api.post('/api/v1/users/edit_profile', newData);
-        
+        console.log("Update response:", data);
         set((state) => ({
           user: state.user ? { ...state.user, ...newData } : null
         }));

@@ -6,7 +6,8 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
-  Modal, 
+  Modal,
+  Platform, 
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../Theme/ThemeContext";
@@ -23,9 +24,9 @@ const DonationHistoryScreen = ({ navigation }) => {
   
   const [isModalVisible, setModalVisible] = useState(false);
 
-  useEffect(() => {
-    fetchUserDonations();
-  }, []);
+  // useEffect(() => {
+  //   fetchUserDonations();
+  // }, []);
 
   // const mockHistoryData = [
   //   donations[0],
@@ -363,6 +364,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
+    
+    ...Platform.select({
+          web: {
+            alignSelf: 'center',
+            width: '100%',
+            maxWidth: 440,
+          }
+        })
   },
   modalContent: {
     backgroundColor: "#FFFFFF",
